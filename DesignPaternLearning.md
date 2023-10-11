@@ -1,4 +1,4 @@
-# 设计模式
+# 设计模式(Design Patern)
 ### 基本概念  
 #### 方法重载 (Method Overloading)  
         方法重载是指在一个类中，当有多个方法的名称相同但参数（数量或类型）不同的情况下，可以使用相同的方法名称来调用不同的方法。
@@ -42,7 +42,7 @@ animal.eat(); // 输出结果：Animal is eating
 Dog dog = new Dog();
 dog.eat(); // 输出结果：Dog is eating
 ```
-#### 接口和抽象类  
+#### 接口和抽象类(Interface vs Abstract Class)  
 ##### 区别： 
     1. 定义方式：接口定义了一些方法的规范，而抽象类可以包含方法的实现。 
     2. 实现方式：一个类可以同时实现多个接口，但只能继承一个抽象类。 
@@ -141,7 +141,7 @@ Animal cat = new Cat("Kitty", 3);
 cat.sound(); // 输出结果：Kitty is meowing
 cat.eat(); // 输出结果：Kitty is eating
 ```
-#### 泛型  
+#### 泛型(Generics)
         泛型（Generics）是Java中的一个特性，它允许我们编写能够处理多种类型的代码，而不是固定于特定类型。
 ##### 例子
         假设我们有一个名为Box的类，用于存储某种物体。在过去，我们可能会定义Box类可以存储任何类型的对象，但在使用时，我们必须进行类型转换。而使用泛型，我们可以定义一个更通用的Box类：
@@ -167,7 +167,7 @@ String str = stringBox.getItem(); // 无需类型转换
 Box<Integer> integerBox = new Box<>(123);
 int num = integerBox.getItem(); // 无需类型转换
 ```
-#### 委托和事件  
+#### 委托和事件(Delegate vs Event)  
         委托（Delegate）是一种引用方法的类型，可以将方法视为参数传递、存储和调用。它允许我们将方法作为委托对象传递给其他方法，从而实现方法的回调和扩展。  
         事件（Event）是基于委托的机制，用于实现观察者模式。它允许对象通过定义和引发事件来通知其他对象发生了某种情况或状态的改变。
 ##### 例子：
@@ -217,58 +217,16 @@ button.Click += HandleButtonClick;
 button.OnClick();
 ```
 ### UML类图
-        类（Class）：用矩形框表示，框内写上类的名称。分为三部分，上面类名，中间特性（字段或属性），最后操作（方法或行为）。
-        属性（Attributes）：表示类的特征或状态，用名称和类型表示。属性通常写在类的顶部。例如，一个名为"age"的属性可以表示为：-age:int （"-"表示私有属性，"int"表示属性的类型）。
-        方法（Methods）：表示类的行为或操作，用名称和参数列表表示。方法通常写在类的底部。例如，一个名为"getName"的方法可以表示为：+getName():String （"+"表示公有方法，"String"表示方法的返回类型）。
-        关联关系（Association）：表示类之间的关联，通常使用实线箭头来表示。箭头指向关联的目标类。例如，如果类A和类B之间存在关联关系，可以用以下形式来表示：[A]-->[B]。
-        继承关系（Inheritance）：表示类之间的继承关系，通常使用空心箭头来表示。箭头指向父类。例如，如果类B继承自类A，可以用以下形式来表示：[A]<|--[B]。
-        实现关系（Interface）：表示类实现接口的关系，通常使用空心三角形箭头来表示。箭头指向接口。例如，如果类A实现了接口B，可以用以下形式来表示：[A]..▷[B]。
-        聚合关系（Aggregation）：表示整体与部分之间的关系，通常使用空心菱形箭头来表示。箭头指向整体。例如，如果类A包含一个类B的对象，可以用以下形式来表示：[B]◇-->[A]。
-        组合关系（Composition）：表示整体与部分之间的强关系，通常使用实心菱形箭头来表示。箭头指向整体。例如，如果类A包含一个类B的对象，并且类B的生命周期依赖于类A，可以用以下形式来表示：[B]◆-->[A]。
+        1. 类（Class）：用矩形框表示，框内写上类的名称。分为三部分，上面类名，中间特性（字段或属性），最后操作（方法或行为）。
+        2. 属性（Attributes）：表示类的特征或状态，用名称和类型表示。属性通常写在类的顶部。例如，一个名为"age"的属性可以表示为：-age:int （"-"表示私有属性，"int"表示属性的类型）。
+        3. 方法（Methods）：表示类的行为或操作，用名称和参数列表表示。方法通常写在类的底部。例如，一个名为"getName"的方法可以表示为：+getName():String （"+"表示公有方法，"String"表示方法的返回类型）。
+        4. 关联关系（Association）：表示类之间的关联，通常使用实线箭头来表示。箭头指向关联的目标类。例如，如果类A和类B之间存在关联关系，可以用以下形式来表示：[A]-->[B]。
+        5. 继承关系（Inheritance）：表示类之间的继承关系，通常使用空心箭头来表示。箭头指向父类。例如，如果类B继承自类A，可以用以下形式来表示：[A]<|--[B]。
+        6. 实现关系（Interface）：表示类实现接口的关系，通常使用空心三角形箭头来表示。箭头指向接口。例如，如果类A实现了接口B，可以用以下形式来表示：[A]..▷[B]。
+        7. 聚合关系（Aggregation）：表示整体与部分之间的关系，通常使用空心菱形箭头来表示。箭头指向整体。例如，如果类A包含一个类B的对象，可以用以下形式来表示：[B]◇-->[A]。
+        8. 组合关系（Composition）：表示整体与部分之间的强关系，通常使用实心菱形箭头来表示。箭头指向整体。例如，如果类A包含一个类B的对象，并且类B的生命周期依赖于类A，可以用以下形式来表示：[B]◆-->[A]。
 ### 基本原则
-#### 单一职责原则  
-    单一职责（Single Responsibility Principle）是面向对象设计原则之一，它要求一个类应该只有一个引起它变化的原因，即一个类应该只有一个职责。
-##### 例子
-```java
-public class FileHandler {
-    public void readFile(String filepath) {
-        // 读取文件的逻辑
-    }
-
-    public void writeFile(String filepath, String content) {
-        // 写入文件的逻辑
-    }
-
-    public void deleteFile(String filepath) {
-        // 删除文件的逻辑
-    }
-}
-
-public class FileValidator {
-    public boolean validateFile(String filepath) {
-        // 验证文件的逻辑
-        // 返回true或false
-    }
-}
-
-public class FileProcessor {
-    private FileHandler fileHandler;
-    private FileValidator fileValidator;
-
-    // 构造函数
-
-    public void processFile(String filepath) {
-        if (fileValidator.validateFile(filepath)) {
-            fileHandler.readFile(filepath);
-            // 处理文件的逻辑
-            fileHandler.writeFile(filepath, "Processed content");
-        } else {
-                // 文件验证失败的处理逻辑
-        }
-    }
-}
-```
-#### 开发-封闭原则  
+#### 开发-封闭原则(Open-Closed Principle)
         开发-封闭是面向对象设计中的一种原则，它强调软件实体（类、模块、函数等）应该是可扩展的，而不是修改原有代码。即在程序的开发阶段，应该尽量保持对修改是封闭的，同时对扩展是开放的。
 ##### 例子
     ```java
@@ -355,7 +313,51 @@ public class FileProcessor {
         }
     }
     ```
-#### 依赖倒转原则  
+以上例子，体现了开发-封闭原则，我们可以通过实现AreaCalculator接口来扩展计算面积的功能，而不需要修改原有代码。
+#### 单一职责原则(Single Responsibility Principle)
+    单一职责是面向对象设计原则之一，它要求一个类应该只有一个引起它变化的原因，即一个类应该只有一个职责。
+##### 例子
+```java
+public class FileHandler {
+    public void readFile(String filepath) {
+        // 读取文件的逻辑
+    }
+
+    public void writeFile(String filepath, String content) {
+        // 写入文件的逻辑
+    }
+
+    public void deleteFile(String filepath) {
+        // 删除文件的逻辑
+    }
+}
+
+public class FileValidator {
+    public boolean validateFile(String filepath) {
+        // 验证文件的逻辑
+        // 返回true或false
+    }
+}
+
+public class FileProcessor {
+    private FileHandler fileHandler;
+    private FileValidator fileValidator;
+
+    // 构造函数
+
+    public void processFile(String filepath) {
+        if (fileValidator.validateFile(filepath)) {
+            fileHandler.readFile(filepath);
+            // 处理文件的逻辑
+            fileHandler.writeFile(filepath, "Processed content");
+        } else {
+                // 文件验证失败的处理逻辑
+        }
+    }
+}
+```
+以上例子，体现了单一职责原则，我们将文件处理的逻辑拆分到了不同的类中，使得每个类只负责一个职责。
+#### 依赖倒转原则(Dependency Inversion Principle)
         依赖倒转（Dependency Inversion Principle）是面向对象设计中的一条原则，它指导我们如何组织和设计代码，以便实现代码的可扩展性和灵活性。该原则的核心思想是高层模块不应该依赖于低层模块的具体实现，而是依赖于抽象。  
         简单来说，依赖倒转模式要求我们通过抽象来解耦高层模块与低层模块之间的关系，而不是直接依赖于具体的实现类。这样做的好处是，当需要修改低层模块的实现时，高层模块不会受到影响，只需要修改抽象接口的实现即可。
 #####     例子
@@ -410,7 +412,8 @@ public class Main {
     }
 }
 ```
-#### 迪米特原则  
+以上例子，体现了依赖倒转原则，我们通过抽象接口Switchable来解耦高层模块RemoteControl与低层模块Television之间的关系，使得高层模块不依赖于低层模块的具体实现。
+#### 迪米特原则(Law of Demeter)  
         迪米特模式也被称为最少知识原则，它是一种设计模式，旨在减少耦合度，提高系统的可维护性和可扩展性。  
         简单来说，迪米特模式的核心思想是尽量降低类与类之间的依赖关系。一个对象应当尽可能不了解其他对象的内部细节，只和自己的朋友打交道。
 #####     例子：
@@ -459,7 +462,246 @@ public class User {
     }
 }
 ```
-    在上述例子中，购物车（ShoppingCart）只与商品（Product）和用户（User）类直接交互，并不知道具体商品或用户的内部实现细节。这样，购物车只需要和自己的朋友打交道，降低了系统的耦合度。
+以上例子中，购物车（ShoppingCart）只与商品（Product）和用户（User）类直接交互，并不知道具体商品或用户的内部实现细节。这样，购物车只需要和自己的朋友打交道，降低了系统的耦合度。
+#### 里氏代换原则(Liskov Substitution Principle)
+        里氏代换原则是面向对象设计中的一条原则，它是对开发-封闭原则的一个补充。里氏代换原则要求，子类必须能够替换掉它们的父类型。也就是说，在使用继承时，只要父类出现的地方，子类就可以出现，而且替换为子类也不会产生任何错误或异常，使用者可能根本就不需要知道是父类还是子类。
+##### 例子：
+```java
+// 定义一个图形抽象类
+abstract class Shape {
+    public abstract double getArea();
+}
+// 定义圆类
+class Circle extends Shape {
+    private double radius;
+
+    public Circle(double radius) {
+        this.radius = radius;
+    }
+
+    @Override
+    public double getArea() {
+        return Math.PI * radius * radius;
+    }
+}
+// 定义矩形类
+class Rectangle extends Shape {
+    private double width;
+    private double height;
+
+    public Rectangle(double width, double height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    @Override
+    public double getArea() {
+        return width * height;
+    }
+}
+// 定义计算面积的工具类
+class AreaCalculator {
+    public double calculateArea(Shape shape) {
+        return shape.getArea();
+    }
+}
+// 测试类
+public class Main {
+    public static void main(String[] args) {
+        AreaCalculator areaCalculator = new AreaCalculator();
+
+        Circle circle = new Circle(3.0);
+        double circleArea = areaCalculator.calculateArea(circle);
+        System.out.println("Circle area: " + circleArea);
+
+        Rectangle rectangle = new Rectangle(4.0, 5.0);
+        double rectangleArea = areaCalculator.calculateArea(rectangle);
+        System.out.println("Rectangle area: " + rectangleArea);
+    }
+}
+```
+以上例子，体现了里氏代换原则，我们可以将Shape类型的变量替换为其子类Circle或Rectangle，而不会影响计算面积的逻辑。
+#### 接口隔离原则(Interface Segregation Principle)
+        接口隔离原则是面向对象设计中的一条原则，它要求接口的设计要尽量小而专，不要让接口承担过多的职责。如果一个接口承担了过多的职责，那么就应该将它拆分成多个更小的接口，以此来降低系统的耦合度，提高系统的可维护性和可扩展性。
+##### 例子：
+```java
+// 定义一个图形接口
+interface Shape {
+    double getArea();
+}
+// 定义一个三维图形接口
+interface SolidShape {
+    double getVolume();
+}
+// 定义一个可旋转图形接口
+interface Rotatable {
+    void rotate(float degree);
+}
+// 定义一个可放大缩小的图形接口
+interface Resizable {
+    void resize(int percent);
+}
+// 定义一个圆类
+class Circle implements Shape, Rotatable {
+    private double radius;
+
+    public Circle(double radius) {
+        this.radius = radius;
+    }
+
+    @Override
+    public double getArea() {
+        return Math.PI * radius * radius;
+    }
+
+    @Override
+    public void rotate(float degree) {
+        // 旋转圆形
+    }
+}
+// 定义一个球类
+class Sphere implements Shape, SolidShape, Rotatable {
+    private double radius;
+
+    public Sphere(double radius) {
+        this.radius = radius;
+    }
+
+    @Override
+    public double getArea() {
+        return 4 * Math.PI * radius * radius;
+    }
+
+    @Override
+    public double getVolume() {
+        return 4 / 3 * Math.PI * radius * radius * radius;
+    }
+
+    @Override
+    public void rotate(float degree) {
+        // 旋转球体
+    }
+}
+// 定义一个长方形类
+class Rectangle implements Shape, Rotatable, Resizable {
+    private double width;
+    private double height;
+
+    public Rectangle(double width, double height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    @Override
+    public double getArea() {
+        return width * height;
+    }
+
+    @Override
+    public void rotate(float degree) {
+        // 旋转长方形
+    }
+
+    @Override
+    public void resize(int percent) {
+        // 放大或缩小长方形
+    }
+}
+// 定义一个正方形类
+class Square implements Shape, Rotatable, Resizable {
+    private double side;
+
+    public Square(double side) {
+        this.side = side;
+    }
+
+    @Override
+    public double getArea() {
+        return side * side;
+    }
+
+    @Override
+    public void rotate(float degree) {
+        // 旋转正方形
+    }
+
+    @Override
+    public void resize(int percent) {
+        // 放大或缩小正方形
+    }
+}
+// 测试类
+public class Main {
+    public static void main(String[] args) {
+        Shape circle = new Circle(3.0);
+        System.out.println("Circle area: " + circle.getArea());
+
+        Shape sphere = new Sphere(3.0);
+        System.out.println("Sphere area: " + sphere.getArea());
+        System.out.println("Sphere volume: " + ((Sphere) sphere).getVolume());
+
+        Shape rectangle = new Rectangle(4.0, 5.0);
+        System.out.println("Rectangle area: " + rectangle.getArea());
+
+        Shape square = new Square(3.0);
+        System.out.println("Square area: " + square.getArea());
+    }
+}
+```
+以上例子，体现了接口隔离原则，我们将Shape接口拆分成了Shape、SolidShape、Rotatable和Resizable四个接口，每个接口都只包含一个职责，这样做的好处是，当我们需要实现某个接口时，只需要实现该接口的一个或多个方法即可，而不需要像之前那样实现所有的方法。
+#### 合成复用原则(Composite Reuse Principle)
+        合成复用原则是面向对象设计中的一条原则，它要求尽量使用合成/聚合的方式，而不是使用继承。
+##### 例子：
+```java
+// 定义一个水果类
+class Fruit {
+    private String name;
+    private double price;
+
+    public Fruit(String name, double price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    public String getFruitInfo() {
+        return name + ": $" + price;
+    }
+}
+// 定义一个水果盘类
+class FruitPlate {
+    private List<Fruit> fruits;
+
+    public FruitPlate() {
+        fruits = new ArrayList<>();
+    }
+
+    public void addFruit(Fruit fruit) {
+        fruits.add(fruit);
+    }
+
+    public void removeFruit(Fruit fruit) {
+        fruits.remove(fruit);
+    }
+
+    public void showFruitPlate() {
+        for (Fruit fruit : fruits) {
+            System.out.println(fruit.getFruitInfo());
+        }
+    }
+}
+// 测试类
+public class Main {
+    public static void main(String[] args) {
+        FruitPlate fruitPlate = new FruitPlate();
+        fruitPlate.addFruit(new Fruit("Apple", 2.0));
+        fruitPlate.addFruit(new Fruit("Banana", 3.0));
+        fruitPlate.addFruit(new Fruit("Orange", 4.0));
+        fruitPlate.showFruitPlate();
+    }
+}
+```
+以上例子，体现了合成复用原则，我们将水果盘（FruitPlate）类中的水果（Fruit）类作为其成员变量，而不是将水果盘类继承自水果类。
+
 ### 23种模式
 #### 简单工厂模式  
         它提供一个统一的接口来创建不同类型的对象，客户端通过这个接口来获取具体的对象，而无需直接关心对象的创建细节。
@@ -1356,66 +1598,65 @@ public class Main {
 #### 状态模式  
         状态模式是一种设计模式，它允许对象在不同的状态下表现出不同的行为。通俗地说，就好像一个人可以根据自己的心情和状态做不同的事情一样。
 ##### 例子：
-```java
-      
-// 状态接口
+```java 
+// 定义一个抽象的状态接口
 interface State {
-    void doAction();
+    void doAction(Context context);
 }
 
-// 具体状态类
-class AngryState implements State {
-    public void doAction() {
-        System.out.println("攻击其他角色");
+// 创建具体的状态类1
+class ConcreteState1 implements State {
+    @Override
+    public void doAction(Context context) {
+        System.out.println("当前状态是状态1");
+        // 根据状态1的逻辑处理相应的行为
+        context.setState(new ConcreteState2()); // 在状态1的逻辑处理完成后，切换到状态2
     }
 }
 
-class HappyState implements State {
-    public void doAction() {
-        System.out.println("跳舞");
+// 创建具体的状态类2
+class ConcreteState2 implements State {
+    @Override
+    public void doAction(Context context) {
+        System.out.println("当前状态是状态2");
+        // 根据状态2的逻辑处理相应的行为
+        context.setState(new ConcreteState1()); // 在状态2的逻辑处理完成后，切换到状态1
     }
 }
 
-class SadState implements State {
-    public void doAction() {
-        System.out.println("哭泣");
-    }
-}
+// 创建一个上下文类
+class Context {
+    private State state; // 当前状态
 
-// 上下文类
-class Character {
-    private State currentState;
-
-    public Character() {
-        currentState = new HappyState();
+    public Context() {
+        this.state = new ConcreteState1(); // 初始化状态为状态1
     }
 
     public void setState(State state) {
-        currentState = state;
+        this.state = state;
     }
 
-    public void performAction() {
-        currentState.doAction();
+    public void doAction() {
+        state.doAction(this);
     }
 }
 
-// 客户端代码
+// 测试
 public class Main {
     public static void main(String[] args) {
-        Character character = new Character();
-
-        character.performAction(); // 输出: 跳舞
-
-        character.setState(new AngryState());
-        character.performAction(); // 输出: 攻击其他角色
-
-        character.setState(new SadState());
-        character.performAction(); // 输出: 哭泣
+        Context context = new Context();
+        context.doAction(); // 执行状态1的行为，并切换到状态2
+        context.doAction(); // 执行状态2的行为，并切换到状态1
     }
 }
 ```
+##### 状态模式与策略模式的异同
+        相似点：状态模式和策略模式都是通过将不同的行为封装到不同的类中，然后通过组合的方式将行为委托给其他对象来实现不同的行为。
+        不同点：
+        1. 状态模式和策略模式的目的不同。状态模式的目的是允许对象在内部状态发生改变时改变它的行为，而策略模式的目的是允许对象在运行时选择算法。
+        2.  状态类的状态切换是由上下文类来控制的，而策略类的算法切换是由客户端来控制的。（最主要）
 #### 适配器模式  
-        适配器模式是一种设计模式，它用于使不兼容的接口能够一起工作。通俗地说，适配器就像一个转接头，可以连接不同类型的设备。
+        适配器模式是一种设计模式，它用于使不兼容的接口能够一起工作。正常项目开发中，我们应该减少使用适配器模式，因为它会导致系统变得更加复杂。但是在某些情况下，比如接手老项目等，它可以帮助我们解决兼容性问题。
 ##### 例子：
         假设你有一台笔记本电脑，但它只有一个USB接口，而你需要连接一个键盘和一个鼠标，它们都是使用PS/2接口的。这时候，你可以使用一个USB到PS/2适配器来解决兼容性问题。适配器连接到USB接口上，然后你可以将鼠标和键盘连接到适配器的PS/2接口上。
 ```java
@@ -1455,3 +1696,800 @@ public class Main {
 }
 ```
 #### 备忘录模式  
+        备忘录模式是一种行为型设计模式，它用于在不破坏封装性的前提下捕获一个对象的内部状态，并且能够在稍后的时间点将该对象恢复到此状态。它通常用于需要保存和恢复对象状态的场景，例如撤销操作、历史记录等。
+        在备忘录模式中，有三个主要角色： 
+        1. 源发器（Originator）：它是需要被保存和恢复状态的对象。它知道如何创建和恢复备忘录对象，并且能够将自身的状态保存到备忘录对象中。 
+        2. 备忘录（Memento）：它是用于存储源发器对象内部状态的对象。它可以包含源发器对象的部分或全部状态信息。 
+        3. 管理者（Caretaker）：它负责保存备忘录对象，并且可以决定何时以及如何恢复源发器的状态。它不知道备忘录对象的具体内容，只负责存储和管理备忘录。
+##### 例子
+```java
+// 源发器类
+class Originator {
+    private String state;
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public Memento createMemento() {
+        return new Memento(state);
+    }
+
+    public void restoreFromMemento(Memento memento) {
+        state = memento.getState();
+    }
+}
+
+// 备忘录类
+class Memento {
+    private String state;
+
+    public Memento(String state) {
+        this.state = state;
+    }
+
+    public String getState() {
+        return state;
+    }
+}
+
+// 管理者类
+class Caretaker {
+    private Memento memento;
+
+    public void saveMemento(Memento memento) {
+        this.memento = memento;
+    }
+
+    public Memento retrieveMemento() {
+        return memento;
+    }
+}
+
+// 示例代码
+public class Main {
+    public static void main(String[] args) {
+        Originator originator = new Originator();
+        Caretaker caretaker = new Caretaker();
+
+        originator.setState("State 1");
+        System.out.println("Current state: " + originator.getState());
+
+        caretaker.saveMemento(originator.createMemento());
+
+        originator.setState("State 2");
+        System.out.println("Current state: " + originator.getState());
+
+        originator.restoreFromMemento(caretaker.retrieveMemento());
+        System.out.println("Restored state: " + originator.getState());
+    }
+}
+```
+#### 组合模式
+        组合模式是一种结构型设计模式，它允许将对象组合成树状的层次结构，以表示“部分-整体”的关系。这使得客户端可以将单个对象和组合对象一视同仁地处理，无需区分它们之间的差异。
+        在组合模式中，有三个主要角色： 
+        1. 组件（Component）：它是组合模式的基本对象。它可以是叶子节点（没有子节点）或者是容器节点（有子节点），定义了统一的接口供客户端使用。 
+        2. 叶子（Leaf）：它是组合模式中的叶子节点，它没有子节点。 
+        3. 容器（Composite）：它是组合模式中的容器节点，可以包含其他组件对象作为子节点。它提供了管理子节点的方法，并且可以将操作委托给子节点。
+##### 例子
+```java
+// 组件接口
+interface Component {
+    void operation();
+}
+
+// 叶子节点类
+class Leaf implements Component {
+    private String name;
+
+    public Leaf(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void operation() {
+        System.out.println("Leaf " + name + " operation");
+    }
+}
+
+// 容器节点类
+class Composite implements Component {
+    private List<Component> components = new ArrayList<>();
+
+    @Override
+    public void operation() {
+        System.out.println("Composite operation");
+
+        for (Component component : components) {
+            component.operation();
+        }
+    }
+
+    public void addComponent(Component component) {
+        components.add(component);
+    }
+
+    public void removeComponent(Component component) {
+        components.remove(component);
+    }
+}
+
+// 示例代码
+public class Main {
+    public static void main(String[] args) {
+        Component leaf1 = new Leaf("Leaf 1");
+        Component leaf2 = new Leaf("Leaf 2");
+        Component leaf3 = new Leaf("Leaf 3");
+
+        Component composite = new Composite();
+        composite.addComponent(leaf1);
+        composite.addComponent(leaf2);
+
+        Component root = new Composite();
+        root.addComponent(composite);
+        root.addComponent(leaf3);
+
+        root.operation();
+    }
+}
+```
+#### 迭代器模式
+        迭代器模式是一种行为型设计模式，用于提供一种统一的方式来遍历集合对象中的元素，而无需暴露集合的内部表示。它将集合和遍历分离，使得可以独立地修改集合和遍历算法。
+        在迭代器模式中，有两个主要角色： 
+        1. 迭代器接口（Iterator）：它定义了遍历集合对象的方法，包括获取下一个元素、判断是否还有元素等。 
+        2. 集合接口（Aggregate）：它定义了创建迭代器对象的方法，通常包含返回迭代器对象的方法。
+##### 例子
+```java
+// 迭代器接口
+interface Iterator {
+    boolean hasNext();
+    Object next();
+}
+
+// 集合接口
+interface Aggregate {
+    Iterator createIterator();
+}
+
+// 具体迭代器类
+class ConcreteIterator implements Iterator {
+    private String[] elements;
+    private int position = 0;
+
+    public ConcreteIterator(String[] elements) {
+        this.elements = elements;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return position < elements.length;
+    }
+
+    @Override
+    public Object next() {
+        return elements[position++];
+    }
+}
+
+// 具体集合类
+class ConcreteAggregate implements Aggregate {
+    private String[] elements;
+
+    public ConcreteAggregate(String[] elements) {
+        this.elements = elements;
+    }
+
+    @Override
+    public Iterator createIterator() {
+        return new ConcreteIterator(elements);
+    }
+}
+
+// 示例代码
+public class Main {
+    public static void main(String[] args) {
+        String[] elements = {"Element 1", "Element 2", "Element 3"};
+
+        Aggregate aggregate = new ConcreteAggregate(elements);
+        Iterator iterator = aggregate.createIterator();
+
+        while (iterator.hasNext()) {
+            Object element = iterator.next();
+            System.out.println(element);
+        }
+    }
+}
+```
+#### 单例模式
+        单例模式是一种创建型设计模式，它能够保证一个类只有一个实例，并提供一个访问该实例的全局节点。
+        在单例模式中，有两个主要角色： 
+        1. 单例类（Singleton）：它包含了一个实例且能自行创建这个实例。 
+        2. 客户端（Client）：它需要通过单例类的全局节点来获取单例类的实例。
+##### 懒汉模式与饿汉模式
+        懒汉模式是指单例实例在第一次被使用时才进行初始化的模式，而饿汉模式是指单例实例在类被加载时就进行初始化的模式。
+        懒汉模式的优点是单例只有在使用时才会被实例化，可以节省资源，缺点是第一次加载时需要及时进行实例化，反应稍慢一些，且在多线程环境下需要使用同步锁 synchronized 进行同步，可能会造成资源的浪费。
+        饿汉模式的优点是单例在类被加载时就被实例化，避免了线程同步问题，缺点是单例在还没有使用到的时候就被实例化，可能会造成资源的浪费。
+##### 例子
+```java
+// 懒汉模式
+public class LazySingleton {
+    private static LazySingleton instance;
+
+    private LazySingleton() {}
+
+    public static LazySingleton getInstance() {
+        if (instance == null) {
+            instance = new LazySingleton();
+        }
+        return instance;
+    }
+}
+// 饿汉模式
+public class EagerSingleton {
+    private static EagerSingleton instance = new EagerSingleton();
+
+    private EagerSingleton() {}
+
+    public static EagerSingleton getInstance() {
+        return instance;
+    }
+}
+```
+#### 桥接模式
+        桥接模式是一种结构型设计模式，它可以将抽象部分与实现部分分离，使它们都可以独立地变化。通俗地说，桥接模式就是将事物与其具体实现分开，使它们可以各自独立地变化。
+        在桥接模式中，有四个主要角色： 
+        1. 抽象类（Abstraction）：它定义了抽象部分的接口。它一般是抽象类而不是接口，因为接口不能包含实现代码。 
+        2. 扩充抽象类（Refined Abstraction）：它是抽象类的子类，可以扩充抽象类中定义的方法。 
+        3. 实现类接口（Implementor）：它定义了实现类的接口，这个接口不一定要与抽象类的接口完全一致，事实上这两个接口可以完全不同。一般来说，Implementor接口仅提供基本操作，而Abstraction定义的接口可能会做更多更复杂的操作。 
+        4. 具体实现类（Concrete Implementor）：它是实现类接口的具体实现，含有实现类的具体操作。
+##### 例子
+```java
+// 定义抽象类 Shape
+public abstract class Shape {
+    protected DrawAPI drawAPI;
+
+    protected Shape(DrawAPI drawAPI) {
+        this.drawAPI = drawAPI;
+    }
+
+    public abstract void draw();
+}
+
+// 定义实现接口 DrawAPI
+public interface DrawAPI {
+    void drawCircle(int radius, int x, int y);
+}
+
+// 创建具体实现类 RedCircle
+public class RedCircle implements DrawAPI {
+    @Override
+    public void drawCircle(int radius, int x, int y) {
+        System.out.println("Drawing red circle with radius " + radius + " at (" + x + ", " + y + ")");
+    }
+}
+
+// 创建具体实现类 GreenCircle
+public class GreenCircle implements DrawAPI {
+    @Override
+    public void drawCircle(int radius, int x, int y) {
+        System.out.println("Drawing green circle with radius " + radius + " at (" + x + ", " + y + ")");
+    }
+}
+
+// 创建实现抽象类 Shape 的子类 Circle
+public class Circle extends Shape {
+    private int x, y, radius;
+
+    public Circle(int x, int y, int radius, DrawAPI drawAPI) {
+        super(drawAPI);
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+    }
+
+    @Override
+    public void draw() {
+        drawAPI.drawCircle(radius, x, y);
+    }
+}
+
+// 在客户端代码中使用桥接模式
+public class BridgePatternExample {
+    public static void main(String[] args) {
+        Shape redCircle = new Circle(100, 100, 10, new RedCircle());
+        Shape greenCircle = new Circle(200, 200, 20, new GreenCircle());
+
+        redCircle.draw();
+        greenCircle.draw();
+    }
+}
+```
+#### 命令模式
+        命令模式是一种行为型设计模式，它可以将请求转换为一个包含与请求相关的所有信息的独立对象。这种转换让你能根据不同的请求将方法参数化、延迟请求执行或将其放入队列中，且能实现可撤销操作。
+        在命令模式中，有四个主要角色： 
+        1. 命令（Command）：它声明了执行操作的接口。 
+        2. 具体命令（Concrete Command）：它是命令接口的实现类，它对应具体的接收者对象，将接收者对象的动作绑定其中。 
+        3. 调用者（Invoker）：它接收客户端的命令并执行命令。 
+        4. 接收者（Receiver）：它执行命令具体的操作，是具体命令对象业务的真正实现者。
+##### 例子
+```java
+// 以电视遥控器为例
+// 命令接口
+interface Command {
+    void execute();
+}
+// 具体命令类
+class TurnOnCommand implements Command {
+    private TV tv;
+
+    public TurnOnCommand(TV tv) {
+        this.tv = tv;
+    }
+
+    @Override
+    public void execute() {
+        tv.turnOn();
+    }
+}
+class TurnOffCommand implements Command {
+    private TV tv;
+
+    public TurnOffCommand(TV tv) {
+        this.tv = tv;
+    }
+
+    @Override
+    public void execute() {
+        tv.turnOff();
+    }
+}
+// 接收者类
+class TV {
+    public void turnOn() {
+        System.out.println("Turning on the TV");
+    }
+}
+// 调用者类
+class RemoteController {
+    private Command command;
+
+    public void setCommand(Command command) {
+        this.command = command;
+    }
+
+    public void pressButton() {
+        command.execute();
+    }
+}
+// 客户端代码
+public class Main {
+    public static void main(String[] args) {
+        TV tv = new TV();
+        Command command1 = new TurnOnCommand(tv), command2 = new TurnOffCommand(tv);
+
+        RemoteController remoteController = new RemoteController();
+        remoteController.setCommand(command1);
+        remoteController.pressButton();
+        remoteController.setCommand(command2);
+        remoteController.pressButton();
+    }
+}
+```
+#### 责任链模式
+        责任链模式是一种行为型设计模式，它允许你将请求沿着处理者链进行发送，直至其中一个处理者对其进行处理。该模式允许多个对象来处理同一请求，而无需让客户端类了解到底使用哪一个对象来处理它。
+        在责任链模式中，有两个主要角色： 
+        1. 处理者（Handler）：它声明了一个处理请求的接口，同时实现了后继链（successor link）。 
+        2. 具体处理者（Concrete Handler）：它是处理请求的具体处理者，它会对请求进行处理，如果不能处理则会将请求转发给后继者。
+##### 例子
+```java
+// 这里以一个请假审批的例子来说明责任链模式
+// 处理者接口
+interface Handler {
+    void handleRequest(int leaveDays);
+}
+// 具体处理者类
+class Director implements Handler {
+    private Handler successor;
+
+    public void setSuccessor(Handler successor) {
+        this.successor = successor;
+    }
+
+    @Override
+    public void handleRequest(int leaveDays) {
+        if (leaveDays <= 3) {
+            System.out.println("Director approved");
+        } else {
+            successor.handleRequest(leaveDays);
+        }
+    }
+}
+class Manager implements Handler {
+    private Handler successor;
+
+    public void setSuccessor(Handler successor) {
+        this.successor = successor;
+    }
+
+    @Override
+    public void handleRequest(int leaveDays) {
+        if (leaveDays <= 10) {
+            System.out.println("Manager approved");
+        } else {
+            successor.handleRequest(leaveDays);
+        }
+    }
+}
+class CEO implements Handler {
+    @Override
+    public void handleRequest(int leaveDays) {
+        System.out.println("CEO approved");
+    }
+}
+// 客户端代码
+public class Main {
+    public static void main(String[] args) {
+        Handler director = new Director();
+        Handler manager = new Manager();
+        Handler ceo = new CEO();
+
+        director.setSuccessor(manager);
+        manager.setSuccessor(ceo);
+
+        director.handleRequest(2);
+        director.handleRequest(5);
+        director.handleRequest(15);
+    }
+}
+```
+#### 中介者模式
+        中介者模式是一种行为型设计模式，它可以让你减少对象之间混乱无序的依赖关系。该模式会限制对象之间的直接交互，迫使它们通过一个中介者对象进行合作。
+        在中介者模式中，有四个主要角色： 
+        1. 中介者（Mediator）：它定义了一个接口，该接口用于与各同事对象之间进行通信。 
+        2. 具体中介者（Concrete Mediator）：它是实现了中介者接口的具体中介者类，它通过协调各个同事对象来实现协作行为，因此它必须依赖于各个同事对象。 
+        3. 同事类（Colleague）：它定义了各个同事类公有的方法，并声明了一些抽象方法来供子类实现，同时它维持了一个对抽象中介者类的引用，其子类可以通过该引用来与中介者进行通信。 
+        4. 具体同事类（Concrete Colleague）：它是各个具体同事类的子类，每个同事只知道自己的行为，而不了解其他同事类的情况，但它们都认识中介者对象。
+##### 例子
+```java
+// 这里以 QQ 群聊为例
+// 中介者接口
+interface Mediator {
+    void sendMessage(String message, User user);
+}
+// 具体中介者类
+class QQGroup implements Mediator {
+    private List<User> users = new ArrayList<>();
+
+    @Override
+    public void sendMessage(String message, User user) {
+        for (User u : users) {
+            if (u != user) {
+                u.receiveMessage(message);
+            }
+        }
+    }
+
+    public void addUser(User user) {
+        users.add(user);
+    }
+}
+// 同事类
+abstract class User {
+    protected Mediator mediator;
+
+    public User(Mediator mediator) {
+        this.mediator = mediator;
+    }
+
+    public abstract void sendMessage(String message);
+    public abstract void receiveMessage(String message);
+}
+// 具体同事类
+class NormalUser extends User {
+    public NormalUser(Mediator mediator) {
+        super(mediator);
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        System.out.println("Normal user sends message: " + message);
+        mediator.sendMessage(message, this);
+    }
+
+    @Override
+    public void receiveMessage(String message) {
+        System.out.println("Normal user receives message: " + message);
+    }
+}
+class VIPUser extends User {
+    public VIPUser(Mediator mediator) {
+        super(mediator);
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        System.out.println("VIP user sends message: " + message);
+        mediator.sendMessage(message, this);
+    }
+
+    @Override
+    public void receiveMessage(String message) {
+        System.out.println("VIP user receives message: " + message);
+    }
+}
+// 客户端代码
+public class Main {
+    public static void main(String[] args) {
+        Mediator mediator = new QQGroup();
+
+        User user1 = new NormalUser(mediator);
+        User user2 = new NormalUser(mediator);
+        User user3 = new VIPUser(mediator);
+
+        mediator.addUser(user1);
+        mediator.addUser(user2);
+        mediator.addUser(user3);
+
+        user1.sendMessage("Hello");
+        user3.sendMessage("Hello");
+    }
+}
+```
+#### 享元模式
+        享元模式是一种结构型设计模式，它通过共享大量细粒度对象来有效地支持大量细粒度的对象。
+        在享元模式中，有两个主要角色： 
+        1. 享元（Flyweight）：它是一个包含状态独立的不可变（又称固有的）数据的共享对象。 
+        2. 工厂（Factory）：它用于构造一个享元对象，它会确保合理地共享享元对象。当用户请求一个享元时，工厂对象会提供一个已创建的实例或者创建一个新的实例。
+##### 例子
+```java
+// 以围棋为例
+// 享元类
+class GoPiece {
+    private String color;
+
+    public GoPiece(String color) {
+        this.color = color;
+    }
+
+    public String getColor() {
+        return color;
+    }
+}
+// 工厂类
+class GoPieceFactory {
+    private static Map<String, GoPiece> pieces = new HashMap<>();
+
+    public static GoPiece getPiece(String color) {
+        GoPiece piece = pieces.get(color);
+
+        if (piece == null) {
+            piece = new GoPiece(color);
+            pieces.put(color, piece);
+        }
+
+        return piece;
+    }
+}
+// 客户端代码
+public class Main {
+    public static void main(String[] args) {
+        GoPiece black1 = GoPieceFactory.getPiece("black");
+        GoPiece black2 = GoPieceFactory.getPiece("black");
+        GoPiece white1 = GoPieceFactory.getPiece("white");
+        GoPiece white2 = GoPieceFactory.getPiece("white");
+
+        System.out.println(black1 == black2); // true
+        System.out.println(white1 == white2); // true
+    }
+}
+```
+#### 解释器模式
+        解释器模式是一种行为型设计模式，它允许你定义语言的语法，并解释语言中的句子。它通常用于需要频繁处理一些结构化文本的场景。
+        在解释器模式中，有四个主要角色： 
+        1. 抽象表达式（Abstract Expression）：它一般是一个抽象类或接口，声明了解释器的抽象方法 interpret()，它是所有终结符表达式和非终结符表达式的公共父类。 
+        2. 终结符表达式（Terminal Expression）：它实现了与文法中的终结符相关联的解释操作，在句子中的每一个终结符都是该类的一个实例。通常在一个解释器模式中只有少数几个终结符表达式类，它们的实例可以通过非终结符表达式组成较为复杂的句子。 
+        3. 非终结符表达式（Nonterminal Expression）：它实现了文法中非终结符的解释操作，由于在非终结符表达式中可以包含终结符表达式，也可以继续包含非终结符表达式，因此其解释操作一般通过递归的方式来完成。 
+        4. 环境（Context）：它定义了各个解释器之间的关系，它一般是一个类，可以使用 HashMap 来存储解释器之间的关系，每个终结符表达式都在环境类中存储了一个对应它的非终结符表达式的引用。
+##### 例子
+```java
+// 以四则运算为例
+// 抽象表达式类
+interface Expression {
+    int interpret();
+}
+// 终结符表达式类
+class NumberExpression implements Expression {
+    private int number;
+
+    public NumberExpression(int number) {
+        this.number = number;
+    }
+
+    @Override
+    public int interpret() {
+        return number;
+    }
+}
+// 非终结符表达式类
+class AddExpression implements Expression {
+    private Expression leftExpression, rightExpression;
+
+    public AddExpression(Expression leftExpression, Expression rightExpression) {
+        this.leftExpression = leftExpression;
+        this.rightExpression = rightExpression;
+    }
+
+    @Override
+    public int interpret() {
+        return leftExpression.interpret() + rightExpression.interpret();
+    }
+}
+class SubtractExpression implements Expression {
+    private Expression leftExpression, rightExpression;
+
+    public SubtractExpression(Expression leftExpression, Expression rightExpression) {
+        this.leftExpression = leftExpression;
+        this.rightExpression = rightExpression;
+    }
+
+    @Override
+    public int interpret() {
+        return leftExpression.interpret() - rightExpression.interpret();
+    }
+}
+class MultiplyExpression implements Expression {
+    private Expression leftExpression, rightExpression;
+
+    public MultiplyExpression(Expression leftExpression, Expression rightExpression) {
+        this.leftExpression = leftExpression;
+        this.rightExpression = rightExpression;
+    }
+
+    @Override
+    public int interpret() {
+        return leftExpression.interpret() * rightExpression.interpret();
+    }
+}
+class DivideExpression implements Expression {
+    private Expression leftExpression, rightExpression;
+
+    public DivideExpression(Expression leftExpression, Expression rightExpression) {
+        this.leftExpression = leftExpression;
+        this.rightExpression = rightExpression;
+    }
+
+    @Override
+    public int interpret() {
+        return leftExpression.interpret() / rightExpression.interpret();
+    }
+}
+// 客户端代码
+public class Main {
+    public static void main(String[] args) {
+        Expression expression = new AddExpression(
+                new SubtractExpression(
+                        new MultiplyExpression(
+                                new NumberExpression(10),
+                                new NumberExpression(2)
+                        ),
+                        new NumberExpression(5)
+                ),
+                new DivideExpression(
+                        new NumberExpression(20),
+                        new NumberExpression(4)
+                )
+        );
+
+        System.out.println(expression.interpret()); // 输出: 5
+    }
+}
+```
+#### 访问者模式
+        访问者模式是一种行为型设计模式，它能将算法与其所作用的对象隔离开来。
+        在访问者模式中，有四个主要角色： 
+        1. 抽象访问者（Visitor）：它声明了一组访问方法，用于声明访问者可以访问哪些元素。 
+        2. 具体访问者（Concrete Visitor）：它实现了抽象访问者所声明的访问方法，它影响了访问者访问到一个类后该类的执行方式。 
+        3. 抽象元素（Element）：它定义了一个接受访问者（accept()）的方法，其意义是指每一个元素都要可以被访问者访问。 
+        4. 具体元素（Concrete Element）：它实现了抽象元素所定义的接受访问方法（accept()），通常它会调用访问者提供的访问该元素的方法。 
+        5. 对象结构（Object Structure）：它是一个元素的集合，提供了遍历它的方法。它可以结合组合模式来实现，也可以是一个简单的集合对象，如一个List对象或一个Set对象。
+##### 例子
+```java
+// 以购物车为例
+// 抽象访问者类
+interface Visitor {
+    void visit(Book book);
+    void visit(Fruit fruit);
+}
+// 具体访问者类
+class ShoppingCartVisitor implements Visitor {
+    @Override
+    public void visit(Book book) {
+        System.out.println("Book: " + book.getName() + ", price: " + book.getPrice());
+    }
+
+    @Override
+    public void visit(Fruit fruit) {
+        System.out.println("Fruit: " + fruit.getName() + ", price: " + fruit.getPrice());
+    }
+}
+// 抽象元素类
+interface ItemElement {
+    void accept(Visitor visitor);
+}
+// 具体元素类
+class Book implements ItemElement {
+    private String name;
+    private int price;
+
+    public Book(String name, int price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+    }
+}
+class Fruit implements ItemElement {
+    private String name;
+    private int price;
+    private int weight;
+
+    public Fruit(String name, int price, int weight) {
+        this.name = name;
+        this.price = price;
+        this.weight = weight;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+    }
+}
+// 客户端代码
+public class Main {
+    public static void main(String[] args) {
+        ItemElement[] items = new ItemElement[]{
+                new Book("Book 1", 10),
+                new Book("Book 2", 20),
+                new Fruit("Apple", 5, 2),
+                new Fruit("Banana", 10, 1)
+        };
+
+        int total = 0;
+        Visitor visitor = new ShoppingCartVisitor();
+
+        for (ItemElement item : items) {
+            item.accept(visitor);
+            total += item.getPrice();
+        }
+
+        System.out.println("Total: " + total);
+    }
+}
+```
