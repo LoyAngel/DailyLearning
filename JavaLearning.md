@@ -1,5 +1,5 @@
 # JAVA
-
+ 
 ## 基础注意项
 ### 注意点
         大小写敏感：Java 是大小写敏感的，这就意味着标识符 Hello 与 hello 是不同的。
@@ -119,3 +119,212 @@
         判定对象是否为某个类的实例，返回boolean值。
 
 ## Java循环结构
+        1. while循环
+        2. do...while循环
+        3. for循环
+        以上3种循环与c一致，不赘述。
+        4. 增强for循环
+        增强for循环指的是foreach循环，用于遍历数组或者集合，类似于python的for(i in list)。
+        结构：for(元素类型 元素变量 : 数组或者集合) {循环体}
+        5. break关键字
+        6. continue关键字
+        以上两个关键字与普通编程一致，不赘述。
+
+## Java条件语句
+        1. if语句
+        2. if...else语句
+        3. if...else if...else语句
+        4. switch语句
+        以上4种语句与c一致，不赘述。
+
+## Java Number & Math类
+### Number类
+        基础数据类型：byte, short, int, long, float, double, boolean, char
+        包装器类型：Byte, Short, Integer, Long, Float, Double, Boolean, Character
+        两者区别：
+        1. 基础数据类型在内存中占用空间较小，包装器类型在内存中占用空间较大。
+        2. 基础数据类型是直接存储在栈中的，包装器类型是存储在堆中的。
+        3. 基础数据类型的值是不可变的，包装器类型的值是可变的。
+        4. 基础数据类型的默认值不是null，包装器类型的默认值是null。
+
+        5. Boolean 1位, true/false
+        6. Byte 8位有符号整数，范围-128~127
+        7.  Short 16位有符号整数，范围-32768~32767
+        8.  Integer 32位有符号整数，范围-2147483648~2147483647
+        9.  Long 64位有符号整数，范围-9223372036854775808~9223372036854775807
+        10. Float 32位单精度浮点数
+        11. Double 64位双精度浮点数
+        12. Character 16位Unicode字符，范围\u0000~\uffff
+#### 装箱和拆箱
+        装箱：将基本数据类型转换为包装器类型，例如将int转换为Integer，将double转换为Double。
+                例子 Integer x = 5;
+        拆箱：将包装器类型转换为基本数据类型，例如将Integer转换为int，将Double转换为double。
+                例子 int x = new Integer(5);
+#### Number & Math 常用类方法
+        Number & Math 类用于对基本数据类型进行包装和数学运算。 
+        1. Number类
+        xxxValue()：以xxx类型返回指定数值
+        compareTo()：将number对象与参数比较
+        equals()：判断number对象是否与参数相等
+        valueOf()：返回一个Number对象指定的内置数据类型
+        2. Math类
+        abs(x)：返回x的绝对值
+        ceil(x)：返回大于等于x的最小整数
+        floor(x)：返回小于等于x的最大整数
+        max(x, y)：返回x和y中的最大值
+        min(x, y)：返回x和y中的最小值
+        pow(x, y)：返回x的y次幂
+        sqrt(x)：返回x的平方根
+        random()：返回0.0~1.0之间的随机数
+        3. 通用型
+        toString()：返回一个字符串表示形式
+        parseInt()：将字符串解析为int类型
+        random()：返回0.0~1.0之间的随机数
+
+### Character 类
+        Character 类用于对单个字符进行操作。
+#### 转义序列
+        \t, \b, \n, \r, \', \", \\
+        与c一致，不赘述。
+        \ddd, 表示8进制数ddd所代表的字符
+        \uxxxx， 表示16进制数xxxx所代表的字符
+#### Character类常用方法
+        isLetter()：判断字符是否为字母
+        isDigit()：判断字符是否为数字
+        isWhitespace()：判断字符是否为空白字符
+        isUpperCase()：判断字符是否为大写字母
+        isLowerCase()：判断字符是否为小写字母
+        toUpperCase()：将字符转换为大写字母
+        toLowerCase()：将字符转换为小写字母
+        toString()：返回字符的字符串形式，字符串长度为1
+
+## String 与 StringBuffer & StringBuilder
+### String 类
+        String 类代表字符串。Java中的字符串是不可变的，所以每次对字符串的操作都会生成一个新的字符串对象。
+        String 类是不可变的，所以你一旦创建了 String 对象，那它的值就无法改变了。如果需要对字符串做很多修改，那么应该选择使用 StringBuffer & StringBuilder 类。
+#### String类创建字符串
+        1. 通过字面量创建字符串
+        String str = "Hello World";
+        2. 通过构造方法创建字符串
+        String str = new String("Hello World");
+        两者区别：
+        通过字面量创建的字符串会被放入字符串常量池中，而通过构造方法创建的字符串不会放入字符串常量池中；
+        通过字面量创建的字符串对象的引用会被放入栈中，而通过构造方法创建的字符串对象的引用不会被放入栈中。
+![String类创建字符串](https://www.runoob.com/wp-content/uploads/2013/12/java-string-1-2020-12-01.png "String类创建字符串")
+#### String类常见构建方法
+        1. String()：初始化一个新创建的String对象，使其表示一个空字符序列。
+        2. String(byte[] bytes)：通过使用平台的默认字符集解码指定的字节数组来构造新的String。
+        3. String(char[] value)：分配一个新的String，使其表示字符数组参数中当前包含的字符序列。
+#### String类常用方法
+        1. length()：返回字符串的长度。例子：int len = str.length();
+        2. concat()：将指定字符串连接到此字符串的结尾。例子：String str2 = str1.concat("World");
+        3. format()：使用指定的格式字符串和参数返回一个格式化字符串。例子：String str2 = String.format("Hi, %s", "World");
+        4. charAt()：返回指定索引处的char值。例子：char ch = str.charAt(0);
+        5. indexOf()：返回指定字符在此字符串中第一次出现处的索引。例子：int index = str.indexOf("Hello");
+        6. compareTo()：按字典顺序比较两个字符串。例子：int result = str1.compareTo(str2);
+        7. substring()：返回一个新的字符串，它是此字符串的一个子字符串。例子：String substr = str.substring(0, 5);
+        8. replace()：返回一个新的字符串，它是通过用 newChar 替换此字符串中出现的所有 oldChar 得到的。例子：String str2 = str1.replace('H', 'W');
+        9. replaceAll()：使用给定的 replacement 替换此字符串所有匹配给定的正则表达式的子字符串。例子：String str2 = str1.replaceAll("He", "Ha");
+        10. contains()：当且仅当此字符串包含指定的 char 值序列时，返回 true。例子：boolean result = str.contains("Hello");
+        11. split()：根据匹配给定的正则表达式来拆分此字符串。例子：String[] substr = str.split(" ");
+
+### StringBuffer & StringBuilder 类
+        StringBuffer & StringBuilder 类是可变的，可用于字符串拼接。
+        StringBuffer & StringBuilder 类的对象能够被多次的修改，并且不产生新的未使用对象。
+        StringBuffer & StringBuilder 类的基本方法和 String 类的方法是一样的。
+#### StringBuffer与StringBuilder的区别
+        StringBuffer 是线程安全的，StringBuilder 是非线程安全的。
+        StringBuilder 效率高于 StringBuffer，所以多数情况下建议使用 StringBuilder 类。
+#### StringBuffer & StringBuilder 比String 特有的方法
+        1. append()：将指定的字符串追加到此字符序列。例子：StringBuffer str = new StringBuffer("Hello"); str.append("World");
+        2. reverse()：将此字符序列用其反转形式取代。例子：StringBuffer str = new StringBuffer("Hello"); str.reverse();
+        3. insert()：将指定的字符串插入此字符序列中。例子：StringBuffer str = new StringBuffer("Hello"); str.insert(0, "World");
+        4. delete()：移除此序列的子字符串中的字符。例子：StringBuffer str = new StringBuffer("Hello"); str.delete(0, 5);
+        5. replace()：使用给定 String 中的字符替换此序列的子字符串中的字符。例子：StringBuffer str = new StringBuffer("Hello"); str.replace(0, 5, "World");
+
+
+
+
+## Java数组
+### 数组
+        数组是一个容器，可以同时存放多个数据值。
+        数组的特点：
+        1. 数组是引用数据类型
+        2. 数组当中的多个数据，类型必须统一
+        3. 数组的长度在程序运行期间不可改变
+        Java数组大多与c一致，此处不赘述。
+### 数组的声明
+        1. dataType[] arrayRefVar; // 首选的方法
+        2. dataType arrayRefVar[]; // 效果相同，但不是首选方法
+        3. dataType[] arrayRefVar = new dataType[arraySize];
+        4. dataType[] arrayRefVar = {value0, value1, ..., valuek};
+
+## Java方法
+        Java方法是语句的集合，它们在一起执行一个功能。
+        Java方法类似于c中的函数，大多不再赘述。
+### 命令行参数
+        Java 命令行参数是 main() 方法的一个字符串数组。主方法不返回任何值，所以必须声明为 void。
+        main() 方法的声明如下所示：
+        public static void main(String args[])
+        以下是一个简单的例子，演示了如何使用命令行参数：
+```java
+public class CommandLine {
+        public static void main(String args[]){
+        for(int i = 0; i<args.length; i++){
+                System.out.println("args[" + i + "]: " + args[i]);
+        }
+        }
+}
+```
+        编译以上代码，运行结果如下所示：
+        $ javac CommandLine.java
+        $ java CommandLine this is a command line 200 -100
+        args[0]: this
+        args[1]: is
+        args[2]: a
+        args[3]: command
+        args[4]: line
+        args[5]: 200
+        args[6]: -100
+### 可变参数
+        可变参数允许传递不同数量的参数给一个方法。它最终被转化为一个数组传递给方法，可以使用命令行参数的方法来编写可变参数的方法。
+        以下实例演示了可变参数的使用方法：
+```java
+public class VarargsDemo {
+        public static void main(String args[]){
+                // 调用可变参数的方法
+                printMax(34, 3, 3, 2, 56.5);
+                printMax(new double[]{1, 2, 3});
+        }
+        public static void printMax( double... numbers) {
+                if (numbers.length == 0) {
+                        System.out.println("No argument passed");
+                        return;
+                }
+                double result = numbers[0];
+                for (int i = 1; i <  numbers.length; i++)
+                        if (numbers[i] >  result)
+                                result = numbers[i];
+                System.out.println("The max value is " + result);
+        }
+}
+```
+        编译以上代码，运行结果如下所示：
+        $ javac VarargsDemo.java
+        $ java VarargsDemo
+        The max value is 56.5
+        The max value is 3.0
+
+
+## Java Stream, File & IO
+### Java Stream
+        Java 中的流是一种数据传输方式，用于处理与设备、文件或者网络连接等交互的数据。
+        Java 中，流是按照操作数据单位划分的，可以划分为字节流和字符流。
+        字节流：以字节为单位进行数据传输，通常用于处理二进制文件，如图片、视频等。
+        字符流：以字符为单位进行数据传输，通常用于处理文本文件，如txt、doc等。
+        Java 中，流的操作方式分为两种：节点流和处理流。
+        节点流：直接与数据源相连，读取数据或者写入数据。
+        处理流：对一个已经存在的流进行连接或者封装，通过封装后的流来实现数据读取或者写入。
+        Java 中，流的处理方式分为两种：字节流和字符流。
+        字节流：以字节为单位进行数据传输，通常用于处理二进制文件，如图片、视频等。
+        字符流：以字符为单位进行数据传输，通常用于处理文本文件，如txt、doc等。

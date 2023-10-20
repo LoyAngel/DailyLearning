@@ -225,6 +225,9 @@ button.OnClick();
         6. 实现关系（Interface）：表示类实现接口的关系，通常使用空心三角形箭头来表示。箭头指向接口。例如，如果类A实现了接口B，可以用以下形式来表示：[A]..▷[B]。
         7. 聚合关系（Aggregation）：表示整体与部分之间的关系，通常使用空心菱形箭头来表示。箭头指向整体。例如，如果类A包含一个类B的对象，可以用以下形式来表示：[B]◇-->[A]。
         8. 组合关系（Composition）：表示整体与部分之间的强关系，通常使用实心菱形箭头来表示。箭头指向整体。例如，如果类A包含一个类B的对象，并且类B的生命周期依赖于类A，可以用以下形式来表示：[B]◆-->[A]。
+        9. 泛化关系（Generalization）：表示类之间的泛化关系，通常使用空心箭头来表示。箭头指向泛化的目标类。例如，如果类B泛化类A，可以用以下形式来表示：[A]..▷[B]。
+        10. 依赖关系（Dependency）：表示类之间的依赖关系，通常使用虚线箭头来表示。箭头指向被依赖的类。例如，如果类A依赖类B，可以用以下形式来表示：[A]..->[B]。
+        11. 约束（Constraint）：表示类的约束条件，通常使用花括号括起来。例如，如果类A的age属性的取值范围为1~100，可以用以下形式来表示：{age:1..100}。
 ### 基本原则
 #### 开发-封闭原则(Open-Closed Principle)
         开发-封闭是面向对象设计中的一种原则，它强调软件实体（类、模块、函数等）应该是可扩展的，而不是修改原有代码。即在程序的开发阶段，应该尽量保持对修改是封闭的，同时对扩展是开放的。
@@ -701,7 +704,6 @@ public class Main {
 }
 ```
 以上例子，体现了合成复用原则，我们将水果盘（FruitPlate）类中的水果（Fruit）类作为其成员变量，而不是将水果盘类继承自水果类。
-
 ### 23种模式
 #### 简单工厂模式  
         它提供一个统一的接口来创建不同类型的对象，客户端通过这个接口来获取具体的对象，而无需直接关心对象的创建细节。
@@ -820,6 +822,7 @@ public class Main {
 }
     
 ```
+##### 策略模式与简单工厂模式的结合
         策略模式一般与简单工厂相结合，让客户端和算法彻底分离。
 ##### 例子：
 ```java
@@ -1095,14 +1098,14 @@ public class Main {
 ##### 简单工厂和工厂方法的区别
         简单工厂模式是由一个工厂类根据传入的参数决定创建哪种类型的对象。它适合只有少量对象类型需要创建的情况，但是随着对象类型增多，工厂类的责任会变得越来越重，代码的维护和扩展性会变差。
         工厂方法模式是将对象的创建交给具体的子类去实现，每个子类负责创建一种具体的对象。它可以更灵活地扩展和替换对象的创建逻辑。工厂方法模式适用于创建产品族或者有多个产品维度的情况。
-##### 例子：
+###### 例子：
         例如，假设有一个汽车制造工厂，根据用户的选择，可以制造不同种类的汽车，比如小汽车和卡车。
 ```java
 public interface Car {
     void drive();
 }
 ```
-##### 简单工厂模式
+###### 简单工厂模式
 ```java
 public class CarFactory {
     public static Car createCar(String type) {
@@ -1140,7 +1143,7 @@ public class Main {
     }
 }
 ```
-##### 工厂方法模式
+###### 工厂方法模式
 ```java
 public interface CarFactory {
     Car createCar();
@@ -1199,7 +1202,7 @@ public class Main {
 ##### 抽象工厂和工厂方法的区别
         抽象工厂模式是一种创建一族相关或相互依赖的对象的设计模式。在抽象工厂模式中，有一个抽象工厂类定义了一系列相关的产品的创建方法，具体的产品创建则由其子类工厂来实现。每个子类工厂可以创建不同种类的产品，但这些产品之间有着相互的关联或依赖关系。
         工厂方法模式是一种创建单一对象的设计模式。在工厂方法模式中，有一个抽象工厂类定义了一个创建产品的方法，具体的产品创建则由其子类工厂来实现。每个子类工厂只能创建一种类型的产品。
-##### 抽象工厂模式
+###### 抽象工厂模式
 ```java
 // 抽象工厂模式
 // 定义抽象工厂类
@@ -1246,7 +1249,7 @@ class ConcreteFactory2 extends AbstractFactory {
     }
 }
 ```
-##### 工厂方法模式
+###### 工厂方法模式
 ```java
 // 工厂方法模式
 // 定义抽象工厂类
@@ -2055,14 +2058,16 @@ class TV {
 }
 // 调用者类
 class RemoteController {
-    private Command command;
+    private Command commandlist;
 
-    public void setCommand(Command command) {
-        this.command = command;
+    public void addCommand(Command command) {
+        this.commandlist.add(command);
     }
 
     public void pressButton() {
-        command.execute();
+        for (Command command : commandlist) {
+            command.execute();
+        }
     }
 }
 // 客户端代码
@@ -2073,7 +2078,6 @@ public class Main {
 
         RemoteController remoteController = new RemoteController();
         remoteController.setCommand(command1);
-        remoteController.pressButton();
         remoteController.setCommand(command2);
         remoteController.pressButton();
     }
@@ -2087,18 +2091,19 @@ public class Main {
 ##### 例子
 ```java
 // 这里以一个请假审批的例子来说明责任链模式
-// 处理者接口
-interface Handler {
-    void handleRequest(int leaveDays);
-}
-// 具体处理者类
-class Director implements Handler {
+// 处理者抽象类
+public abstract class Handler {
     private Handler successor;
 
     public void setSuccessor(Handler successor) {
         this.successor = successor;
     }
 
+    public abstract void handleRequest(int leaveDays);
+}
+
+// 具体处理者类
+class Director extends Handler {
     @Override
     public void handleRequest(int leaveDays) {
         if (leaveDays <= 3) {
@@ -2108,13 +2113,7 @@ class Director implements Handler {
         }
     }
 }
-class Manager implements Handler {
-    private Handler successor;
-
-    public void setSuccessor(Handler successor) {
-        this.successor = successor;
-    }
-
+class Manager extends Handler {
     @Override
     public void handleRequest(int leaveDays) {
         if (leaveDays <= 10) {
@@ -2124,7 +2123,7 @@ class Manager implements Handler {
         }
     }
 }
-class CEO implements Handler {
+class CEO extends Handler {
     @Override
     public void handleRequest(int leaveDays) {
         System.out.println("CEO approved");
@@ -2146,6 +2145,11 @@ public class Main {
     }
 }
 ```
+##### 与状态模式的异同
+        相似点：责任链模式和状态模式都是通过将请求委托给其他对象来实现的，它们都可以用于消除 if-else 语句。
+        不同点：
+        1. 状态模式是让各个状态对象自己知道其下一个处理的对象是谁，即在编译时便设定。而责任链模式是让客户端自己决定将请求发送给哪个处理者，即在运行时才决定。
+        2. 状态模式的子类只负责改变其拥有类的状态属性，而不负责去执行下一个状态的方法，执行还需要通过拥有他的类去调用下个状态子类的方法。而责任链模式的子类则负责去执行下个节点的方法，也就是说责任链模式的子类不仅仅是改变状态，还有执行权。
 #### 中介者模式
         中介者模式是一种行为型设计模式，它可以让你减少对象之间混乱无序的依赖关系。该模式会限制对象之间的直接交互，迫使它们通过一个中介者对象进行合作。
         在中介者模式中，有四个主要角色： 
@@ -2246,12 +2250,12 @@ public class Main {
         2. 工厂（Factory）：它用于构造一个享元对象，它会确保合理地共享享元对象。当用户请求一个享元时，工厂对象会提供一个已创建的实例或者创建一个新的实例。
 ##### 例子
 ```java
-// 以围棋为例
+// 以玩具枪子弹为例
 // 享元类
-class GoPiece {
+class Bullet {
     private String color;
 
-    public GoPiece(String color) {
+    public Bullet(String color) {
         this.color = color;
     }
 
@@ -2260,30 +2264,29 @@ class GoPiece {
     }
 }
 // 工厂类
-class GoPieceFactory {
-    private static Map<String, GoPiece> pieces = new HashMap<>();
+class BulletFactory {
+    private static Map<String, Bullet> bullets = new HashMap<>();
 
-    public static GoPiece getPiece(String color) {
-        GoPiece piece = pieces.get(color);
+    public static Bullet getBullet(String color) {
+        Bullet bullet = bullets.get(color);
 
-        if (piece == null) {
-            piece = new GoPiece(color);
-            pieces.put(color, piece);
+        if (bullet == null) {
+            bullet = new Bullet(color);
+            bullets.put(color, bullet);
         }
 
-        return piece;
+        return bullet;
     }
 }
 // 客户端代码
 public class Main {
     public static void main(String[] args) {
-        GoPiece black1 = GoPieceFactory.getPiece("black");
-        GoPiece black2 = GoPieceFactory.getPiece("black");
-        GoPiece white1 = GoPieceFactory.getPiece("white");
-        GoPiece white2 = GoPieceFactory.getPiece("white");
+        Bullet bullet1 = BulletFactory.getBullet("red");
+        Bullet bullet2 = BulletFactory.getBullet("red");
+        Bullet bullet3 = BulletFactory.getBullet("blue");
 
-        System.out.println(black1 == black2); // true
-        System.out.println(white1 == white2); // true
+        System.out.println(bullet1 == bullet2); // 输出: true
+        System.out.println(bullet1 == bullet3); // 输出: false
     }
 }
 ```
