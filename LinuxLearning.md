@@ -42,6 +42,8 @@
         常见用法：
         ln test.txt test2.txt ：创建test2.txt文件，指向test.txt文件
         ln -s test.txt test2.txt ：创建test2.txt文件，指向test.txt文件
+        注意:
+        ln -s不可以链接相对路径，不然会提示符号链接层数过多。
 
 ### 重定向至文件
         >, >> , <
@@ -313,3 +315,49 @@
     nohup java -jar universal_spider_java-0414.jar > /root/universal_spider/nohup.out 2>&1 &
 
     解释：nohup命令用于在后台运行命令，即使终端关闭，命令也不会停止。-u表示不缓冲输出，2>&1表示将标准错误输出重定向到标准输出，&表示后台运行。
+
+## service文件
+        service文件是systemd管理的服务的配置文件，一般位于/etc/systemd/system目录下，以.service结尾，比如sshd.service。service文件是一个文本文件，可以使用vim编辑。
+### 常见格式
+```bash
+# 系统自带的服务，可以放在After,Before,Wants,Requires，常见的有network.target( 网络服务 ),syslog.target( 系统日志服务 ),local-fs.target( 本地文件系统服务 ),remote-fs.target( 远程文件系统服务 ),time-sync.target( 时间同步服务 ),timers.target( 定时任务服务 ),sockets.target( 套接字服务 ),swap.target( 交换分区服务 ),basic.target( 基本服务 ),multi-user.target( 多用户服务 ),graphical.target( 图形界面服务 ),rescue.target( 救援服务 ),emergency.target( 紧急服务 )
+[Unit]
+Description=描述
+After=依赖的服务,表示某些服务启动后再启动该服务
+Before=依赖的服务,表示某些服务启动前启动该服务
+Wants=依赖的服务,弱依赖，表示依赖的服务启动后再启动该服务, 但是依赖的服务启动失败、停止后，该服务仍然会启动
+Requires=依赖的服务,强依赖，表示依赖的服务启动后再启动该服务, 但是依赖的服务启动失败、停止后，该服务不会启动
+
+[Service]
+Type=服务类型，常见的有simple( 默认值，表示该服务是一个简单的命令 ),forking( 表示该服务是一个守护进程, 类似nohup启动),oneshot( 表示该服务只运行一次 ),dbus( 表示该服务是一个dbus服务 )
+ExecStart=启动命令
+Restart=重启策略，常见的有no( 默认值，表示不重启 ),on-success( 表示只有在成功退出时才重启 ),on-failure( 表示只有在失败退出时才重启 ),on-abnormal( 表示只有在异常退出时才重启 ),on-abort( 表示只有在异常退出时才重启 ),on-watchdog( 表示只有在看门狗退出时才重启 )
+
+[Install]
+WantedBy=表示服务所在的target，一般用multi-user.target(多用户服务),因为这个target是默认启动的
+```
+
+## shell 脚本
+### 经典解读
+```bash
+#!/bin/bash 表示使用bash解释器执行脚本
+
+# 定义变量
+case "$1" in
+start) # 表示如果第一个参数是start，则执行下面的命令
+    do something...
+    echo "start"
+    ;;
+stop) # 表示如果第一个参数是stop，则执行下面的命令
+    do something...
+    echo "stop"
+    ;;
+...
+*) # 表示如果第一个参数不是start或stop，则执行下面的命令
+    echo "Usage: $0 {start|stop}"
+    exit 1
+    ;;
+esac # 表示case语句结束
+
+exit 0 # 表示脚本正常退出
+```
