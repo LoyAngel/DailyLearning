@@ -312,4 +312,6 @@
 
     nohup java -jar universal_spider_java-0414.jar > /root/universal_spider/nohup.out 2>&1 &
 
+    nohup python -u app.py > app.log 2>&1 &
+
     解释：nohup命令用于在后台运行命令，即使终端关闭，命令也不会停止。-u表示不缓冲输出，2>&1表示将标准错误输出重定向到标准输出，&表示后台运行。
