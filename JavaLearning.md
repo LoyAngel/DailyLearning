@@ -317,7 +317,7 @@ public class VarargsDemo {
 
 
 ## Java Stream, File & IO
-### Java Stream
+#### Java Stream
         Java 中的流是一种数据传输方式，用于处理与设备、文件或者网络连接等交互的数据。
         Java 中，流是按照操作数据单位划分的，可以划分为字节流和字符流。
         字节流：以字节为单位进行数据传输，通常用于处理二进制文件，如图片、视频等。
@@ -325,6 +325,73 @@ public class VarargsDemo {
         Java 中，流的操作方式分为两种：节点流和处理流。
         节点流：直接与数据源相连，读取数据或者写入数据。
         处理流：对一个已经存在的流进行连接或者封装，通过封装后的流来实现数据读取或者写入。
-        Java 中，流的处理方式分为两种：字节流和字符流。
-        字节流：以字节为单位进行数据传输，通常用于处理二进制文件，如图片、视频等。
-        字符流：以字符为单位进行数据传输，通常用于处理文本文件，如txt、doc等。
+#### 控制台输入输出
+1. System.in
+        System.in 是 InputStream 的对象，通常用于获取键盘输入。
+        初始化:
+                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        System.in 常见搭配输入方法: 
+                br.read() 读取一个字节
+                br.readln() 读取一行
+2. System.out
+        System.out 是 PrintStream 的对象，通常用于输出结果。
+        System.out 常见搭配输出方法: 
+                System.out.print() 输出一个字符
+                System.out.println() 输出一行
+                System.out.printf() 格式化输出
+                System.out.write() 输出一个字节
+3. Scanner
+        Scanner 是 Java5 中的新特征，通常用于获取键盘输入。
+        初始化:
+                Scanner sc = new Scanner(System.in);
+        Scanner 常见搭配输入方法: 
+                sc.next() 读取一个字符串
+                sc.nextInt() 读取一个整数
+                sc.nextDouble() 读取一个双精度浮点数
+                sc.nextBoolean() 读取一个布尔值
+                sc.nextLine() 读取一行
+#### 文件输入输出
+1. FileInputStream
+        FileInputStream 是 InputStream 的子类，通常用于读取二进制文件，如图片、视频等。
+        初始化:
+                FileInputStream fis = new FileInputStream("文件路径");
+        FileInputStream 常见搭配输入方法: 
+                fis.read() 读取一个字节
+                fis.read(byte[] b, int off, int len) 读取一个字节数组的一部分
+2. FileOutputStream
+        FileOutputStream 是 OutputStream 的子类，通常用于写入二进制文件，如图片、视频等。
+        初始化:
+                FileOutputStream fos = new FileOutputStream("文件路径");
+        FileOutputStream 常见搭配输出方法: 
+                fos.write(int b) 写入一个字节
+                fos.write(byte[] b, int off, int len) 写入一个字节数组的一部分
+
+## 异常处理
+        异常是程序在执行过程中出现的错误。
+        Java 中，异常是一个对象，表示程序在执行过程中出现的错误。
+        异常的分类：
+        1. 检查性异常：在编译时发生的异常，如文件不存在、网络中断等。
+        2. 运行时异常：在运行时发生的异常，如数组越界、除数为0等。
+        3. 错误：Java 虚拟机无法解决的严重问题，如 JVM 运行错误、内存溢出等。
+        Java 中，异常处理的方式有两种：try...catch...finally 和 throw/throws。
+### try...catch...finally
+        try 用于指定一块预防异常的代码。
+        catch 用于捕获异常并处理异常。
+        finally 用于指定一块无论是否发生异常都会执行的代码。
+        以下实例演示了 try...catch...finally 的使用方法：
+```java
+public class ExceptionDemo {
+        public static void main(String args[]){
+                try {
+                        int a[] = new int[2];
+                        System.out.println("Access element three :" + a[3]);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                        System.out.println("Exception thrown  :" + e);
+                } finally{
+                        System.out.println("The finally statement is executed");
+                }
+        }
+}
+```
+### throw 与 throws
+        
