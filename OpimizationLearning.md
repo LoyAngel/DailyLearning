@@ -1,5 +1,23 @@
 # Opimization
 
+## 线性搜索
+### 进退法
+本质是找到函数的一个单峰区间，方便后续搜索。  
+步骤为：
+1. 选取初始点$x_0, h_0$，计算$f(x_0)$,置 $k=0$；
+2. 令$x_{k+1}=x_k+h_k$，计算$f(x_{k+1})$；若$f(x_{k+1})<f(x_k)$，转3；否则，转4；
+3. 加大步长。即$h_{k+1}=2h_k,x=x_k,x_k=x_{k+1},f(x_k)=f(x_{k+1}),k=k+1$，转2；
+4. 反向搜索或输出。若$k=0$，令$h_1=-h_0,x=x_1,x_1=x_0,f(x_1)=f(x_0),k=1$，转2；否则停止迭代。
+5. 令$a=min\{x,x_{k+1}\}, b=max\{x,x_{k+1}\}$，输出$[a,b]$。
+### 黄金分割法
+理论依据：如果$f(x)$在区间$[a,b]$上是单峰的，且只有一个极小值，且区间$[a,b]$为搜索区间，那么对任意$x1,x2∈[a,b]$, 如果$f(x_1)<f(x_2)$，则搜索区间可以收缩为$[a,x_2]$，否则搜索区间可以收缩为$[x_1,b]$。  
+步骤：
+1. 确定初始搜索区间$[a,b]$和误差限$\epsilon$
+2. 计算初始试探点$p_0=a_0+0.382(b_0-a_0)$, $q_0=a_0+0.618(b_0-a_0)$，计算$f(p_0),f(q_0)$，置$k=0$；若$f(p_0)>f(q_0)$，转3；否则，转4；
+3. 计算左试探点，若$|q_k-a_k|<=\epsilon$，停止迭代，输出$[a_k,q_k]$；否则，令$a_{k+1}=a_k,b_{k+1}=q_k,f(q_{k+1})=f(q_k),q_{k+1}=q_k,p_{k+1}=a_{k+1}+0.382(b_{k+1}-a_{k+1})$，转2；
+1. 计算右试探点，若$|b_k-p_k|<=\epsilon$，停止迭代，输出$[p_k,b_k]$；否则，令$a_{k+1}=p_k,b_{k+1}=b_k,f(p_{k+1})=f(p_k),p_{k+1}=q_k,q_{k+1}=a_{k+1}+0.618(b_{k+1}-a_{k+1})$，转2；
+
+
 ## Hessian矩阵 与 严格全局极小点
 ### 概念
 Hessian矩阵是一个函数的二阶偏导数构成的方阵，它描述了函数的局部曲率。
@@ -28,13 +46,13 @@ $x^*$是序列的极限点。
 它的思想是: 用一阶泰勒展开式去逼近函数，然后求解逼近的方程，得到下一个迭代点，直到满足终止条件。  
 一阶函数牛顿法公式 ： $x_{k+1}=x_k-\frac{f(x_k)}{f'(x_k)}$  
 多元函数牛顿法公式 ： $x_{k+1}=x_k-H_k^{-1}g_k$ , $H_k$是$f(x_k)$的Hessian矩阵，$g_k$是$f(x_k)$的梯度。  
-阻尼牛顿法公式： $x_{k+1}=x_k-\lambda_kH_k^{-1}g_k$ , $\lambda_k$是步长，增加线性搜索，防止迭代点跑出函数定义域。
+阻尼牛顿法公式： $x_{k+1}=x_k-a_kH_k^{-1}g_k$ , $a_k$是步长，增加线性搜索，防止迭代点跑出函数定义域。
 ### 阻尼牛顿法步骤
 1. 选取初始点$x_0$，给定终止误差$\epsilon$，置$k=0$；
 2. 计算$f(x_k)$的梯度$g_k$，当$\|g_k\|<\epsilon$时，停止迭代，得到近似解$x^*=x_k$；否则，进行第3步；
-3. 计算$f(x_k)$的Hessian矩阵$H_k$，计算阻尼因子$\lambda_k$，计算下一个迭代点$x_{k+1}=x_k-\lambda_kH_k^{-1}g_k$，置$k=k+1$，转第2步。
-4. 阻尼因子$\lambda_k$的计算方法有很多种，这里介绍一种：$\lambda_k=\min\{1,\frac{1}{2}\|\nabla f(x_k)\|_2\}$
-5. 令$x_{k+1}=x_k-\lambda_kH_k^{-1}g_k$，置$k=k+1$，转第2步。
+3. 计算$f(x_k)$的Hessian矩阵$H_k$，计算阻尼因子$a_k$，计算下一个迭代点$x_{k+1}=x_k-a_kH_k^{-1}g_k$，置$k=k+1$，转第2步。
+4. 阻尼因子$a_k$的计算方法有很多种，这里介绍一种：$a_k=\min\{1,\frac{1}{2}\|\nabla f(x_k)\|_2\}$
+5. 令$x_{k+1}=x_k-a_kH_k^{-1}g_k$，置$k=k+1$，转第2步。
 
 ### 代码实现
 ```python
@@ -81,11 +99,11 @@ plt.show()
 1. 选取初始点$x_0$，给定终止误差$\epsilon$，置$k=0$；
 2. 计算$f(x_k)$的梯度$g_k$，当$\|g_k\|<\epsilon$时，停止迭代，得到近似解$x^*=x_k$；否则，进行第3步；
 3. 取$p_k=-g_k$；
-4. 进行一维搜索，即求$\lambda_k$，使得$f(x_k+\lambda_kp_k)=\min\limits_{\lambda\geq0}f(x_k+\lambda p_k)$；
-5. 令$x_{k+1}=x_k+\lambda_kp_k$，置$k=k+1$，转第2步。
+4. 进行一维搜索，即求$a_k$，使得$f(x_k+a_kp_k)=\min\limits_{a\geq0}f(x_k+a p_k)$；
+5. 令$x_{k+1}=x_k+a_kp_k$，置$k=k+1$，转第2步。
 #### 最优步长计算步骤
 微分法
-因为要找寻$\lambda$使得$f(x_k+\lambda p_k)=\min\limits_{\lambda\geq0}f(x_k+\lambda p_k)$，所以可以对$f(x_k+\lambda p_k)$求导，令导数为0，求得最优步长$\lambda$。
+因为要找寻$a$使得$f(x_k+a p_k)=\min\limits_{a\geq0}f(x_k+a p_k)$，所以可以对$f(x_k+a p_k)$求导，令导数为0，求得最优步长$a$。
 
 ### 代码实现
 ```python
@@ -106,17 +124,17 @@ def get_lamda(x1, x2, p):
     return (4*p[0]+6*p[1]-6*x1*p[0]-4*x2*p[1]) / (6*p[0]**2 + 4*p[1]**2)
 # 最速梯度下降法 
 def steepest_descend_method(x1, x2, e):
-    lamda = 0
+    a = 0
     while True:
         g = grad(x1, x2)
-        print(f'{i}Turn,x1={x1}, x2={x2}, f(x1, x2)={f(x1, x2)}, \n\tnorm = {norm(g[0], g[1])}, lamda = {lamda}, g = {g}')
+        print(f'{i}Turn,x1={x1}, x2={x2}, f(x1, x2)={f(x1, x2)}, \n\tnorm = {norm(g[0], g[1])}, a = {a}, g = {g}')
         if norm(g[0], g[1]) < e:
             break
         else:
             p = -g
-            lamda = get_lamda(x1, x2, p)
-            x1 = x1 - lamda * grad(x1, x2)[0]
-            x2 = x2 - lamda * grad(x1, x2)[1]
+            a = get_a(x1, x2, p)
+            x1 = x1 - a * grad(x1, x2)[0]
+            x2 = x2 - a * grad(x1, x2)[1]
             x1 = round(x1, 3)
             x2 = round(x2, 3)
 
