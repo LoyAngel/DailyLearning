@@ -394,4 +394,87 @@ public class ExceptionDemo {
 }
 ```
 ### throw 与 throws
-        
+        throw 用于抛出一个异常对象。
+        throws 用于声明一个方法可能抛出的所有异常。
+        以下实例演示了 throw 与 throws 的使用方法：
+```java
+// throw
+public class ExceptionDemo {
+        public static void main(String args[]){
+                try {
+                        throw new Exception("My Exception");
+                } catch (Exception e) {
+                        System.out.println(e);
+                }
+        }
+}
+```
+```java
+// throws
+public class ExceptionDemo {
+        public static void main(String args[]) throws Exception {
+                throw new Exception("My Exception");
+        }
+}
+```
+
+## 继承
+### 继承关键字
+        继承类用extends关键字，实现接口用implements关键字。
+### super 与 this
+        super 与 this 关键字用于在子类中访问父类的成员变量和成员方法。
+        super 用于访问父类的成员变量和成员方法, this 用于访问本类的成员变量和成员方法。
+### final
+        final 关键字用于声明属性、方法和类，分别表示属性不可变、方法不可覆盖、类不可继承。
+        final 修饰的属性必须在声明时初始化，且不可再修改。
+        final 修饰的方法不可被子类覆盖。
+        final 修饰的类不可被继承。
+### 构造器
+        构造器用于初始化对象，与python的__init__类似。
+        构造器的名称必须与类名相同，且没有返回值。
+        构造器的访问修饰符只能是 public，且不能被 static、final、synchronized 和 abstract 修饰。
+        子类构造器不继承父类的构造器，但是子类构造器默认调用父类的无参构造器，如果父类没有无参构造器，则必须在子类的构造器中用 super 显式调用父类的构造器。
+
+## Overload & Override
+### Overload 
+        重载指的是在同一个类中，方法名相同，参数列表不同的多个方法。
+        重载的方法必须满足以下条件：
+        1. 方法名相同
+        2. 参数列表不同
+        3. 与方法的修饰符和异常无关
+        4. 与方法的参数名无关
+        以下实例演示了重载的使用方法：
+```java
+public class OverloadDemo {
+        public static void main(String args[]){
+                OverloadDemo demo = new OverloadDemo();
+                demo.test();
+                demo.test(1);
+                demo.test(1, 2);
+                demo.test("Hello");
+        }
+        public void test() {
+                System.out.println("无参方法");
+        }
+        public void test(int a) {
+                System.out.println("重载的方法，参数为：" + a);
+        }
+        public void test(int a, int b) {
+                System.out.println("重载的方法，参数为：" + a + " 和 " + b);
+        }
+        public void test(String a) {
+                System.out.println("重载的方法，参数为：" + a);
+        }
+}
+```
+### Override
+        重写指的是在子类中，方法名相同，参数列表相同，返回值相同的方法。
+        重写的方法必须满足以下条件：
+        1. 方法名相同
+        2. 参数列表相同
+        3. 返回类型相同
+        4. 可以减少异常抛出，但是不能抛出新的异常
+        5. 与方法的修饰符和异常无关
+        6. 与方法的参数名无关
+        以下实例演示了重写的使用方法：
+```java

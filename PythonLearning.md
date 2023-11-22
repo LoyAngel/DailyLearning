@@ -62,13 +62,159 @@
         args和kwargs不仅可以在函数定义中使用，还可以在函数调用中使用。在调用时使用就相当于pack（打包）和unpack（解包），类似于元组的打包和解包。
 
 ## 装饰器
-        我的理解：在要重复使用的函数下加上Wrapper（*args,**kwargs）函数，写明需要重复调用的操作，再在需要使用这个重复函数的前面加上@(Name of Function) ，即可实现重复调用。      
+        装饰器本质上是一个Python函数，它可以让其他函数在不需要做任何代码变动的前提下增加额外功能，装饰器的返回值也是一个函数对象。
+### 工作原理
+```python
+    @decorator
+    def func():
+        pass
+    #等同于
+    fun = decorator(func)
+```
+### Python 启用装饰器的时间
+        装饰器的关键特性是，它们在被装饰的函数定义之后立即运行。这通常是在导入时（即Python加载模块时）。因此，装饰器可以用于改进“策略模式”。
+```python
+# 装饰器选择最佳策略
+registry = []
+def register(func):
+    print('running register(%s)' % func)
+    registry.append(func)
+    return func
+@register
+def f1(value):
+    return value * 2 
+@register
+def f2(value):
+    return value + 2
+@register      
+def f3(value):
+    return value ** 2
+def best_func(value):
+    return max(f(value) for f in registry)
+```
+### 闭包和nonlocal声明
+        闭包是一种函数，它会保留定义函数时存在的自由变量的绑定，这样调用函数时，虽然定义作用域不可用了，但是仍然能够使用那些绑定。
+        闭包的典型用途是延伸函数的作用域。
+        nonlocal 声明用于指示某个变量是外部作用域中的自由变量，而不是局部作用域中的变量。一般可变变量在闭包中不需要nonlocal声明，但是如果要修改不可变变量（如元组或数字）则需要nonlocal声明。
+```python
+# 闭包实现计算移动平均值
+def make_averager():
+    count = 0
+    total = 0
+    def averager(new_value):
+        nonlocal count, total
+        count += 1
+        total += new_value
+        return total / count
+    return averager
+avg = make_averager()
+print(avg(10))  # 输出 10.0
+print(avg(11))  # 输出 10.5
+print(avg(12))  # 输出 11.0
+```
+### 标准库中的装饰器
+        functools.lru_cache 装饰器实现了备忘（memoization）功能，它把耗时的函数的结果保存起来，避免传入相同的参数时重复计算。(牺牲空间换取时间)
+```python
+# 示例：使用 functools.lru_cache 装饰器实现备忘功能
+from functools import lru_cache
+@lru_cache()
+def fib(n):
+    if n < 2:
+        return n
+    return fib(n - 1) + fib(n - 2)
+print(fib(80)) # 用lru_cache可以大幅度缩短递归运行时间
+```
+        functools.singledispatch 装饰器可以把整体方案拆分成多个模块，甚至可以为你无法修改的类提供专门的函数。
+```python
+# 示例：使用 functools.singledispatch 装饰器为不同类型的对象执行不同的操作
+from functools import singledispatch
+@singledispatch
+def fun(arg, verbose=False):
+    if verbose:
+        print("Let me just say,", end=" ")
+    print(arg)
+@fun.register(int)
+def _(arg, verbose=False):
+    if verbose:
+        print("Strength in numbers, eh?", end=" ")
+    print(arg)
+@fun.register(list)
+def _(arg, verbose=False):
+    if verbose:
+        print("Enumerate this:")
+    for i, elem in enumerate(arg):
+        print(i, elem)
+@fun.register(dict)
+def _(arg, verbose=False):
+    if verbose:
+        print("We are dicty:")
+    for key, value in arg.items():
+        print(key, value)
+fun("Hi", verbose=True)  # 输出 Let me just say, Hi
+fun(42, verbose=True)  # 输出 Strength in numbers, eh? 42
+fun(['spam', 'spam', 'eggs', 'spam'], verbose=True) # 输出 Enumerate this: 0 spam 1 spam 2 eggs 3 spam
+fun({'a': 1, 'b': 2}, verbose=True)  # 输出 We are dicty: a 1 b 2
+```
+        functools.total_ordering 装饰器为类定义所有的比较运算符，这样只需定义一个 __eq__() 方法，就能使用装饰器提供的方法自动获得其他方法。
+```python
+# 示例：使用 functools.total_ordering 装饰器为类定义所有的比较运算符
+from functools import total_ordering
+@total_ordering
+class Student:
+    def __init__(self, name, grade, age):
+        self.name = name
+        self.grade = grade
+        self.age = age
+    def __eq__(self, other):
+        return ((self.grade, self.age) == (other.grade, other.age))
+    def __lt__(self, other):
+        return ((self.grade, self.age) < (other.grade, other.age))
+student1 = Student('John', 'A', 15)
+student2 = Student('Jane', 'B', 12)
+print(student1 > student2)  # 输出 True
+```
+### 参数化装饰器
+        参数化装饰器是指接受参数的装饰器，它能让我们在应用装饰器时传入自定义的参数。
+```python
+# 示例：参数化的注册装饰器
+registry = set()
+def register(active=True):
+    def decorate(func):
+        print('running register(active=%s)->decorate(%s)' % (active, func))
+        if active:
+            registry.add(func)
+        else:
+            registry.discard(func)
+        return func
+    return decorate
+@register(active=False)
+def f1():
+    print('running f1()')
+@register()
+def f2():
+    print('running f2()')
+```
 
-## Python 中的函数参数传递
+## Python 中的函数参数传递1(可变与不可变，浅复制与深复制)
         Python中的变量类型可分为可变与不可变。Python中可变对象包括列表（list）、字典（dict）、集合（set）等；不可变对象包括数字（int, float等）、布尔值（bool）、字符串（str）等。
         可变对象传入函数后，相当于C语言中的引用，对象更改会使对象发生改变。不可变对象则不会改变。
 
-## Python 中的函数参数传递2
+        浅复制：复制对象，但不会复制对象中的可变元素，即复制对象中的可变元素的引用。
+        深复制：复制对象，同时会复制对象中的可变元素，即复制对象中的可变元素的值。
+        一般来说，python复制列表可以用list()。也可以用python标准库中copy和deepcopy实现浅复制和深复制。
+
+        不要使用可变类型作为参数的默认值，因为默认值会成为函数对象的属性，导致new 类的时候会出问题。
+        防御可变参数，尽量传参默认值改为None，然后在属性赋值改为判断：None则为空列表，非None则浅复制或深复制。
+```python
+# 防御可变参数,
+def __init__(self, passengers=None):
+    if passengers is None:
+        self.passengers = []
+    else:
+        self.passengers = list(passengers)
+```
+
+## Python 中的函数参数传递2(赋值)
         Python中的赋值实际上赋值的是地址，这里和C语言很大不同。
         例：
         b = a
@@ -82,8 +228,9 @@
         和
         head = data + ['domain_url','domain_name']
         两者是不一样的，前者引用了地址然后改变值，后者可以理解为常量的相加（？）。
+        当此时print(data)的值就可以发现两者的不同。
 
-## Python 中的函数参数传递3
+## Python 中的函数参数传递3(关键字参数)
         Python中存在仅限关键字参数，即在函数定义时，参数名前加*，表示该参数只能作为关键字参数传入。
         比如
         def fun(a, b, *, c):
@@ -359,3 +506,43 @@ print(adder(3))  # 输出 8
 ```
 
 
+
+## == 与 is
+        == 比较的是值，is 比较的是对象的标识（内存地址）。 
+        is 运算符比 == 速度快，因为它不能重载，而是直接比较两个整数 ID；而 a == b 是语法糖，等同于 a.__eq__(b)。
+        一般而言，我们比较的是值，所以 == 的使用频率更高。
+        但是在比较对象是否为 None 时，应该使用 is。
+
+## 可散列类和只读化处理属性
+        一般而言，Python 中只有不可变的对象才能作为字典的键，这种对象叫做可散列对象。
+        可散列对象需要满足以下要求：
+        - 支持 hash() 函数，并且通过 __hash__() 方法所得到的散列值是不变的。
+        - 支持通过 __eq__() 方法来检测相等性。
+        - 对象和hash有关的属性都不能变化，比如对象的实例变量。
+        要使一个类可散列，要进行以下操作：
+        - 实现一个 __hash__() 方法，使其返回一个散列值。
+        - 实现一个 __eq__() 方法，使其返回 True。
+        - 对hash有关的计算进行设置，使其不能变化。(比如只读化处理hash有关的属性)
+```python
+# 示例：实现一个可散列的二维向量类
+from array import array
+import math
+class Vector2d:
+    typecode = 'd'
+    def __init__(self, x, y):
+        # 用只读属性保护实例变量
+        self.__x = float(x)
+        self.__y = float(y)
+    
+    # 只读访问器构造函数
+    @property
+    def x(self):
+        return self.__x
+    @property
+    def y(self):
+        return self.__y
+    def __eq__(self, other):
+        return tuple(self) == tuple(other)
+    def __hash__(self):
+        return hash(self.__x) ^ hash(self.__y)
+```
