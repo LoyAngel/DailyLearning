@@ -1,9 +1,9 @@
 # Python3
 
-## 注释
+## 基础知识
+### 注释
     # 单注释 ’’’ ””” 多注释
-
-## 基本数据类型：（type查看）
+### 基本数据类型：（type查看）
     1. String : 
         - 不能改变
         - +连，*重复
@@ -26,40 +26,233 @@
         - 映射，哈希
         - {},dict()创建
         - Keys()、Values()
-
-## 数据转换
+### 数据转换
     隐式与显式  
     chr(),ord() 字符与ASCII码   
     hex(),oct() 进制
-
-## Yield
-    1. 与return 一样是返回值，不同的是yield是生成器，类似断点可保存信息。
-    2. 有yield关键字后调用函数返回的就是实例化的生成器对象。
-    3. yield两种操作：next与send。Send可以让yield得到返回值。
-
-## 异常处理：
+### 异常处理
     1. try/except 
         - except+错误代码，最后一个except作通配符，有异常执行 。
         - else，表示没有异常时执行。
         - finally，无论如何都执行。
     2. Raise 
         抛出异常raise [Exception [, args [, traceback]]]
-
-## Exception类
+    3. Exception类
         自定义异常
-
-## 异常的抛出
-    一般用于网络访问等情况（比如爬虫）
-
-## with语句
+    4. 异常的抛出
+        一般用于网络访问等情况（比如爬虫）
+### with语句
         当执行with语句时，Python会调用上下文管理器对象的__enter__()方法来获取资源，然后执行with-block。当代码块执行完毕后，Python会自动调用上下文管理器对象的__exit__()方法来释放资源。简单来说，就是
         有了with可以不需要try/except，可以在类封装的__exit()__函数对其进行处理，包括错误判定等；如果要让程序继续执行，只需要return True即可。 
-
-## Python中的*args和**kwargs
+### 函数注解
+        函数注解可以在函数声明时，对函数的参数和返回值进行注解。
+        函数注解的语法格式为：def func(arg1: type, arg2:'string', arg3: int = 0) -> type:
+        函数注解的作用是对函数的参数和返回值进行类型提示，它不会对函数的参数和返回值进行强制性的类型检查。
+        函数注解的信息存储在函数的 __annotations__ 属性中，它是一个字典，键是参数名，值是注解的类型。
+        函数注解的主要作用是对函数的参数和返回值进行类型提示，它不会对函数的参数和返回值进行强制性的类型检查。
+### Python中的*args和**kwargs
         *args就是就是传递一个可变参数列表给函数实参，这个参数列表的数目未知，甚至长度可以为0。args类型是一个tuple。
         **kwargs则是将一个可变的关键字参数的字典传给函数实参，同样参数列表长度可以为0或为其他值。kwargs则是一个字典dict。
         args只能位于kwargs的前面。
         args和kwargs不仅可以在函数定义中使用，还可以在函数调用中使用。在调用时使用就相当于pack（打包）和unpack（解包），类似于元组的打包和解包。
+```python
+# 示例：函数中使用 *args 和 **kwargs
+from functools import wraps
+def trace(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print(f'TRACE: calling {func.__name__}() '
+              f'with {args}, {kwargs}')
+        original_result = func(*args, **kwargs)
+        print(f'TRACE: {func.__name__}() '
+              f'returned {original_result!r}')
+        return original_result
+    return wrapper
+@trace
+def say(name, line):
+    return f'{name}: {line}'
+say('Jane', 'Hello, World')
+# 输出
+# TRACE: calling say() with ('Jane', 'Hello, World'), {}
+# TRACE: say() returned 'Jane: Hello, World'
+```
+### == 与 is
+        == 比较的是值，is 比较的是对象的标识（内存地址）。 
+        is 运算符比 == 速度快，因为它不能重载，而是直接比较两个整数 ID；而 a == b 是语法糖，等同于 a.__eq__(b)。
+        一般而言，我们比较的是值，所以 == 的使用频率更高。
+        但是在比较对象是否为 None 时，应该使用 is。
+
+## 类与对象
+### 实例方法、类方法、静态方法
+        实例方法：默认方法，不需要修饰。只有实例可以调用。实例变量用self来调用。
+        类方法：需要@classmethod修饰。只有类可以调用。类中变量用类名调用。
+        静态方法：需要@staticmethod修饰。类和实例都可以调用。
+### Cls 方法
+        cls方法指在类中调用本身，往往跟修饰器@classmethod 绑定。
+```python
+class Apple:
+    def __init__(self, color, name):
+        self.color = color
+        self.name = name
+    
+    @classmethod
+    def be_touched(cls, fruit):
+        apple = cls(fruit.color, fruit.name)
+        return apple
+```
+### 类的简洁化创建
+#### 具名元组
+        具名元组，namedtuple，是一个工厂函数，用来创建一个带字段名的元组和一个有名字的类。
+        nametuple 有两个参数，第一个是类名，第二个是类的各个字段的名字。后者可以是由数个字符串组成的可迭代对象，或者是由空格分隔开的字段名组成的字符串。
+```python
+from collections import namedtuple
+Point = namedtuple('Point', ['x', 'y'])
+p = Point(1, 2)
+print(p.x, p.y)  # 输出 1 2
+```
+#### dataclass
+        dataclass 是 Python 3.7 新增的一个装饰器，用于自动为数据类生成一些特殊方法，如 __init__、__repr__、__eq__ 等。
+```python
+from dataclasses import dataclass
+@dataclass
+class Point:
+    x: int
+    y: int
+p = Point(1, 2)
+print(p.x, p.y)  # 输出 1 2
+```
+### 用户定义可调用类型
+        除了使用 def 语句或 lambda 表达式来创建函数之外，Python 还可以使用 class 语句来定义可调用类型。
+        如果一个类实现了 __call__ 方法，那么它的实例可以作为函数调用。
+```python
+class Adder:
+    def __init__(self, n):
+        self.n = n
+
+    def __call__(self, m):
+        return self.n + m
+adder = Adder(5)
+print(adder(3))  # 输出 8
+```
+### 可散列类和只读化处理属性
+        一般而言，Python 中只有不可变的对象才能作为字典的键，这种对象叫做可散列对象。
+        可散列对象需要满足以下要求：
+        - 支持 hash() 函数，并且通过 __hash__() 方法所得到的散列值是不变的。
+        - 支持通过 __eq__() 方法来检测相等性。
+        - 对象和hash有关的属性都不能变化，比如对象的实例变量。
+        要使一个类可散列，要进行以下操作：
+        - 实现一个 __hash__() 方法，使其返回一个散列值。
+        - 实现一个 __eq__() 方法，使其返回 True。
+        - 对hash有关的计算进行设置，使其不能变化。(比如只读化处理hash有关的属性)
+```python
+# 示例：实现一个可散列的二维向量类
+from array import array
+import math
+class Vector2d:
+    typecode = 'd'
+    def __init__(self, x, y):
+        # 用只读属性保护实例变量
+        self.__x = float(x)
+        self.__y = float(y)
+    
+    # 只读访问器构造函数
+    @property
+    def x(self):
+        return self.__x
+    @property
+    def y(self):
+        return self.__y
+    def __eq__(self, other):
+        return tuple(self) == tuple(other)
+    def __hash__(self):
+        return hash(self.__x) ^ hash(self.__y)
+```
+### __slots__ 类节省空间
+        Python 中的对象会占用大量的内存，因为每个对象都会存储各种各样的信息，比如实例变量、类变量、方法等。
+        为了减少内存的使用，可以使用 __slots__ 类属性来指定实例属性名的列表，从而减少实例所占的内存。
+        __slots__ 属性只对当前类有效，对子类无效。
+```python
+# 示例：使用 __slots__ 类属性来减少实例所占的内存
+class Vector2d:
+    __slots__ = ('__x', '__y')
+    typecode = 'd'
+    def __init__(self, x, y):
+        self.__x = float(x)
+        self.__y = float(y)
+```
+### 鸭子类型和白鹅类型
+        鸭子类型：鸭子类型是指，当我们看到一只鸟走起来像鸭子、游泳起来像鸭子、叫起来也像鸭子，那么这只鸟就可以被称为鸭子。鸭子类型是一种动态类型，它关注的不是对象的类型本身，而是它是如何使用的。
+        白鹅类型：白鹅类型是一种静态类型，它关注的是对象的类型本身。一般继承于同一个父类的对象，都可以被看作是白鹅类型。白鹅类型也可以不通过继承而实现，可以通过python的register方法来实现。register是虚拟子类，只是将类注册到父类中，注册的类不会从父类中继承任何方法。(我寻思似乎只有用到大量isinstace项目时会用到)
+```python
+# 示例：鸭子类型
+class Duck:
+    def quack(self):
+        print('Quack, quack!')
+    def fly(self):
+        print('Flap, flap!')
+class Person:
+    def quack(self):
+        print("I'm quacking like a duck!")
+    def fly(self):
+        print("I'm flapping my arms!")
+def quack_and_fly(thing):
+    thing.quack()
+    thing.fly()
+d = Duck()
+quack_and_fly(d)  # 输出 Quack, quack! Flap, flap!
+p = Person()
+quack_and_fly(p)  # 输出 I'm quacking like a duck! I'm flapping my arms!
+
+# 示例：白鹅类型, 继承实现
+class Bird:
+    def quack(self):
+        print('Quack, quack! I am a bird.')
+    def fly(self):
+        print('Flap, flap! I am a bird.')
+class Duck(Bird):
+    def quack(self):
+        print('Quack, quack! I am a duck.')
+    def fly(self):
+        print('Flap, flap! I am a duck.')
+def quack_and_fly(thing):
+    thing.quack()
+    thing.fly()
+b = Bird()
+quack_and_fly(b)  # 输出 Quack, quack! I am a bird. Flap, flap! I am a bird.
+d = Duck()
+quack_and_fly(d)  # 输出 Quack, quack! I am a duck. Flap, flap! I am a duck.
+
+# 示例：白鹅类型, register实现
+class Bird:
+    def quack(self):
+        print('Quack, quack! I am a bird.')
+    def fly(self):
+        print('Flap, flap! I am a bird.')
+@Bird.register
+class Duck:
+    def quack(self):
+        print('Quack, quack! I am a duck.')
+    def fly(self):
+        print('Flap, flap! I am a duck.')
+print(issubclass(Duck, Bird))  # 输出 True
+```
+### 多继承时的执行顺序
+        python 支持多继承，但是多继承时，如果多个父类中有同名的方法，子类会优先调用排在前面的父类中的方法。
+```python
+# 示例：多继承时的执行顺序
+class A:
+    def func(self):
+        print('A')
+class B:
+    def func(self):
+        print('B')
+class C(A, B):
+    def func(self):
+        super().func()
+c = C()
+c.func()  # 输出 A
+B.func(c)  # 输出 B
+```
 
 ## 装饰器
         装饰器本质上是一个Python函数，它可以让其他函数在不需要做任何代码变动的前提下增加额外功能，装饰器的返回值也是一个函数对象。
@@ -195,7 +388,8 @@ def f2():
     print('running f2()')
 ```
 
-## Python 中的函数参数传递1(可变与不可变，浅复制与深复制)
+## Python 中的函数参数传递
+### 可变与不可变，浅复制与深复制
         Python中的变量类型可分为可变与不可变。Python中可变对象包括列表（list）、字典（dict）、集合（set）等；不可变对象包括数字（int, float等）、布尔值（bool）、字符串（str）等。
         可变对象传入函数后，相当于C语言中的引用，对象更改会使对象发生改变。不可变对象则不会改变。
 
@@ -213,8 +407,7 @@ def __init__(self, passengers=None):
     else:
         self.passengers = list(passengers)
 ```
-
-## Python 中的函数参数传递2(赋值)
+### 赋值
         Python中的赋值实际上赋值的是地址，这里和C语言很大不同。
         例：
         b = a
@@ -229,27 +422,15 @@ def __init__(self, passengers=None):
         head = data + ['domain_url','domain_name']
         两者是不一样的，前者引用了地址然后改变值，后者可以理解为常量的相加（？）。
         当此时print(data)的值就可以发现两者的不同。
-
-## Python 中的函数参数传递3(关键字参数)
+### 关键字参数
         Python中存在仅限关键字参数，即在函数定义时，参数名前加*，表示该参数只能作为关键字参数传入。
         比如
         def fun(a, b, *, c):
             print(a, b, c)
         这里c就是仅限关键字参数，只能通过c=xxx的形式传入。
 
-## 函数注解
-        函数注解可以在函数声明时，对函数的参数和返回值进行注解。
-        函数注解的语法格式为：def func(arg1: type, arg2:'string', arg3: int = 0) -> type:
-        函数注解的作用是对函数的参数和返回值进行类型提示，它不会对函数的参数和返回值进行强制性的类型检查。
-        函数注解的信息存储在函数的 __annotations__ 属性中，它是一个字典，键是参数名，值是注解的类型。
-        函数注解的主要作用是对函数的参数和返回值进行类型提示，它不会对函数的参数和返回值进行强制性的类型检查。
 
-## 实例方法、类方法、静态方法
-        实例方法：默认方法，不需要修饰。只有实例可以调用。实例变量用self来调用。
-        类方法：需要@classmethod修饰。只有类可以调用。类中变量用类名调用。
-        静态方法：需要@staticmethod修饰。类和实例都可以调用。
-
-## filter ,map, reduce
+## 高阶函数
         filter, map, reduce 是 Python 中的三个内置高阶函数，它们都是对集合进行操作的函数，都接收一个函数作为参数，然后返回一个新的集合。
 ### filter 函数：
         filter 函数用于根据指定的条件过滤集合中的元素，只保留满足条件的元素。
@@ -284,8 +465,7 @@ print(product)  # 输出 120 (2 * 3 * 4 * 5)
         - reduce 用于对集合中的元素进行累积操作，将二元函数逐个应用到元素上，得到一个单一的累积结果。
         注意：
         - filter 和 map 函数都可以用列表推导式来替代。
-
-## functiontools.partial
+### functiontools.partial
         functools.partial 函数用于部分应用一个函数，即固定函数的某些参数，返回一个新的函数。
 ```python
 from functools import partial
@@ -298,7 +478,8 @@ double_ls = list(map(double, rand_ls))
 print(double_ls)
 ```
 
-## 列表推导式，生成器表达式和字典推导式
+## Python数据结构 
+### 列表推导式，生成器表达式和字典推导式
         - 列表推导式
         首先形式为 [a for a in {gen}] ，gen为迭代器。返回值为列表。
 ```python
@@ -341,8 +522,7 @@ for num in num_str:
 num_str = "123"
 codes = {num: ord(num) for num in num_str}
 ```
-
-## 元组拆包
+### 元组拆包
         可以用  a, b, c, d = (a1, b1, c1 ,d1) 
         一般可以用于函数返回值赋值中：
 ```python
@@ -353,61 +533,11 @@ res1, res2, ...= fun1(k1, k2, ...)
 用*可以处理剩下的元素
   res1, res2, *rest = fun1(k1, k2, ...)
 ```
-
-## Cls 方法
-        cls方法指在类中调用本身，往往跟修饰器@classmethod 绑定。
-```python
-class Apple:
-    def __init__(self, color, name):
-        self.color = color
-        self.name = name
-    
-    @classmethod
-    def be_touched(cls, fruit):
-        apple = cls(fruit.color, fruit.name)
-        return apple
-```
-
-## 类的简洁化创建
-### 具名元组
-        具名元组，namedtuple，是一个工厂函数，用来创建一个带字段名的元组和一个有名字的类。
-        nametuple 有两个参数，第一个是类名，第二个是类的各个字段的名字。后者可以是由数个字符串组成的可迭代对象，或者是由空格分隔开的字段名组成的字符串。
-```python
-from collections import namedtuple
-Point = namedtuple('Point', ['x', 'y'])
-p = Point(1, 2)
-print(p.x, p.y)  # 输出 1 2
-```
-### dataclass
-        dataclass 是 Python 3.7 新增的一个装饰器，用于自动为数据类生成一些特殊方法，如 __init__、__repr__、__eq__ 等。
-```python
-from dataclasses import dataclass
-@dataclass
-class Point:
-    x: int
-    y: int
-p = Point(1, 2)
-print(p.x, p.y)  # 输出 1 2
-```
-
-## 序列用*易出现的错误
+### 序列用*易出现的错误
         用*来处理序列时，如果序列的元素为可变对象的引用，往往会出现错误。
         错误示范：my_list = [[]] * 3, 此时my_list中的三个元素都是对同一个列表的引用，所以当修改其中一个元素时，其他元素也会发生改变。
         正确示范：my_list = [[] for _ in range(3)]，此时my_list中的三个元素都是独立的列表，修改其中一个元素不会影响其他元素。
-
-## bisect 搜索
-        bisect 模块包含两个主要函数，bisect 和 insort，两个函数都利用二分查找算法来在有序序列中查找或插入元素。
-        bisect 函数用于查找元素应该插入的位置，insort 函数用于将元素插入到相应的位置。
-```python
-import bisect
-my_list = [1, 2, 3, 7, 9, 11, 33]
-print(bisect.bisect(my_list, 3))  # 输出 3
-print(bisect.bisect(my_list, 8))  # 输出 4
-bisect.insort(my_list, 4)
-print(my_list)  # 输出 [1, 2, 3, 4, 7, 9, 11, 33]
-```
-
-## 数组, 内存视图, 双向队列
+### 数组, 内存视图, 双向队列
 ### 数组
         Python 中的数组是指由同一类型的元素组成的集合，与列表不同，数组中的元素类型必须一致。
         Python 中的数组效率比列表高，因此在需要存储大量数字的时候，应该使用数组而不是列表。
@@ -440,8 +570,7 @@ def search(lines, pattern, history=5):
             yield line, previous_lines
         previous_lines.append(line)
 ```
-
-## dict中字典的默认处理
+### dict中字典的默认处理
         setdefault() 方法: 为dict类的实例添加一个新的键值对，如果该键已经存在于dict中，则不做任何操作。
         defaultdict() 方法: 为collections模块中的defaultdict类, 是一个工厂函数，用于创建一个类似于dict的对象，其中所有的键都有默认值。
 ```python
@@ -491,58 +620,11 @@ print(octets.decode('utf-8', errors='replace'))  # 输出 Montr�al
 print(octets.decode('utf-8'))  # 抛出 UnicodeDecodeError 异常
 ```
 
-## 用户定义可调用类型
-        除了使用 def 语句或 lambda 表达式来创建函数之外，Python 还可以使用 class 语句来定义可调用类型。
-        如果一个类实现了 __call__ 方法，那么它的实例可以作为函数调用。
-```python
-class Adder:
-    def __init__(self, n):
-        self.n = n
-
-    def __call__(self, m):
-        return self.n + m
-adder = Adder(5)
-print(adder(3))  # 输出 8
-```
 
 
 
-## == 与 is
-        == 比较的是值，is 比较的是对象的标识（内存地址）。 
-        is 运算符比 == 速度快，因为它不能重载，而是直接比较两个整数 ID；而 a == b 是语法糖，等同于 a.__eq__(b)。
-        一般而言，我们比较的是值，所以 == 的使用频率更高。
-        但是在比较对象是否为 None 时，应该使用 is。
 
-## 可散列类和只读化处理属性
-        一般而言，Python 中只有不可变的对象才能作为字典的键，这种对象叫做可散列对象。
-        可散列对象需要满足以下要求：
-        - 支持 hash() 函数，并且通过 __hash__() 方法所得到的散列值是不变的。
-        - 支持通过 __eq__() 方法来检测相等性。
-        - 对象和hash有关的属性都不能变化，比如对象的实例变量。
-        要使一个类可散列，要进行以下操作：
-        - 实现一个 __hash__() 方法，使其返回一个散列值。
-        - 实现一个 __eq__() 方法，使其返回 True。
-        - 对hash有关的计算进行设置，使其不能变化。(比如只读化处理hash有关的属性)
-```python
-# 示例：实现一个可散列的二维向量类
-from array import array
-import math
-class Vector2d:
-    typecode = 'd'
-    def __init__(self, x, y):
-        # 用只读属性保护实例变量
-        self.__x = float(x)
-        self.__y = float(y)
-    
-    # 只读访问器构造函数
-    @property
-    def x(self):
-        return self.__x
-    @property
-    def y(self):
-        return self.__y
-    def __eq__(self, other):
-        return tuple(self) == tuple(other)
-    def __hash__(self):
-        return hash(self.__x) ^ hash(self.__y)
-```
+## Yield
+    1. 与return 一样是返回值，不同的是yield是生成器，类似断点可保存信息。
+    2. 有yield关键字后调用函数返回的就是实例化的生成器对象。
+    3. yield两种操作：next与send。Send可以让yield得到返回值。
