@@ -193,10 +193,12 @@ $$
 #### KKT条件
 KKT条件是指拉格朗日函数的最优性条件，它是最优化问题的充分条件，但不是必要条件。
 即对于
+##### 原始目标函数(有约束)
 $$
 \begin{cases}
 &\min\limits_{x} &f(x) \\
-&s.t. &g(x)≤0
+&s.t. &g_i(x)\geq0 ,\text{ for $i=1,2,...,n$} \\
+&&h_i(x)=0 ,\text{ for $i=1,2,...,l$}
 \end{cases}
 $$
 两种情况
@@ -208,30 +210,11 @@ $$
 因此KKT条件为：
 $$
 \begin{cases}
-&g(x^*)≤0 \\
-&λ≥0 \\
-&λ^*g(x^*)=0
-\end{cases}
-$$
-#### 拉格朗日对偶
-拉格朗日对偶是指将一个原始最优化问题转化为与之等价的对偶形式，可以将有约束最优化问题转化为无约束最优化问题。
-##### 原始目标函数(有约束)
-$$
-\begin{cases}
-&\min\limits_{x} &f(x) \\
-&s.t. &g_i(x)≤0 ,\text{ for $i=1,2,...,n$} \\
-&&h_i(x)=0 ,\text{ for $i=1,2,...,l$}
-\end{cases}
-$$
-##### 新构造的目标函数(无约束)
-新构建目标函数:
-$$
-\theta_P(x)=\max\limits_{λ,μ:λ≥0} L(x,λ,μ)
-$$
-
-广义拉格朗日函数：
-$$
-L(x,λ,μ)=f(x)+\sum\limits_{i=1}^n λ_ig_i(x)+\sum\limits_{i=1}^l μ_ih_i(x)
+\bigtriangledown f(x^*)-\sum\limits_{i=1}^n λ_i^*\bigtriangledown g_i(x^*)-\sum\limits_{i=1}^l μ_i^*\bigtriangledown h_i(x^*)=0 \\
+h_i(x^*)=0 \\
+g_i(x^*)≥0 \\
+λ_i^*≥0 \\
+\end{cases} \\
 $$
 
 ##### 对偶问题

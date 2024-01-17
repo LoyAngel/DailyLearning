@@ -624,7 +624,172 @@ print(octets.decode('utf-8'))  # 抛出 UnicodeDecodeError 异常
 
 
 
-## Yield
+## 生成器函数与协程
+        生成器函数：包含yield关键字的函数，调用生成器函数时，会返回一个生成器对象。对于一个生成器对象，应该使用next函数或send方法来获取下一个值，直到抛出StopIteration异常。使用for, list, tuple等函数可以获取生成器对象的所有值而不会抛出异常。
+        协程：协程是指一个过程，这个过程与调用方协作，产出由调用方提供的值。协程可以暂停执行并在暂停的地方继续执行。
+### iter 函数
+        iter函数用于生成迭代器，迭代器是一种特殊的对象，它可以在诸如for循环之类的语句中使用。iter函数接收两个参数，第一个参数是一个可调用对象，第二个参数是哨符，用于标记迭代的结束。可用于检测对象是否可迭代。
+        iter函数的作用：检查对象是否实现了__iter__方法，如果实现了则调用它，获取一个迭代器；如果没有实现__iter__方法，则检查对象是否实现了__getitem__方法，如果实现了则创建一个迭代器，从序列的第一个元素开始遍历；如果两个方法都没有实现，则抛出TypeError异常。
+        __iter__方法：如果一个对象实现了__iter__方法，那么它就是可迭代的，可以被iter函数识别。__iter__方法必须返回一个迭代器，比如自身实现了__next__方法后需要返回self。
+        __next__方法：如果一个对象实现了__next__方法，那么它就是迭代器，可以被next函数识别。__next__方法必须返回下一个元素，如果没有元素了则需要抛出StopIteration异常。
+        __getitem__方法：如果一个对象实现了__getitem__方法，那么它就是可迭代的，可以被iter函数识别。__getitem__方法必须返回下一个元素，如果没有元素了则需要抛出IndexError异常。
+```python
+# 只实现__iter__方法调用iter
+class Foo:
+    num_ls = []
+    def __init__(self, num):
+        self.num = num
+        Foo.num_ls.append(self.num)
+    def __next__(self):
+        if self.num_ls:
+            return self.num_ls.pop(0)
+        else:
+            raise StopIteration 
+    def __iter__(self):
+        return self
+foo = Foo(1)
+foo2 = Foo(2)
+print(list(foo))  # 输出 [1, 2]
+# 只实现__getitem__方法调用iter
+class Foo:
+    num_ls = []
+    def __init__(self, num):
+        self.num = num
+        Foo.num_ls.append(self.num)
+    def __getitem__(self, index):
+        return Foo.num_ls[index]
+foo = Foo(1)
+foo2 = Foo(2)
+print(list(foo))  # 输出 [1, 2]
+```
+### Yield
     1. 与return 一样是返回值，不同的是yield是生成器，类似断点可保存信息。
     2. 有yield关键字后调用函数返回的就是实例化的生成器对象。
     3. yield两种操作：next与send。Send可以让yield得到返回值。
+### 生成器函数与iter
+        生成器函数和类的__iter__都可以构建生成器，但是后者不如前者，因为__iter__方法每次都要创建一个新的迭代器对象，而生成器函数则不会。
+```python
+# 示例：使用生成器函数构建生成器
+def gen_AB():
+    print('start')
+    yield 'A'
+    print('continue')
+    yield 'B'
+    print('end.')
+for c in gen_AB():
+    print('-->', c)
+# 示例：使用类的 __iter__ 方法构建生成器
+class gen_AB:
+    def __iter__(self):
+        print('start')
+        yield 'A'
+        print('continue')
+        yield 'B'
+        print('end.')
+for c in gen_AB():
+    print('-->', c)
+# 输出:
+# start
+# --> A
+# continue
+# --> B
+# end.
+```
+### 惰性实现
+        Iterator接口可以用于实现惰性计算，即只有在需要时才计算。惰性计算可以节省大量内存，提高程序的性能。如下的re.finditer函数就是惰性实现。
+        re.finditer(pattern, string, flags=0) 函数用于在字符串中找到正则表达式所匹配的所有子串，并返回一个迭代器，迭代器中包含匹配的所有子串。运用该函数代替re.findall可以节省大量内存。
+```python
+import re
+# 示例：使用 re.finditer 函数查找字符串中的所有数字
+s = '12 drummers drumming, 11 pipers piping, 10 lords a-leaping'
+RE_WORD = re.compile(r'\w+')
+for match in RE_WORD.finditer(s):
+    print(match.group(), end='|')
+# 输出: 12|drummers|drumming|11|pipers|piping|10|lords|a|leaping|
+```
+### 标准库的生成器函数
+1. compress(it, selector_it): 并行处理两个可迭代对象，如果selector_it中的元素为真，则输出it中对应的元素。
+2. dropwhile(predicate, it): 跳过it中predicate为真的元素，然后输出剩下的元素。
+3. takewhile(predicate, it): 输出it中predicate为真的元素，然后停止。
+4. filter(predicate, it): 输出it中predicate为真的元素。为内置函数。
+5. filterfalse(predicate, it): 输出it中predicate为假的元素。
+6. map(func, it1, [it2, ..., itN]): 输出func(it1[i], it2[i], ..., itN[i])的结果。为内置函数。
+7. starmap(func, it): 输出it中func(*it[i])的结果, it一般为元组或列表。
+8. islice(it, stop)或islice(it, start, stop, step=1): 输出it中从start开始到stop结束的元素切片，步长为step。
+9. accumulate(it, [func]): 输出it中的元素累加和，如果指定了func，则输出it中的元素经过func处理后的累加和。
+10. enumerate(iterable, start=0): 输出iterable中的元素以及元素的索引，索引从start开始。为内置函数。
+11. chain(it1, ..., itN): 依次输出it1, ..., itN中的元素。
+12. product(it1, ..., itN, repeat=1): 输出it1, ..., itN中的元素的笛卡尔积，repeat表示重复次数。
+13. zip(it1, ..., itN): 输出it1, ..., itN中的元素的元组。只要有一个可迭代对象到达结尾，就会停止。为内置函数。
+14. zip_longest(it1, ..., itN, fillvalue=None): 输出it1, ..., itN中的元素的元组，如果某个可迭代对象到达结尾，则用fillvalue填充。fillvalue默认为None。
+15. count(start=0, step=1): 从start开始，每次加step，输出一个无限序列。
+16. repeat(object, [times]): 输出object，如果指定了times，则输出times次。
+17. cycle(iterable): 无限重复iterable中的元素。
+### yield from 语句
+        yield from 语句可以用于简化 for 循环中的 yield 语句，它可以把一个可迭代对象中的所有元素都产出。
+        yield from 语句的作用：
+        1. yield from 语句可以把嵌套的可迭代对象中的所有元素都产出。
+        2. yield from 语句可以把子生成器产出的值直接传给生成器的调用方。
+        3. yield from 语句可以在生成器中处理子生成器产生的异常。
+```python
+# 示例：使用 yield from 语句简化 for 循环中的 yield 语句
+def chain(*iterables):
+    for it in iterables:
+        yield from it
+s = 'ABC'
+t = tuple(range(3))
+print(list(chain(s, t)))  # 输出 ['A', 'B', 'C', 0, 1, 2]
+```
+### @contextmanager 装饰器
+        @contextmanager 装饰器可以把简单的生成器函数变成上下文管理器，从而减少重复代码。
+        @contextmanager 装饰器的作用：
+        1. @contextmanager 装饰器可以把简单的生成器函数变成上下文管理器。
+        2. @contextmanager 装饰器可以减少重复代码。
+        3. @contextmanager 装饰器可以把生成器函数中的 yield 语句移到 __exit__ 方法中。
+        使用 @contextmanager 装饰器时，一定要定义一个生成器函数，它的作用是生成上下文管理器。yield 语句之前的代码相当于 __enter__ 方法，yield 语句之后的代码相当于 __exit__ 方法中的内容。yield 语句产出的值会绑定到 with 语句中 as 子句的目标变量上。
+        注意使用try/finally语句时，yield一定要放在try中，因为yield之后的语句相当于finally中的语句。
+```python
+# 示例：使用 @contextmanager 装饰器把简单的生成器函数变成上下文管理器
+from contextlib import contextmanager
+@contextmanager
+def looking_glass():
+    import sys
+    original_write = sys.stdout.write
+    def reverse_write(text):
+        original_write(text[::-1])
+    sys.stdout.write = reverse_write
+    yield 'JABBERWOCKY'
+    sys.stdout.write = original_write
+with looking_glass() as what:
+    print('Alice, Kitty and Snowdrop')
+    print(what)
+# 输出:
+# pordwonS dna yttiK ,ecilA
+# YKCOWREBBAJ
+```
+### 协程
+        协程的特点：
+        1. 协程是指一个过程，这个过程与调用方协作，产出由调用方提供的值。
+        2. 协程可以暂停执行并在暂停的地方继续执行。
+        3. 协程可以把控制权交给调用方，让调用方决定做什么。
+        4. 协程可以用于实现多任务协作式函数。
+        协程的使用步骤：
+        1. 调用方通过调用生成器的 next 方法预激生成器。
+        2. 调用方通过 send 方法把数据发给生成器。
+        3. 协程通过 yield 表达式把控制权让给调用方。
+        4. 调用方处理数据，然后再把控制权交还给协程。
+        P.S. 使用yield from 会自动预激子生成器；可以通过捕获StopIteration异常来判断协程是否结束。
+```python
+# 示例：使用协程的简单例子
+def simple_coroutine():
+    print('-> coroutine started')
+    x = yield
+    print('-> coroutine received:', x)
+my_coro = simple_coroutine()
+print(my_coro)  # 输出 <generator object simple_coroutine at 0x0000020E6F9F9C80>
+next(my_coro)  # 输出 -> coroutine started
+my_coro.send(42)  # 输出 -> coroutine received: 42
+my_coro.send(43)  # 抛出 StopIteration 异常
+```
+
+## 期物和asyncio

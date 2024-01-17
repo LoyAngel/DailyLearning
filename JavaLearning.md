@@ -1,14 +1,15 @@
 # JAVA
+## JAVA Basic
  
-## 基础注意项
-### 注意点
+### 基础注意项
+#### 注意点
         大小写敏感：Java 是大小写敏感的，这就意味着标识符 Hello 与 hello 是不同的。
         主方法入口：所有的 Java 程序由 public static void main(String[] args) 方法开始执行。
-### 注释
+#### 注释
         单行注释：//
         多行注释：/* */
         文档注释：/** */
-#### 特殊注释规范样例
+##### 特殊注释规范样例
         类注释：
         /**
         * CopyRright (c), xxxx-yyyy, All Rights Reserved
@@ -30,58 +31,142 @@
         * @return 返回值说明
         * @throws 异常类型 说明
         */
-### 标识符
+#### 标识符
         比其他常规语言多了美元符号
-### 常见命名规范
+#### 常见命名规范
         包名：多单词组成时所有字母都小写：xxyyzz
         类名、接口名：多单词组成时，所有单词的首字母大写：XxYyZz
         变量名、方法名：多单词组成时，第一个单词首字母小写，第二个单词开始每个单词首字母大写：xxYyZz
         常量名：所有字母都大写。多单词时每个单词用下划线连接：XX_YY_ZZ
-### javac和java命令
+#### javac和java命令
         javac：编译命令，将java文件编译成class文件
+        如: (Linux 环境下) javac -d ./bin ./src/**/*.java, 将src目录下所有java文件编译成class文件，输出到bin目录下,-d表示输出目录
         java：运行命令，运行class文件
+        如: java -cp ./bin com.example.HelloWorld, 运行bin目录下的com.example.HelloWorld类, -cp表示类路径
+#### jar包
+        jar包是java的打包文件，通过对class文件进行打包，可以将多个class文件打包成一个jar包，方便传输和使用。
+        jar包的创建：(Windows) 直接右键打包成zip文件，然后修改后缀名为jar
+                    (Maven) mvn package, 在target目录下生成jar包
 
-## Java的对象和类
-### 构造方法
+### Java的对象和类
+#### 构造方法
         Java的构造方法名必须与类名相同，一个类可以有多个构造方法，构造方法可以有多个参数，构造方法没有返回值。
-### 创建对象
+#### 创建对象
         三步走：
         1. 声明：声明一个对象，包括对象名称和对象类型。
         2. 实例化：使用关键字 new 来创建一个对象。
         3. 初始化：使用 new 创建对象时，会调用构造方法初始化对象。
-### Java包
+#### Java包
         类似python, import 包名.类名
-        当前目录已经有class的情况下，可以直接使用类名，不需要import
+        使用 package p_name; 导入包;
+        或者使用 import p_name.c_name; 导入包中的类
+        包的作用域: 包名相同的类，可以直接访问不需要import。不用public, protected, private修饰的类就是包作用域。
+#### 内部类
+        内部类是定义在另一个类中的类。
+        内部类的访问修饰符可以是 public, protected, private 以及默认访问权限。
+        外部类要访问内部类的成员，必须创建内部类的对象。
+        内部类可以访问外部类的所有成员，而不需要外部类对象的引用。下为例子
+```java
+void Outer(){
+    private int x = 10;
 
-## Java变量类型
-### 局部变量
+    class Inner{
+        void print(){
+            System.out.println(Outer.this.x);
+        }
+    }
+}
+```
+        内部类还可以是Anonymous class，即匿名类。下为例子。
+```java
+void asyncHello(){
+    Runnable r = new Runnable(){
+        public void run(){
+            System.out.println("Hello World");
+        }
+    };
+    new Thread(r).start();
+}
+```
+        内部类还可以是静态类，即static class。静态类只能访问外部类的静态成员，不能访问外部类的非静态成员, 即不能访问.this。下为例子。
+```java
+class Outer{
+    private static int x = 10;
+
+    static class Inner{
+        void print(){
+            System.out.println(Outer.x);
+        }
+    }
+}
+```
+#### JavaBean
+
+        JavaBean 是一种符合如下标准的 Java 类：
+        1. 类是公共的
+        2. 有一个无参的公共构造器
+        3. 有属性，且有对应的 get、set 方法
+        4. 实现了 Serializable 接口
+        以下为例子。
+```java
+public class Person implements Serializable {
+    private String name;
+
+    // 读属性(getter)
+    public String getName(){
+        return name;
+    }
+    // 写属性(setter)
+    public void setName(String name){
+        this.name = name;
+    }
+}
+```
+#### 枚举类
+        枚举类是一种特殊的类，用于定义常量。
+        枚举类的每个值都是枚举类的实例，枚举类的构造方法必须为私有。
+        枚举类写法: enum ClassName{value1, value2, value3}
+        枚举类好处: 1. 本身带有类型信息，编译器会检查类型错误。2. 不可能引用到非枚举的值。
+        枚举类的常用方法: 1. name()：返回枚举值的名称。 2. ordinal(),返回枚举值的序号。
+        以下为例子。
+```java
+public enum Weekday{
+    SUN(0), MON(1), TUE(2), WED(3), THU(4), FRI(5), SAT(6);
+    public final int dayValue;
+    private Weekday(int dayValue){
+        this.dayValue = dayValue;
+    }
+}
+```
+
+### Java变量类型
+#### 局部变量
         局部变量声明在方法、构造方法或者语句块中；
         局部变量在方法、构造方法、或者语句块被执行的时候创建，当它们执行完成后，变量将会被销毁；
         访问修饰符不能用于局部变量；
         局部变量只在声明它的方法、构造方法或者语句块中可见；
         局部变量是在栈上分配的。
-### 成员变量
+#### 成员变量
         成员变量是定义在类中，方法体之外的变量，在整个类体内都可见；
         成员变量在对象创建的时候创建，在对象被销毁的时候销毁；
         访问修饰符可以修饰成员变量；
         成员变量可以被声明在使用前或者使用后；
         成员变量是在堆上分配的。
-### 类变量（静态变量）
-        类变量声明在类中，方法体之外，但必须声明为static类型；
+#### 类变量（静态变量）
+        类变量声明在类中，方法体之外，但必须声明为static类型, 即用static修饰；
         类变量在类加载的时候创建，在程序退出的时候销毁；
         访问修饰符可以修饰类变量；
-        类变量被声明为public static final类型时，类变量名称必须使用大写字母；
         类变量是在静态区分配的。
-#### 静态变量线程安全
+##### 静态变量线程安全
         类变量是全局的，所有的对象都共享同一个变量。所以，当一个对象对类变量进行修改后，其他对象访问的类变量是修改后的值。这样会造成线程安全问题。为了解决这个问题，可以使用同步关键字 synchronized，原子类，或者volatile关键字。
-### 参数变量
+#### 参数变量
         参数变量是在方法调用时被传递进方法中的变量；
         方法中的参数变量在调用方法时被创建，当方法返回时，参数变量被销毁；
         参数变量只在方法内部可见；
         参数变量是在栈上分配的。
 
-## Java修饰符
-### 访问控制修饰符
+### Java修饰符
+#### 访问控制修饰符
         Java中，可以使用访问控制符来保护对类、变量、方法和构造方法的访问。Java 支持 4 种不同的访问权限。
         default：
         默认的，即不加任何修饰符，通常称为“默认访问模式“。
@@ -91,16 +176,17 @@
         访问级别：本类可见; 不同包都不可见。
         public：
         公共的，允许在任何地方进行访问。
+        (一个.java文件中只能有一个public类，且public类的类名必须与文件名相同。)
         访问级别：对所有类可见。
         protected：
         受保护的，允许在当前类、同一包中以及子类中进行访问。不能修饰类（外部类）。
         访问级别：本类、同一包、子类可见; 不同包都不可见。
-### 非访问修饰符
+#### 非访问修饰符
         Java中，提供了很多非访问修饰符来实现其他的功能。非访问修饰符一般位于访问修饰符之前。
         static：
         静态的，表明一个成员变量或者方法可以在没有创建类的实例的情况下使用。静态变量始终只有一个副本，无论类创建了多少个对象。静态方法只能访问静态变量。
         final：
-        最终的，表明一个变量只能被赋值一次，常量。一个类不能被继承，方法不能被重写。通常和 static 一起使用来创建类常量。
+        最终的，表明一个变量只能被赋值一次，常量。类不能被继承，方法不能被重写。通常和 static 一起使用来创建类常量。
         abstract：
         抽象的，表明一个类或者方法是抽象的，不能被实例化。抽象方法只需要声明，不需要实现。通常和接口一起使用。
         synchronized：
@@ -111,14 +197,14 @@
         短暂的，表明一个变量不应该被序列化，通常用于socket或者文件传输中。
 
 
-## Java基本运算符
+### Java基本运算符
         大都与python一致，此处讲讲特殊的几个运算符。
         1. 三目运算符
         三目运算符与c一致，也不赘述。
         2. instanceof 运算符
         判定对象是否为某个类的实例，返回boolean值。
 
-## Java循环结构
+### Java循环结构
         1. while循环
         2. do...while循环
         3. for循环
@@ -130,37 +216,31 @@
         6. continue关键字
         以上两个关键字与普通编程一致，不赘述。
 
-## Java条件语句
+### Java条件语句
         1. if语句
         2. if...else语句
         3. if...else if...else语句
         4. switch语句
         以上4种语句与c一致，不赘述。
 
-## Java Number & Math类
-### Number类
+
+### Java 核心类
+#### Number类
         基础数据类型：byte, short, int, long, float, double, boolean, char
         包装器类型：Byte, Short, Integer, Long, Float, Double, Boolean, Character
         两者区别：
         1. 基础数据类型在内存中占用空间较小，包装器类型在内存中占用空间较大。
         2. 基础数据类型是直接存储在栈中的，包装器类型是存储在堆中的。
-        3. 基础数据类型的值是不可变的，包装器类型的值是可变的。
-        4. 基础数据类型的默认值不是null，包装器类型的默认值是null。
-
-        5. Boolean 1位, true/false
-        6. Byte 8位有符号整数，范围-128~127
-        7.  Short 16位有符号整数，范围-32768~32767
-        8.  Integer 32位有符号整数，范围-2147483648~2147483647
-        9.  Long 64位有符号整数，范围-9223372036854775808~9223372036854775807
-        10. Float 32位单精度浮点数
-        11. Double 64位双精度浮点数
-        12. Character 16位Unicode字符，范围\u0000~\uffff
-#### 装箱和拆箱
+        3. 基础数据类型的默认值不是null，包装器类型的默认值是null。
+        4. 包装器类型不能用==比较，只能用equals()方法比较。
+        创建Number类新对象时，优先使用静态工厂方法valueOf()，而不是new。
+        所有的包装类型都是不变类。
+##### 装箱和拆箱
         装箱：将基本数据类型转换为包装器类型，例如将int转换为Integer，将double转换为Double。
                 例子 Integer x = 5;
         拆箱：将包装器类型转换为基本数据类型，例如将Integer转换为int，将Double转换为double。
                 例子 int x = new Integer(5);
-#### Number & Math 常用类方法
+##### Number & Math 常用类方法
         Number & Math 类用于对基本数据类型进行包装和数学运算。 
         1. Number类
         xxxValue()：以xxx类型返回指定数值
@@ -180,15 +260,14 @@
         toString()：返回一个字符串表示形式
         parseInt()：将字符串解析为int类型
         random()：返回0.0~1.0之间的随机数
-
-### Character 类
+#### Character 类
         Character 类用于对单个字符进行操作。
-#### 转义序列
+##### 转义序列
         \t, \b, \n, \r, \', \", \\
         与c一致，不赘述。
         \ddd, 表示8进制数ddd所代表的字符
         \uxxxx， 表示16进制数xxxx所代表的字符
-#### Character类常用方法
+##### Character类常用方法
         isLetter()：判断字符是否为字母
         isDigit()：判断字符是否为数字
         isWhitespace()：判断字符是否为空白字符
@@ -198,11 +277,11 @@
         toLowerCase()：将字符转换为小写字母
         toString()：返回字符的字符串形式，字符串长度为1
 
-## String 与 StringBuffer & StringBuilder
-### String 类
+### String 与 StringBuffer & StringBuilder
+#### String 类
         String 类代表字符串。Java中的字符串是不可变的，所以每次对字符串的操作都会生成一个新的字符串对象。
         String 类是不可变的，所以你一旦创建了 String 对象，那它的值就无法改变了。如果需要对字符串做很多修改，那么应该选择使用 StringBuffer & StringBuilder 类。
-#### String类创建字符串
+##### String类创建字符串
         1. 通过字面量创建字符串
         String str = "Hello World";
         2. 通过构造方法创建字符串
@@ -211,11 +290,11 @@
         通过字面量创建的字符串会被放入字符串常量池中，而通过构造方法创建的字符串不会放入字符串常量池中；
         通过字面量创建的字符串对象的引用会被放入栈中，而通过构造方法创建的字符串对象的引用不会被放入栈中。
 ![String类创建字符串](https://www.runoob.com/wp-content/uploads/2013/12/java-string-1-2020-12-01.png "String类创建字符串")
-#### String类常见构建方法
+##### String类常见构建方法
         1. String()：初始化一个新创建的String对象，使其表示一个空字符序列。
         2. String(byte[] bytes)：通过使用平台的默认字符集解码指定的字节数组来构造新的String。
         3. String(char[] value)：分配一个新的String，使其表示字符数组参数中当前包含的字符序列。
-#### String类常用方法
+##### String类常用方法
         1. length()：返回字符串的长度。例子：int len = str.length();
         2. concat()：将指定字符串连接到此字符串的结尾。例子：String str2 = str1.concat("World");
         3. format()：使用指定的格式字符串和参数返回一个格式化字符串。例子：String str2 = String.format("Hi, %s", "World");
@@ -228,14 +307,14 @@
         10. contains()：当且仅当此字符串包含指定的 char 值序列时，返回 true。例子：boolean result = str.contains("Hello");
         11. split()：根据匹配给定的正则表达式来拆分此字符串。例子：String[] substr = str.split(" ");
 
-### StringBuffer & StringBuilder 类
+#### StringBuffer & StringBuilder 类
         StringBuffer & StringBuilder 类是可变的，可用于字符串拼接。
         StringBuffer & StringBuilder 类的对象能够被多次的修改，并且不产生新的未使用对象。
         StringBuffer & StringBuilder 类的基本方法和 String 类的方法是一样的。
-#### StringBuffer与StringBuilder的区别
+##### StringBuffer与StringBuilder的区别
         StringBuffer 是线程安全的，StringBuilder 是非线程安全的。
         StringBuilder 效率高于 StringBuffer，所以多数情况下建议使用 StringBuilder 类。
-#### StringBuffer & StringBuilder 比String 特有的方法
+##### StringBuffer & StringBuilder 比String 特有的方法
         1. append()：将指定的字符串追加到此字符序列。例子：StringBuffer str = new StringBuffer("Hello"); str.append("World");
         2. reverse()：将此字符序列用其反转形式取代。例子：StringBuffer str = new StringBuffer("Hello"); str.reverse();
         3. insert()：将指定的字符串插入此字符序列中。例子：StringBuffer str = new StringBuffer("Hello"); str.insert(0, "World");
@@ -245,24 +324,24 @@
 
 
 
-## Java数组
-### 数组
+### Java数组
+#### 数组
         数组是一个容器，可以同时存放多个数据值。
         数组的特点：
         1. 数组是引用数据类型
         2. 数组当中的多个数据，类型必须统一
         3. 数组的长度在程序运行期间不可改变
         Java数组大多与c一致，此处不赘述。
-### 数组的声明
+#### 数组的声明
         1. dataType[] arrayRefVar; // 首选的方法
         2. dataType arrayRefVar[]; // 效果相同，但不是首选方法
         3. dataType[] arrayRefVar = new dataType[arraySize];
         4. dataType[] arrayRefVar = {value0, value1, ..., valuek};
 
-## Java方法
+### Java方法
         Java方法是语句的集合，它们在一起执行一个功能。
         Java方法类似于c中的函数，大多不再赘述。
-### 命令行参数
+#### 命令行参数
         Java 命令行参数是 main() 方法的一个字符串数组。主方法不返回任何值，所以必须声明为 void。
         main() 方法的声明如下所示：
         public static void main(String args[])
@@ -286,8 +365,9 @@ public class CommandLine {
         args[4]: line
         args[5]: 200
         args[6]: -100
-### 可变参数
+#### 可变参数
         可变参数允许传递不同数量的参数给一个方法。它最终被转化为一个数组传递给方法，可以使用命令行参数的方法来编写可变参数的方法。
+        可变参数的写法为：type... parameterName，其中 type 是参数类型，parameterName 是参数的名称。
         以下实例演示了可变参数的使用方法：
 ```java
 public class VarargsDemo {
@@ -316,8 +396,8 @@ public class VarargsDemo {
         The max value is 3.0
 
 
-## Java Stream, File & IO
-#### Java Stream
+### Java Stream, File & IO
+##### Java Stream
         Java 中的流是一种数据传输方式，用于处理与设备、文件或者网络连接等交互的数据。
         Java 中，流是按照操作数据单位划分的，可以划分为字节流和字符流。
         字节流：以字节为单位进行数据传输，通常用于处理二进制文件，如图片、视频等。
@@ -325,7 +405,7 @@ public class VarargsDemo {
         Java 中，流的操作方式分为两种：节点流和处理流。
         节点流：直接与数据源相连，读取数据或者写入数据。
         处理流：对一个已经存在的流进行连接或者封装，通过封装后的流来实现数据读取或者写入。
-#### 控制台输入输出
+##### 控制台输入输出
 1. System.in
         System.in 是 InputStream 的对象，通常用于获取键盘输入。
         初始化:
@@ -350,7 +430,7 @@ public class VarargsDemo {
                 sc.nextDouble() 读取一个双精度浮点数
                 sc.nextBoolean() 读取一个布尔值
                 sc.nextLine() 读取一行
-#### 文件输入输出
+##### 文件输入输出
 1. FileInputStream
         FileInputStream 是 InputStream 的子类，通常用于读取二进制文件，如图片、视频等。
         初始化:
@@ -366,18 +446,22 @@ public class VarargsDemo {
                 fos.write(int b) 写入一个字节
                 fos.write(byte[] b, int off, int len) 写入一个字节数组的一部分
 
-## 异常处理
+### 异常处理
         异常是程序在执行过程中出现的错误。
         Java 中，异常是一个对象，表示程序在执行过程中出现的错误。
         异常的分类：
         1. 检查性异常：在编译时发生的异常，如文件不存在、网络中断等。
         2. 运行时异常：在运行时发生的异常，如数组越界、除数为0等。
         3. 错误：Java 虚拟机无法解决的严重问题，如 JVM 运行错误、内存溢出等。
+        一般而言：
+        如果异常最后可以统一丢给Exception处理，如catch(Exception e);
+        可以用printStackTrace()方法打印异常信息;
+        可以将异常传入给异常类的构造方法，这会使新的异常对象包含原始异常的信息，从而让定位错误更加准确，如throw new Exception(e);
         Java 中，异常处理的方式有两种：try...catch...finally 和 throw/throws。
-### try...catch...finally
+#### try...catch...finally
         try 用于指定一块预防异常的代码。
         catch 用于捕获异常并处理异常。
-        finally 用于指定一块无论是否发生异常都会执行的代码。
+        finally 用于指定一块无论是否发生异常都会执行的代码，即使是在catch里发生异常的情况下。
         以下实例演示了 try...catch...finally 的使用方法：
 ```java
 public class ExceptionDemo {
@@ -393,7 +477,7 @@ public class ExceptionDemo {
         }
 }
 ```
-### throw 与 throws
+#### throw 与 throws
         throw 用于抛出一个异常对象。
         throws 用于声明一个方法可能抛出的所有异常。
         以下实例演示了 throw 与 throws 的使用方法：
@@ -417,26 +501,35 @@ public class ExceptionDemo {
         }
 }
 ```
+#### 空指针异常
+        Null
 
-## 继承
-### 继承关键字
+
+### 继承和接口
+#### 关键字
         继承类用extends关键字，实现接口用implements关键字。
-### super 与 this
+        继承一般是继承抽象类，本质上是定义基本变量和方法，子类可以继承父类的字段和方法，也可以重写父类的方法。
+        接口本质上是定义方法，子类必须实现接口的方法，接口没有变量(可以有常量)，所有的方法(除了default方法)都是抽象方法。
+#### super 与 this
         super 与 this 关键字用于在子类中访问父类的成员变量和成员方法。
         super 用于访问父类的成员变量和成员方法, this 用于访问本类的成员变量和成员方法。
-### final
+#### final
         final 关键字用于声明属性、方法和类，分别表示属性不可变、方法不可覆盖、类不可继承。
         final 修饰的属性必须在声明时初始化，且不可再修改。
         final 修饰的方法不可被子类覆盖。
         final 修饰的类不可被继承。
-### 构造器
+#### 构造器
         构造器用于初始化对象，与python的__init__类似。
         构造器的名称必须与类名相同，且没有返回值。
         构造器的访问修饰符只能是 public，且不能被 static、final、synchronized 和 abstract 修饰。
         子类构造器不继承父类的构造器，但是子类构造器默认调用父类的无参构造器，如果父类没有无参构造器，则必须在子类的构造器中用 super 显式调用父类的构造器。
+#### default
+        default 关键字用于声明接口的默认方法。
+        default 修饰的方法必须有方法体，且不能被子类覆盖。
+        default 修饰的方法可以被实现接口的类调用。
 
-## Overload & Override
-### Overload 
+### Overload & Override
+#### Overload 
         重载指的是在同一个类中，方法名相同，参数列表不同的多个方法。
         重载的方法必须满足以下条件：
         1. 方法名相同
@@ -467,7 +560,7 @@ public class OverloadDemo {
         }
 }
 ```
-### Override
+#### Override
         重写指的是在子类中，方法名相同，参数列表相同，返回值相同的方法。
         重写的方法必须满足以下条件：
         1. 方法名相同
@@ -478,3 +571,23 @@ public class OverloadDemo {
         6. 与方法的参数名无关
         以下实例演示了重写的使用方法：
 ```java
+public class OverrideDemo {
+        public static void main(String args[]){
+                OverrideDemo demo = new OverrideDemo();
+                demo.test();
+        }
+        public void test() {
+                System.out.println("父类的方法");
+        }
+}
+public class OverrideDemoChild extends OverrideDemo {
+        public static void main(String args[]){
+                OverrideDemoChild demo = new OverrideDemoChild();
+                demo.test();
+        }
+        @Override
+        public void test() {
+                System.out.println("子类重写父类的方法");
+        }
+}
+```
