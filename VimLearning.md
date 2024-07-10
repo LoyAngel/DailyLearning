@@ -303,15 +303,35 @@
         比如：
         :%norm A; 在全文末尾加上:
         :%exe
-### Global
+### Gand V
         :[range]g[lobal]/{pattern}/[cmd]
+        :[range]v[global]/{pattern}/[cmd]
         
         :g 默认整个文件生效
         :g! 不满足匹配
+        :v 反向匹配
+        :v! 反向不满足匹配
         
+        常见的range: 
+        % 全文
+        . 当前行
+        1,10 1-10行
+        1,$ 1-最后一行
+        1,. 1-当前行
+        .,.+5 当前行-当前行+5行
+
+        常见的pattern:
+        norm [commands] 执行命令
+        +1d 每隔一行删除
+        s/old/new 替换
+        t. 复制到本行
+
+
         比如:
         :g!/;$/norm A; 在所有没有分号的文章后面加分号
         :g/^#/norm x 在对所有markdown标题降级
+        :v/watch/d 删除所有不包含watch的行
+
 
 ## 技巧
         v选择后，跳至区域开头或结尾

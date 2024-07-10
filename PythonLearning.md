@@ -33,8 +33,8 @@
 ### 异常处理
     1. try/except 
         - except+错误代码，最后一个except作通配符，有异常执行 。
-        - else，表示没有异常时执行。
-        - finally，无论如何都执行。
+        - else，表示没有异常且try中没有return时执行。
+        - finally，无论如何都执行。如果finally 有return, 则会覆盖try/except中的return。
     2. Raise 
         抛出异常raise [Exception [, args [, traceback]]]
     3. Exception类

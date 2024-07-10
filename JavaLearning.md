@@ -434,10 +434,16 @@ public class VarargsDemo {
 1. FileInputStream
         FileInputStream 是 InputStream 的子类，通常用于读取二进制文件，如图片、视频等。
         初始化:
-                FileInputStream fis = new FileInputStream("文件路径");
+                InputStream fis = new FileInputStream("文件路径");
         FileInputStream 常见搭配输入方法: 
                 fis.read() 读取一个字节
                 fis.read(byte[] b, int off, int len) 读取一个字节数组的一部分
+        一般的读写采用try(resource)的方式，可以实现自动关闭流，如:0
+                try (InputStream fis = new FileInputStream("文件路径")) {
+                        // 读取文件
+                } catch (IOException e) {
+                        e.printStackTrace();
+                }        
 2. FileOutputStream
         FileOutputStream 是 OutputStream 的子类，通常用于写入二进制文件，如图片、视频等。
         初始化:
@@ -445,6 +451,19 @@ public class VarargsDemo {
         FileOutputStream 常见搭配输出方法: 
                 fos.write(int b) 写入一个字节
                 fos.write(byte[] b, int off, int len) 写入一个字节数组的一部分
+3. Filter 模式
+        Filter 模式是一种常见的设计模式，它通过对已有的流进行封装，来实现特定的功能。
+        Filter 模式一般是为了防止类的爆炸，即类的数量过多，导致代码难以维护。
+        JDK 将 FilexxxStream 分为两大类，一个提供直接数据，一个提供附加功能，在使用时，可以从直接类开始，不断用附加功能类对直接类进行包装，直到得到想要的全部功能。
+4. 读取 classpath 资源
+        Java 中，大部分项目都需要在程序启动时读取配置文件。在 Java 中，可以通过 ClassLoader 类的 getResourceAsStream() 方法来读取 classpath 下的资源文件, 以此避免路径依赖。
+        如果未读到，getResourceAsStream() 方法会返回 null。
+##### 序列化
+        序列化是将对象转换为字节序列的过程，反序列化是将字节序列恢复为对象的过程。
+        序列化的主要用途是将对象保存到文件中，或者将对象通过网络传输到另一个地方。
+        Java 中，可以通过实现 Serializable 接口来实现序列化，该接口没有任何方法或者字段，只是作为一个标识。
+        序列化： 将Java对象转为byte[]数组, 需要用到ObjectOutputStream类。
+        反序列化：将byte[]数组转为Java对象, 需要用到ObjectInputStream类，用readObject()方法读取对象。此时可能会有两种异常，ClassNotFoundException和InvalidClassException。反序列化不调用构造方法，所以可以设置serialVersionUID作为版本号。
 
 ### 异常处理
         异常是程序在执行过程中出现的错误。
@@ -457,8 +476,8 @@ public class VarargsDemo {
         如果异常最后可以统一丢给Exception处理，如catch(Exception e);
         可以用printStackTrace()方法打印异常信息;
         可以将异常传入给异常类的构造方法，这会使新的异常对象包含原始异常的信息，从而让定位错误更加准确，如throw new Exception(e);
-        Java 中，异常处理的方式有两种：try...catch...finally 和 throw/throws。
 #### try...catch...finally
+        Java 中，异常处理的方式有两种：try...catch...finally 和 throw/throws。
         try 用于指定一块预防异常的代码。
         catch 用于捕获异常并处理异常。
         finally 用于指定一块无论是否发生异常都会执行的代码，即使是在catch里发生异常的情况下。
@@ -502,7 +521,31 @@ public class ExceptionDemo {
 }
 ```
 #### 空指针异常
-        Null
+        NullPointerException 是 Java 中最常见的异常之一，当引用类型变量为 null 时，调用该变量的方法或者获取该变量的属性时，会发生空指针异常。
+        对于空指针异常，必须遵循"早暴露，早修复"的原则，严禁使用catch(Exception e)来捕获空指针异常。
+        避免空指针异常的好习惯：
+        1. 变量尽量初始化，避免使用null。
+        2. 返回值尽量避免使用null。
+#### Java的日志
+##### JDK Logging
+        JDK Logging 是 Java 自带的日志框架，位于 java.util.logging 包中。
+        JDK Logging 的日志级别从高到低分别为：SEVERE、WARNING、INFO、CONFIG、FINE、FINER、FINEST。
+        JDK Logging 的局限: 
+        1. Logging 系统在 JVM 启动时读取配置文件并完成初始化，一旦开始运行，就无法修改配置。
+        2. 配置不方便，需要在 JVM 启动时传递参数"-Djava.util.logging.config.file=<config-file-name>"。
+##### Commons Logging
+        Commons Logging 是 Apache 提供的日志框架，位于 org.apache.commons.logging 包中。
+        Commons Logging 的日志级别从高到低分别为：FATAL、ERROR、WARNNING、INFO、DEBUG、TRACE。
+        Commons Logging 的特色:
+        1. 可以通过配置文件挂接不同的日志系统，如 JDK Logging、Log4J、Logback 等。
+        2. 只需要和两个类打交道：LogFactory 获取 Log 对象，Log 记录日志。
+        3. 重载方法，可以传入异常对象，使得日志信息更加丰富。
+##### Log4j
+        Log4j 是 非常流行的日志框架，位于 org.apache.log4j 包中。
+        Log4j 是 组件化的日志框架，包含四个组件：Appender、Layout、Filter、Console/File/Socket/JDBC 等。
+        Log4j 的特色：
+        通过配置log4j2.xml文件，可以实现日志的输出到控制台、文件、数据库等。
+
 
 
 ### 继承和接口
@@ -591,3 +634,475 @@ public class OverrideDemoChild extends OverrideDemo {
         }
 }
 ```
+
+### Java 的反射
+        反射，指的是在对传入的类进行操作时，可以获取类的信息，如类名、属性、方法等。
+#### Class 类
+        JVM为每个加载的类都创建了一个 Class 类的对象，用于保存类的信息。获取到一个类的 Class 类的对象后，就可以通过该对象获取类的信息。
+        获得 Class 类的对象的方法有三种：
+        1. 直接通过类名获取，如 String.class
+        2. 通过对象的 getClass() 方法获取，如 str.getClass()
+        3. 通过 Class 类的 forName() 静态方法获取，如 Class.forName("java.lang.String")
+        动态加载： JVM执行程序时，不是一次性将所有的类都加载到内存中，而是第一次使用时才会加载。
+#### 访问字段与调用方法
+        Java Class类获取字段对象的方法:
+        1. getField(Name): 获取指定名称的 public 字段(包括父类)
+        2. getDeclaredField(Name): 获取指定名称的字段(不包括父类)
+        3. getFields(): 获取所有 public 字段(包括父类)
+        4. getDeclaredFields(): 获取所有字段(不包括父类)
+        Java Field类操作字段信息的方法:
+        1. getName(): 获取字段名称
+        2. getType(): 获取字段类型
+        3. get(Object): 获取指定对象的字段值
+        4. set(Object, Value): 设置指定对象的字段值
+        Java Class类获取方法对象的方法:
+        1. getMethod(Name, Class...): 获取指定名称和参数类型的 public 方法(包括父类)
+        2. getDeclaredMethod(Name, Class...): 获取指定名称和参数类型的方法(不包括父类)
+        3. getMethods(): 获取所有 public 方法(包括父类)
+        4. getDeclaredMethods(): 获取所有方法(不包括父类)
+        多态调用准则：总是调用实际类型的覆写方法。
+        Java Class类调用构造方法:
+        1. newsInstance(): 调用无参构造方法
+        2. getConstructor(Class...): 获取指定参数类型的 public 构造方法
+        Java Class类获得父类与接口:
+        1. getSuperclass(): 获取父类
+        2. getInterfaces(): 获取接口
+        Java Class类获得注解:
+        1. getAnnotation(Class): 获取指定类型的注解
+        2. getAnnotations(): 获取所有注解
+#### 动态代理
+        动态代理指的是在运行时动态生成代理类，代理类可以在运行时调用任意方法。
+        动态代理创建过程如下:
+        1. 定义一个 InvocationHandler 实现类，实现 invoke() 方法
+        2. 通过 Proxy.newProxyInstance() 方法创建interface实例, 需要三个参数:
+                ClassLoader loader: 指定当前目标对象使用的类加载器, 获取加载器的方法是固定的
+                Class<?>[] interfaces: 目标对象实现的接口类型, 使用泛型方式确认类型
+                InvocationHandler h: 事件处理, 执行目标对象的方法时, 会触发事件处理器的方法, 会把当前执行的目标对象方法作为参数传入
+        3. 将返回的 Object 强制转换为目标对象的接口
+        以下实例演示了动态代理的使用方法：
+```java
+// 基于接口的示例
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+public class DynamicProxyDemo {
+        public static void main(String args[]){
+                // 创建被代理的对象
+                Subject realSubject = new RealSubject();
+                // 创建一个实现了 InvocationHandler 接口的类的对象
+                InvocationHandler handler = new DynamicProxy(realSubject);
+                // 创建一个代理对象
+                Subject proxySubject = (Subject) Proxy.newProxyInstance(handler.getClass().getClassLoader(), realSubject.getClass().getInterfaces(), handler);
+                // 调用代理对象的方法
+                proxySubject.request();
+        }
+}
+interface Subject {
+        void request();
+}
+class RealSubject implements Subject {
+        @Override
+        public void request() {
+                System.out.println("RealSubject");
+        }
+}
+class DynamicProxy implements InvocationHandler {
+        private Object subject;
+        public DynamicProxy(Object subject) {
+                this.subject = subject;
+        }
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                System.out.println("Before");
+                Object result = method.invoke(subject, args);
+                System.out.println("After");
+                return result;
+        }
+}
+```
+
+### Java 的注解
+        注解，指的是在代码中加入元数据，用于描述代码的特性。
+        注解中的属性类型可以是基本类型、String、枚举、以上类型及Class类型的数组。
+        注解定义规则:
+        1. 使用 @interface 定义注解
+        2. 可以定义多个参数和默认值， 核心参数名称用 value
+        3. 必须设置@Target指定注解的应用场合
+        4. 应当设置@Retention(RetentionPolicy.RUNTIME)便于运行期读取
+        注解的作用：
+        1. 编译器使用的注解，如
+            @Override: 检查该方法是否是重写方法，如果发现其父类，或者接口中并没有该方法时，会报编译错误。
+            @SuppressWarnings: 指示编译器去忽略注解中声明的警告。
+        2. 工具处理.class文件使用的注解，被底层库使用，无需自己处理。
+        3. 程序运行时的注解，一般用于在运行时动态生成代码（比如反射）。
+           常见的此类注解有注解的注解，即元注解，总共有5种，分别是： @Retention(生命周期)、@Target(应用场合)、@Documented(文档)、@Inherited(继承)、@Repeatable(可重复)。
+           样例如下：
+```java
+// 注解实现反射简单示例
+import java.lang.annotation.*;
+import java.lang.reflect.Method;
+@Retention(RetentionPolicy.RUNTIME) // 用来修饰注解，指定注解的生命周期为运行时
+@Target(ElementType.METHOD) // 用来修饰注解，指定注解的应用场合为方法
+public @interface Range{
+        int min() default 0;
+        int max() default 255;
+}
+public class Person{
+    @Range(min=1, max=20)
+    public String name;
+
+    @Range(max=10)
+    public String city;
+}
+
+// 使用注解和反射实现简单的参数检查
+void check(Person person) throws IllegalArgumentException, ReflectiveOperationException {
+        // 遍历所有Field
+        for (Field field : person.getClass().getFields()) {
+                // 获取Field定义的@Range
+                Range range = field.getAnnotation(Range.class);
+                if (range != null) {
+                        Object value = field.get(person);
+                        if (value instanceof String) {
+                                String s = (String) value;
+                                // 判断值是否满足@Range的min/max
+                                if (s.length() < range.min() || s.length() > range.max()) {
+                                        throw new IllegalArgumentException("Invalid field: " + field.getName());
+                                }
+                        }
+                }
+        }
+}
+```
+
+### Java 的泛型
+        泛型，指的是在定义类、接口、方法时，使用类型参数，用于指定类、接口、方法中的类型。
+        泛型的作用：
+        1. 提高代码的重用性
+        2. 避免类型转换
+        3. 提高代码的可读性
+#### 向上转型
+        向上转型指的是将子类对象转换为父类对象，可以使用父类引用指向子类对象。
+        比如ArraryList<T> 可以向上转型为 List<T>，这样可以使得代码更加通用。(T不能变)
+        但是不要把ArrayList<Integer> 向上转型为 ArrayList<Number>，因为两者之间没有继承关系。(T不能为父类)
+#### 泛型使用
+        在赋值后省略泛型<T>编译器会自动判断class类型;
+        不指定泛型参数类型，编译器会给出警告;
+        可以在接口定义泛型类型，实现接口时指定具体类型，下为例子：
+```java
+// 以Compareble<T> 为例
+/* 
+Comparable 定义:
+public interface Comparable<T> {
+        public int compareTo(T o);
+}
+*/
+from java.lang import Comparable;
+public class Person implements Comparable<Person> {
+        public String name;
+        public int age;
+        public Person(String name, int age) {
+                this.name = name;
+                this.age = age;
+        }
+        @Override
+        public int compareTo(Person other) {
+                return this.name.compareTo(other.name);
+        }
+}
+```
+#### 泛型定义
+        静态方法不能引用泛型类型<T>, 必须定义其他类型(比如<K>);
+        泛型可以同时定义多个类型参数，如Map<K, V>;
+#### 擦拭法
+        Java 的泛型是采用擦拭法实现的，即在编译期间，所有的泛型信息都会被擦除，只保留原始类型。
+        因此Java泛型存在以下局限:
+        1. <T> 不是基本类型
+        2. 无法取得带泛型的Class(无法用getClass() 判断类型)
+        3. 不能实例化T类型, 要实例化得借助Class<T>参数, 通过反射来实例化T类型。
+        4. 不恰当的覆写方法会使编译器报错，比如在某个Class里定义了equals(T t)方法，会被认为是覆写了Object.equals(Object)方法。
+        如果非泛型子类继承了泛型父类，那么子类可以获取到泛型父类的类型。
+#### 泛型中的通配符
+##### extends 通配符
+        extends 通配符指的是泛型的上限，即泛型必须是指定类型或者指定类型的子类。
+        上届通配符： <? extends T> 可以赋值给 T 类型和 T 类型的子类。
+        此时，方法内部可以调用获取 T 的方法，但是不能调用修改 T 的方法，即只可读不可写，如：
+            <? extends Number>作为通配符，
+            可以调用获取 Number 引用的方法，比如 'Number n = obj.getFirst();'(因为obj肯定是Number的子类，所以必能用Number读)
+            但是不能调用修改 Number 引用的方法，比如 'obj.setFirst(new Number(100));'(因为Number不一定能转成子类obj，所以不能写)
+        唯一例外： set(NULL);
+##### super 通配符
+        super 通配符指的是泛型的下限，即泛型必须是指定类型或者指定类型的父类。
+        下届通配符： <? super T> 可以赋值给 T 类型和 T 类型的父类。
+        此时，方法内部可以调用修改 T 的方法，但是不能调用获取 T 的方法，即只可写不可读，如：
+            <? super Integer>作为通配符，
+            可以调用修改 Integer 引用的方法，比如 'obj.setFirst(new Integer(100));'(因为obj的类型肯定是Integer的父类，所以必能写)
+            但是不能调用获取 Integer 引用的方法，比如 'Integer n = obj.getFirst();'(但是obd的类型不一定能用Integer读出来，所以不能读)
+        唯一例外： Object obj = p.getFirst();
+##### PECS 原则
+        PECS 原则指的是 Producer-Extends, Consumer-Super。
+        1. 如果需要返回 T 类型，那么使用 <? extends T>。
+        2. 如果需要写入 T 类型，那么使用 <? super T>。
+        3. 如果需要读写 T 类型，那么不使用通配符。
+        以下实例演示了泛型中的通配符的使用方法：
+```java
+// 以copy示例
+public class Collections {
+        public static <T> void copy(List<? super T> dest, List<? extends T> src) {
+                for (int i = 0; i < src.size(); i++) {
+                    T t = src.get(i); // src是producer
+                    dest.add(t); // dest是consumer
+                }
+        }
+}
+```
+#### 泛型中的反射
+        待补充
+
+
+
+
+### Java 的集合
+        Java的集合类Collection分为三种类型：List, Set, Map。
+        Java的集合设计特点：
+            1. 接口和实现分离
+            2. 支持泛型
+            3. 访问集合元素统一通过Iterator接口
+#### List
+        Java的List分为两种类型：ArrayList, LinkedList。
+        前者是基于数组实现的，后者是基于链表实现的。
+        List快速创建： List.of("A", "B", "C");
+        List遍历： for (String s : list) { ... }
+        List转Array: 
+            List<String> list = List.of(1, 2, 3);
+            1. Object[] array = list.toArray(); 容易丢失类型信息, 不常用
+            2. Integer[] array = list.toArray(new Integer[3]); 一般用toArray(new Integer[list.size()])创建"恰好"大小的数组
+            3. Integer[] array = list.toArray(Integer[]::new); Java8新特性,函数式写法，最简洁
+        Array转List: List<Integer> list = Arrays.asList(array);
+        List的contains和indexOf方法依赖元素的equals方法，若对象里没有重写equals方法，则比较的是对象的地址。所以一般自定义类要重写equals方法。
+#### Map   
+        Map类似python中的dict。
+        Map常用的实现类有HashMap, TreeMap, EnumMap。
+        Map的顺序是不可靠的，即遍历的顺序不一定是put的顺序。
+        Map的读写: 读- get(key), 写- put(key, value)。(put会自动覆盖相同key的value)
+        Map的遍历: 
+            1. for (String key : map.keySet()) { ... } 遍历key
+            2. for (String value : map.values()) { ... } 遍历value
+            3. for (Map.Entry<String, Integer> entry : map.entrySet()) { ... } 遍历key-value, entry.getKey()和entry.getValue()分别获取key和value
+        HashMap的使用必须正确的实现equals()和hashCode()方法，否则，作为key的class就无法正确地比较是否相等。(比如自定义类作为key)。hashCode常用Object.hashCode()方法计算。
+        EnumMap是一种特殊的Map，它要求key必须是enum类型, 它不仅效率高，而且没有额外的空间浪费。
+        TreeMap是一种能够保证key有序的Map，它通过红黑树实现，key必须实现Comparable接口或者传入Comparator, 如果没有实现或者传入，则必须在创建TreeMap时传入一个自定义排序算法。
+#### Properties
+        Properties是Java提供的一种基于key-value存储的简单结构，常用来保存配置文件。
+        读取配置文件:
+            1. 创建Properties实例: Properties props = new Properties();
+            2. 调用load()方法读取文件: props.load(new FileInputStream("config.properties"));
+            3. 调用getProperty()方法获取配置: props.getProperty("key");
+        写入配置文件:
+            4. 创建Properties实例: Properties props = new Properties();
+            5. 调用setProperty()方法设置配置: props.setProperty("key", "value");
+            6. 调用store()方法写入文件: props.store(new FileOutputStream("config.properties"), "This is a comment line");
+#### Set
+        Set 就像是没有 value 的 Map，它本身是一组 key 的集合，因此，Set 不保存重复的元素。
+        Set 可以用来去除重复元素。
+        Set 的常用实现类有HashSet, TreeSet。
+#### Queue
+        Queue 是一种先进先出的队列。
+        Queue 常用的实现类有LinkedList, ArrayDeque。
+        LinkedList既可以当List用，也可以当Queue用，具体看抽象类引用。
+        Queue的常用方法:
+            1. add(E): 添加元素到队尾，如果添加失败，抛出异常
+            2. offer(E): 添加元素到队尾，如果添加失败，返回false
+            3. remove(): 获取队首元素并删除，如果队列为空，抛出异常
+            4. poll(): 获取队首元素并删除，如果队列为空，返回null
+            5. element(): 获取队首元素但不删除，如果队列为空，抛出异常
+            6. peek(): 获取队首元素但不删除，如果队列为空，返回null
+#### PriorityQueue
+        PriorityQueue 是一种优先队列，它的特点是能保证每次取出的元素都是队列中权值最小的。
+        PriorityQueue 的作用是能保证每次取出的元素都是队列中权值最小的。
+        PriorityQueue 的优先级通过构造方法传入的 Comparator 对象决定，也可以实现 Comparable 接口来定义排序规则。
+        其它同 Queue。
+#### Deque
+        Deque 是一种两端都可以操作的队列。
+        Deque 的常用实现类有 ArrayDeque 和 LinkedList。
+        待补充。
+#### Collections
+        Collections 是 Java 集合类的工具类，提供了一系列静态方法实现对集合的搜索、排序、线程安全化等操作。
+        Collections 的常用方法:
+            1. 排序: sort(List<T> list, Comparator<? super T> c)
+            2. 洗牌: shuffle(List<?> list)
+            3. 查找: binarySearch(List<? extends Comparable<? super T>> list, T key)
+            4. 复制: copy(List<? super T> dest, List<? extends T> src)
+            5. 最大最小值: max(Collection<? extends T> coll), min(Collection<? extends T> coll)
+            6. 反转: reverse(List<?> list)
+   
+            
+### 函数式编程
+        函数式编程是一种编程范式，它将计算机运算视为数学上的函数计算，并且避免使用程序状态以及易变对象。
+        Java 8 引入了函数式接口，Lambda 表达式，方法引用等新特性，使得 Java 也可以进行函数式编程。
+#### Lamada 表达式
+        Lambda 表达式是 Java 8 的新特性，它允许我们将一个函数作为参数传递给一个方法。
+        Lambda 表达式的语法:
+        1. 无参数，无返回值: () -> System.out.println("Hello");
+        2. 有参数，无返回值: (int x) -> System.out.println(x);
+        3. 有参数，有返回值: (int x, int y) -> { return x + y; };
+        4. 有参数，有返回值(类型推断): (x, y) -> x + y;
+        Lambda 表达式的使用:
+        1. 作为参数传递给方法
+        2. 作为返回值返回
+        3. 作为变量赋值
+        4. 作为方法调用
+#### 方法引用
+        方法引用是指使用方法的名字来替代 Lambda 表达式。
+        方法引用的语法:
+        1. 静态方法引用: 类名::静态方法名
+        2. 实例方法引用: 实例::实例方法名
+        3. 对象方法引用: 类名::实例方法名
+        4. 构造方法引用: 类名::new
+        方法引用的使用:
+        同上。
+#### 使用Stream
+        Stream 是 Java 8 中处理集合的关键抽象概念，它可以对集合进行各种操作，并且支持并行处理。
+        Stream 的特点:
+        1. 不是数据结构，不保存数据
+        2. 不会改变原对象，相反，它会返回一个持有结果的新Stream
+        3. 惰性执行，只有终结操作才会执行
+        Stream 的操作:
+        1. 初始操作: Stream.of, Arrays.stream, Stream.generate
+        2. 中间操作: filter, map, distinct(去重), sorted, limit, skip, concat(合并), parallel(并行)
+        3. 终结操作: forEach, toArray, collect, reduce, count, max, min, sum, average
+
+
+## Spring 
+### IoC
+        Ioc 称为控制反转，又称为依赖注入（DI）, 是一种设计思想，它的核心思想是将对象的创建和对象之间的调用关系交给容器来管理。Ioc 容器是一个高度可扩展的无侵入容器， 即不需要在代码中引入容器的API，只需要在配置文件中配置好对象的创建和对象之间的调用关系，容器就可以自动完成对象的创建和对象之间的调用。
+        Ioc 的优点:
+        1. Service 不再关心 Dao 的实现，只需要关心接口
+        2. 共享组件变得非常容易
+        3. 测试更加容易，因为可以使用内存数据库
+        Ioc 的实现:
+        1. 属性注入: 通过 setter 方法注入
+        2. 构造方法注入: 通过构造方法注入
+#### JavaBean
+        JavaBean 是一种符合命名规范的 Java 类，在 Spring的 Ioc 容器中，所有的组件都是 JavaBean。
+        xml配置文件中的bean必要标签:
+        1. id: bean 的唯一标识符
+        2. class: bean 的全限定类名
+        Java里从Ioc容器中获取bean的方法:
+        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        User user = (User) context.getBean("user");
+        下面是使用xml配置文件创建bean的示例:
+```xml
+<!-- bean 创建示例 -->
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+    <bean id="user" class="com.example.User">
+            <property name="name" value="Tom"/>
+            <property name="age" value="18"/>
+            <property name="area" ref="area"/>
+    </bean>
+    <bean id="area" class="com.example.Area">
+            <property name="province" value="Shanghai"/>
+            <property name="city" value="Shanghai"/>
+    </bean>
+</beans>
+```
+```java
+// 创建Ioc容器实例，加载配置文件
+ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+// 从Ioc容器中获取bean实例并使用
+User user = (User) context.getBean(User.class);
+String userName = user.getName();
+```
+        
+
+        Annotation配置bean的注解(最常用):
+        依赖创建类:
+            1. @Component: 用于标注一个类为 Spring 的组件
+            2. @Service: 用于标注一个类为 Spring 的 Service
+            3. @Repository: 用于标注一个类为 Spring 的 Dao
+            4. @Controller: 用于标注一个类为 Spring 的 Controller
+        对象注入类:
+            1. @Autowired: 根据类型自动装配
+            2. @Inject: JSR-330 标准的注解，功能与 @Autowired 相同
+            3. @Resource: 根据名称自动装配
+        配置类:
+            1. @Configuration: 用于标注一个类为 Spring 的配置类
+            2. @ComponentScan: 用于指定 Spring 扫描的包
+        Bean创建类:
+            @Bean: 用于标注一个方法为 Spring 的 Bean, 该方法的返回值将被注册为一个 Bean。@Bean 注解的方法可以有参数，参数可以通过 @Autowired 注入。@Bean 注解与xml配置文件中的 <bean> 标签功能类似。@Bean 可以把第三方库的类注册为 Bean。
+```java
+// 使用@Component和@Autowired注解创建bean
+@Component
+public class User {
+        private String name;
+        private int age;
+        private Area area;
+        @Autowired
+        public void setArea(Area area) {
+                this.area = area;
+        }
+        public void setName(String name) {
+                this.name = name;
+        }
+        public void setAge(int age) {
+                this.age = age;
+        }
+}
+```
+        定制bean:
+        1. @Scope: 用于指定 Bean 的作用域, 可以取值为 "singleton"(单例,默认)、"prototype"(原型)、"request"(请求)、"session"(会话)、"application"(应用)等等
+        2. 注入List: 使用 @Autowired 注入 List时，Spring 会自动查找所有类型匹配的 Bean，并注入到 List 中。并且可以通过 @Order 注解指定顺序。
+        3. 初始化和销毁: 使用 @PostConstruct 和 @PreDestroy 注解指定初始化和销毁方法。
+        4. 使用别名: 使用 @Bean 注解的 name 属性指定别名以防止Bean重名。即@Bean(name="user")或者下方加个@Qualifier("user")。
+#### Resource 和 配置注入
+        Resource 是 Spring 提供的一个用于加载资源的接口，它可以加载文件系统、类路径、URL、Servlet 上下文等资源。一般用于加载配置文件。
+        Resource可以通过以下方式注入：
+        1. @Value("classpath:/path/to/file.txt"): 从类路径加载资源
+        2. @Value("file:/path/to/file.txt"): 从文件系统加载资源
+        配置注入是指将配置文件中的属性注入到 Bean 中。
+        配置注入的方式有两种：
+        3. @PropertySource: 用于指定配置文件的位置。只需要在@Configuration注解的类上使用@PropertySource注解指定配置文件的位置，然后在@Bean注解的方法上使用@Value注解注入属性。
+        4. @Value("${key}")和@Value("#{}): 前者表示注入配置文件中的属性，后者表示从JavaBean中获取属性。
+
+### AOP
+        AOP 是一种编程范式，它的核心思想是将程序的业务逻辑和系统服务分离，通过预编译方式和运行期动态代理实现程序功能的统一维护的一种技术。
+        AOP 本质上就是一个动态代理模式，它可以在不修改源代码的情况下，对方法进行增强。
+#### Spring里使用AOP的步骤
+        1. 定义执行方法，并在方法上通过AspectJ注解定义切面告诉Spring何处调用该方法(比如@Before, @After, @Around等拦截器);
+        2. 标记@Component 和 @Aspect注解;
+        3. 在@Configuration注解的类上使用@EnableAspectJAutoProxy注解开启AOP支持
+```java
+// 使用AOP的示例
+@Aspect
+@Component
+public class LogAspect {
+        @Before("execution(* com.example.service.*.*(..))")
+        public void before() {
+                System.out.println("Before");
+        }
+        @After("execution(* com.example.service.*.*(..))")
+        public void after() {
+                System.out.println("After");
+        }
+}
+// 启用AOP
+@Configuration
+@EnableAspectJAutoProxy
+public class AppConfig {
+}
+```
+#### 注解装配AOP
+        简单装配: excution(* com.example.service.*.*(..)) 表示匹配com.example.service包下的所有类的所有方法。
+        注解装配: 
+        首先使用@Transaction注解标记一个方法或者类，表示该方法或者类需要事务支持。
+#### AOP注意事项
+        Spring 通过CGLIB创建的代理类不会调用super()，不会初始化final方法，也不会初始化父类的属性，包括final属性。(如果要访问注入后的字段，改用方法访问)
+
+### 数据库操作
+        暂略
+
