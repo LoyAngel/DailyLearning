@@ -2060,7 +2060,7 @@ class TV {
 class RemoteController {
     private Command commandlist;
 
-    public void addCommand(Command command) {
+    public void setCommand(Command command) {
         this.commandlist.add(command);
     }
 

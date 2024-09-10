@@ -66,6 +66,7 @@
 #### 常用命令
         i inner 内部
         a around 包裹
+        ii/ai 选择本层级内/包括本层级在内的所有内容(常用于Python)
         
         . 当前
         {num} 第几行
@@ -277,9 +278,10 @@
         {operation}z{char}{char}  
 ### vim-easymotion(需开启)
          <Leader> + <Leader> + {motion}  快速跳转行为
-           
-         <Leader> + <Leader> + w 快速跳转到单词开头
+
+         <Leader> + <Leader> + w/b 快速跳转到单词开头/结尾
          <Leader> + <Leader> + f/F{char} 快速向下/上跳转搜索
+         <Leader> + <Leader> + s{char} 快速跳转到{char}
          
 #### 一些命令
          不跟参： j k h l b w e ge 

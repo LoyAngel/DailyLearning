@@ -767,7 +767,8 @@ with looking_glass() as what:
 # pordwonS dna yttiK ,ecilA
 # YKCOWREBBAJ
 ```
-### 协程
+### 协程(coroutine)
+        协程是指一个过程，这个过程与调用方协作，产出由调用方提供的值。协程可以暂停执行并在暂停的地方继续执行。协程可以把控制权交给调用方，让调用方决定做什么。协程可以用于实现多任务协作式函数。
         协程的特点：
         1. 协程是指一个过程，这个过程与调用方协作，产出由调用方提供的值。
         2. 协程可以暂停执行并在暂停的地方继续执行。
@@ -792,4 +793,41 @@ my_coro.send(42)  # 输出 -> coroutine received: 42
 my_coro.send(43)  # 抛出 StopIteration 异常
 ```
 
-## 期物和asyncio
+## 期物(future)和asyncio
+### 期物
+        期物: 期物是一个对象，它表示异步执行的操作。期物是协程的结果，它可以用于判断协程是否结束，也可以用于获取协程的结果。  
+        期物的状态: 期物有三种状态，分别是 pending、running 和 finished。
+        常见期物的方法:
+        1. done() 方法: 用于判断期物是否结束，如果结束则返回 True，否则返回 False。
+        2. result() 方法: 用于获取期物的结果，如果期物没有结束，则会阻塞直到期物结束。
+        3. exception() 方法: 用于获取期物的异常，如果期物没有异常，则返回 None。
+```python
+# 示例：使用 asyncio.Future 类表示异步操作
+import asyncio
+async def set_after(fut, delay, value):
+    await asyncio.sleep(delay)
+    fut.set_result(value)
+async def main():
+    loop = asyncio.get_running_loop()
+    fut = loop.create_future()
+    await asyncio.gather(
+        set_after(fut, 2, 'hello'),
+        set_after(fut, 1, 'world'),
+    )
+    print(fut.result())
+asyncio.run(main())
+```
+        期物和协程的关系: 期物是协程的结果，它可以用于判断协程是否结束，也可以用于获取协程的结果。
+### asyncio
+        asyncio 是 Python 3.4 版本引入的标准库，它提供了一种协程的实现方式，可以用于编写高效的异步程序。asyncio 是基于事件循环的异步框架，它提供了一种协程的实现方式，可以用于编写高效的异步程序。
+        asyncio 的特点：
+        1. asyncio 是基于事件循环的异步框架，它提供了一种协程的实现方式，可以用于编写高效的异步程序。
+        2. asyncio 提供了一种协程的实现方式，可以用于编写高效的异步程序。
+        常见asyncio 库的方法:
+        1. asyncio.run(coro) 函数: 用于运行一个协程。
+        2. asyncio.create_task(coro) 函数: 用于创建一个任务。
+        3. asyncio.ensure_future(coro/future) 函数: 用于创建一个任务。与 create_task 方法不同的是，ensure_future 方法可以接收一个 Future 对象。
+        4. asyncio.gather(*tasks) 函数: 用于并发运行多个任务。
+        5. asyncio.wait(tasks) 函数: 用于等待多个任务完成。
+        6. asyncio.sleep(delay) 函数: 用于休眠 delay 秒。
+        7. asyncio.get_running_loop() 函数: 用于获取当前运行的事件循环。
