@@ -187,6 +187,7 @@ var app = new Vue({
     }
 });
 </script>
+<template>
 <!-- 静态例子 -->
 <div v-bind:style = "objectStyle"> Static Style </div>
 <!-- 动态例子, 动态对象 -->
@@ -197,6 +198,7 @@ var app = new Vue({
 <div v-bind:style = "computedStyle"> Computed Style </div>
 <!-- 动态例子，watch-->
 <div v-bind:style = "objectStyle"> Watch Style </div>
+</template>
 ```
 ### 组件使用
         对于模版使用class时，会和根元素的class合并。当有多个根元素时，可以使用':class="$attrs.class"'来指定根元素接收外部传入的class。
@@ -267,7 +269,7 @@ Vue.component('example', {
 ```
 ### 自定义事件
         子组件可以通过调用内建的$emit方法触发一个父组件上的事件，父组件可以通过v-on监听这个事件。
-        `v-on:{eventName}="handler"`与`methosd: {handler: function() {...; this.$emit('eventName', data)}}}`配合使用。`v-on:{eventName}`相当于将函数传递给子组件，子组件通过`$emit`触发父组件的函数。
+        `v-on:{eventName}="handler"`与`methods: {handler: function() {...; this.$emit('eventName', data)}}`配合使用。`v-on:{eventName}`相当于将函数传递给子组件，子组件通过`$emit`触发父组件的函数。
         其中，component中的data必须是一个函数，且要最好返回一个对象的独立实例，否则会导致多个组件共享一个实例。
 ```html
 <!-- 自定义事件 样例 -->
@@ -331,7 +333,7 @@ export default {
 ### `v-model`的实现原理
     `v-model`其实是语法糖，相当于`v-bind:value`和`v-on:input`的结合。在自定义组件中，`v-modle`默认利用`value`的prop和`input`的事件。可以通过`model`选项自定义组件的v-model。
 ```javascript
-// 自定义组件的v-model
+// 自定义组件的v-model的等效实现
 Vue.component('custom-input', {
     model: {
         prop:'checked',
@@ -371,10 +373,10 @@ Vue.component('custom-input', {
 <!-- 插槽示例 -->
 <div id="app">
     <alert-box>
-        <template v-slot:title>
-            <h1>Alert!</h1>
+        <h3>Something went wrong!</h3>
+        <template #footer>
+            <button @click="show = false">Close</button>
         </template>
-        Only show when true.
     </alert-box>
 </div>
 <script>
@@ -383,6 +385,7 @@ Vue.component('alert-box', {
         <div class="demo-alert-box">
             <strong>Error!</strong>
             <slot></slot>
+            <slot name="footer"></slot>
         </div>
     `
 });
@@ -392,33 +395,38 @@ new Vue({
 </script>
 ```
 #### 插槽的作用域
-        插槽的作用域是父子相互隔离。如果要让父组件获取子组件的数据，可以如下操作:
-            1. 父组件 `<x-component v-slot="slotProps"> {{ slotProps.data }} </x-component>``
-            2. 子组件 `<slot :data="data"></slot>`
-        如果同时使用了具名插槽和默认插槽，需要为默认插槽使用显示的`<template>`标签, 直接为组件添加`v-slot`会导致编译错误。
+        插槽的作用域是父子相互隔离。如果要让父组件获取子组件的数据，可以使用`scope`来获取子组件的数据。
+        用法：
+        子组件，`<slot :data="data"></slot>`传递数据给插槽；
+        父组件，`<template v-slot:slotName="slotProps"></template>`获取插槽数据，可以简写为`<template #slotName="slotProps"></template>`。
 ```html
-<!-- 插槽作用域示例 -->
- <!-- xComponent template-->
-  <div>
-    <slot :message="hello"></slot>
-    <slot name="footer" />
-  </div>
- <!-- wrong usage -->
-  <x-component v-slot="{ message }">
-    <p>{{ message }}</p>
-    <template #footer>
-      <p>{{ message }}</p>
-    </template>
-  </x-component>
-<!-- right usage -->
-  <x-component>
-    <template #default="{ message }">
-      <p>{{ message }}</p>
-    </template>
-    <template #footer>
-      <p>not use message</p>
-    </template>
-  </x-component>
+<!-- 子组件 -->
+<template>
+    <div>
+        <slot :student="stus"></slot>
+    </div>
+</template>
+<script>
+export default {
+    data() {
+        return {
+            stus: ['A Student', 'B Student', 'C Student']
+        }
+    }
+}
+</script>
+<!-- 父组件 -->
+<template>
+    <div>
+        <student-list>
+            <template #="stus">
+                <ul>
+                    <li v-for="stu in stus.student">{{ stu }}</li>
+                </ul>
+            </template>
+        </student-list>
+    </div>
+</template>
 ```
 ### 依赖注入
         依赖注入是一种设计模式，用于向组件提供依赖。Vue提供了一个`provide`和`inject`选项，用于实现依赖注入。

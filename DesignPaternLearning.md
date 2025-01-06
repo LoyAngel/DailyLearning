@@ -217,17 +217,80 @@ button.Click += HandleButtonClick;
 button.OnClick();
 ```
 ### UML类图
-        1. 类（Class）：用矩形框表示，框内写上类的名称。分为三部分，上面类名，中间特性（字段或属性），最后操作（方法或行为）。
-        2. 属性（Attributes）：表示类的特征或状态，用名称和类型表示。属性通常写在类的顶部。例如，一个名为"age"的属性可以表示为：-age:int （"-"表示私有属性，"int"表示属性的类型）。
-        3. 方法（Methods）：表示类的行为或操作，用名称和参数列表表示。方法通常写在类的底部。例如，一个名为"getName"的方法可以表示为：+getName():String （"+"表示公有方法，"String"表示方法的返回类型）。
-        4. 关联关系（Association）：表示类之间的关联，通常使用实线箭头来表示。箭头指向关联的目标类。例如，如果类A和类B之间存在关联关系，可以用以下形式来表示：[A]-->[B]。
-        5. 继承关系（Inheritance）：表示类之间的继承关系，通常使用空心箭头来表示。箭头指向父类。例如，如果类B继承自类A，可以用以下形式来表示：[A]<|--[B]。
-        6. 实现关系（Interface）：表示类实现接口的关系，通常使用空心三角形箭头来表示。箭头指向接口。例如，如果类A实现了接口B，可以用以下形式来表示：[A]..▷[B]。
-        7. 聚合关系（Aggregation）：表示整体与部分之间的关系，通常使用空心菱形箭头来表示。箭头指向整体。例如，如果类A包含一个类B的对象，可以用以下形式来表示：[B]◇-->[A]。
-        8. 组合关系（Composition）：表示整体与部分之间的强关系，通常使用实心菱形箭头来表示。箭头指向整体。例如，如果类A包含一个类B的对象，并且类B的生命周期依赖于类A，可以用以下形式来表示：[B]◆-->[A]。
-        9. 泛化关系（Generalization）：表示类之间的泛化关系，通常使用空心箭头来表示。箭头指向泛化的目标类。例如，如果类B泛化类A，可以用以下形式来表示：[A]..▷[B]。
-        10. 依赖关系（Dependency）：表示类之间的依赖关系，通常使用虚线箭头来表示。箭头指向被依赖的类。例如，如果类A依赖类B，可以用以下形式来表示：[A]..->[B]。
-        11. 约束（Constraint）：表示类的约束条件，通常使用花括号括起来。例如，如果类A的age属性的取值范围为1~100，可以用以下形式来表示：{age:1..100}。
+1. 类（Class）：用矩形框表示，框内写上类的名称。分为三部分，上面类名，中间特性（字段或属性），最后操作（方法或行为）。
+2. 属性（Attributes）：表示类的特征或状态，用名称和类型表示。属性通常写在类的顶部。例如，一个名为"age"的属性可以表示为：-age:int （"-"表示私有属性，"int"表示属性的类型）。
+3. 方法（Methods）：表示类的行为或操作，用名称和参数列表表示。方法通常写在类的底部。例如，一个名为"getName"的方法可以表示为：+getName():String （"+"表示公有方法，"String"表示方法的返回类型）。
+4. 关联关系（Association）：是一种拥有关系，它使一个类知道另一个类的属性和方法。表示类之间的关联，通常使用实线箭头来表示。箭头指向关联的目标类。例如，如果类A和类B之间存在关联关系，可以用以下形式来表示：[A]————>[B]。例子: 一个学生类Student和一个班级类Class之间存在关联关系。
+```java
+// 关联关系示例
+// B作为A的成员变量
+public class A {
+    private B b;
+}
+// B作为A的局部变量
+public class A {
+    public void method() {
+        B b = new B();
+    }
+}
+```
+5. 继承关系（Inheritance）：又称泛化，表示特殊与一般的关系，它指定了子类如何继承父类的属性和方法。表示类之间的继承关系，通常使用空心箭头来表示。箭头指向父类。例如，如果类B继承自类A，可以用以下形式来表示：[A]————▷[B]。例子: 一个学生类Student继承自一个人类Person。
+```java
+// 继承关系示例
+public class A {
+    // ...
+}
+public class B extends A {
+    // ...
+}
+```
+6. 实现关系（Interface）：表示类与接口之间的关系，表示类实现了接口。通常使用空心三角形箭头来表示。箭头指向接口。例如，如果类A实现了接口B，可以用以下形式来表示：[A]-----▷[B]。例子: 一个学生类Student实现了一个学习接口Learnable。
+```java
+// 实现关系示例
+public interface A {
+    void method();
+}
+public class B implements A {
+    public void method() {
+        // ...
+    }
+}
+```
+7. 聚合关系（Aggregation）：表示整体与部分之间的弱关系，整体不存在时，部分仍然存在。通常使用空心菱形箭头来表示，箭头指向整体。例如，如果类A包含一个类B的对象，可以用以下形式来表示：[B]◇-->[A]。和组合关系的区别在于，聚合关系中整体和部分之间的生命周期是独立的，整体不存在时，部分仍然存在。例子: 一个学习小组类StudyGroup包含多个学生类Student。
+```java
+// 聚合关系示例, 与关联类似，主要为业务差别，非代码差别
+public class A {
+    private B b;
+}
+public class B {
+    // ...
+}
+```
+8. 组合关系（Composition）：表示整体与部分之间的强关系，通常使用实心菱形箭头来表示。箭头指向整体。例如，如果类A包含一个类B的对象，并且类B的生命周期依赖于类A，可以用以下形式来表示：[B]◆-->[A]。和聚合关系的区别在于，组合关系中整体和部分之间的生命周期是一致的，整体不存在时，部分也不存在。例子：一个学生类Student包含一个学籍号类StudentId。
+```java
+// 组合关系示例, 与关联类似，主要为业务差别，非代码差别
+public class A {
+    private B b;
+}
+public class B {
+    // ...
+}
+```
+9.  依赖关系（Dependency）：表示一种使用关系，一个类的实现需要另一个类的协助。通常使用虚线箭头来表示。箭头指向被依赖的类。例如，如果类A依赖类B，可以用以下形式来表示：[A]---->[B]。例子: 一个课程类Course依赖一个教师类Teacher。
+```java
+// 依赖关系示例
+public class A {
+    // 参数传入
+    public void method(B b) {
+        // ...
+    }
+    // 返回值
+    public B method() {
+        return new B();
+    }
+}
+```
+10.   约束（Constraint）：表示类的约束条件，通常使用花括号括起来。例如，如果类A的age属性的取值范围为1~100，可以用以下形式来表示：{age:1..100}。
 ### 基本原则
 #### 开发-封闭原则(Open-Closed Principle)
         开发-封闭是面向对象设计中的一种原则，它强调软件实体（类、模块、函数等）应该是可扩展的，而不是修改原有代码。即在程序的开发阶段，应该尽量保持对修改是封闭的，同时对扩展是开放的。
@@ -705,7 +768,7 @@ public class Main {
 ```
 以上例子，体现了合成复用原则，我们将水果盘（FruitPlate）类中的水果（Fruit）类作为其成员变量，而不是将水果盘类继承自水果类。
 ### 23种模式
-#### 简单工厂模式  
+#### 简单工厂模式(Simple Factory Pattern)  
         它提供一个统一的接口来创建不同类型的对象，客户端通过这个接口来获取具体的对象，而无需直接关心对象的创建细节。
 ##### 例子：
 ```java
@@ -756,8 +819,44 @@ public class CoffeeFactory {
     }
 }
 ```
-#### 策略模式  
+#### 策略模式(Strategy Pattern)
         策略模式是一种行为设计模式，用于在运行时选择算法的方法。它允许你在多个算法之间进行切换或选择，而不需要更改类的实现。换句话说，它将算法与其使用者分离。
+##### 常见uml图
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class Strategy(策略模式)" #DDDDDD {
+    interface Strategy
+    {
+    +algorithm()
+    }
+    note right: 策略的抽象
+
+    class ConcreteStrategyA
+    {
+    +algorithm()
+    }
+
+    class ConcreteStrategyB
+    {
+    +algorithm()
+    }
+
+    class Context
+    {
+    +setStrategy(Strategy)
+    +algorithm()
+    }
+    note right:上下文环境
+
+    Context o-- Strategy
+    Strategy <|.. ConcreteStrategyA
+    Strategy <|.. ConcreteStrategyB
+}
+@enduml
+```
 ##### 例子：
 ```java
 // 定义战斗策略接口
@@ -907,8 +1006,60 @@ public class Main {
     }
 }
 ```
-#### 装饰模式  
+#### 装饰模式(Decorator Pattern)  
         装饰模式是一种设计模式，它允许你在不修改已有对象的基础上，动态地给对象添加额外的功能。它采用了一种包装的方式，将对象放入一个装饰器对象中，然后用装饰器对象来扩展该对象的功能。
+##### 常见uml图
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class Decorator(装饰模式)" #DDDDDD {
+
+    abstract class Component
+    {
+    + operate():void
+    }
+    note top of Component: 抽象组件
+
+    class ConcreteComponent
+    {
+    + operate():void
+    }
+    note top of ConcreteComponent: 组件具体实现类
+
+    abstract class Decorator
+    {
+    - component:Component
+    + Decorator(Component)
+    + operate():void
+    }
+    note left: 抽象类装饰者
+
+    class ConreteDecoratorA
+    {
+    + ConreteDecoratorA(Component)
+    + operate():void
+    + operateA():void
+    + operateB():void
+    }
+
+    class ConreteDecoratorB
+    {
+    + ConreteDecoratorB(Component)
+    + operate():void
+    + operateA():void
+    + operateB():void
+    }
+
+    Component <|-- ConcreteComponent
+    Component <|-- Decorator
+    Component <--o Decorator
+    ConreteDecoratorA --|> Decorator
+    ConreteDecoratorB --|> Decorator
+}
+@enduml
+```
 ##### 例子：
 ```java
 // 定义一个手机接口，里面包含基本的手机功能
@@ -991,11 +1142,48 @@ smartPhone.sendText("Hello!");
 
 // 通过装饰模式，你可以在不修改现有智能手机类的情况下，动态地给手机添加防水和快速充电功能。      
 ```
-#### 代理模式  
+#### 代理模式(Proxy Pattern)  
         代理模式是一种结构型设计模式，用于提供一个代理对象来控制对另一个对象的访问。
         通俗地说，我们可以把代理理解为一个中间人，它可以帮助我们进行一些操作，而不需要直接与目标对象进行交互。代理模式在实际应用中常用于隐藏真实对象的复杂性、实现权限控制、延迟加载等。
+##### 常见uml图
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class Proxy(代理模式)" #DDDDDD {
+    class Client
+
+    abstract class Subject
+    {
+    +visit()
+    }
+    note right: 抽象主题类
+
+    class RealSubject
+    {
+    +visit()
+    }
+    note right: 真实主题类
+
+    class ProxySubject{
+    -mSubject:RealSubject
+    +visit()
+    }
+    note right: 代理类
+
+    Subject <.. Client
+    Subject <|-- RealSubject
+    Subject <|-- ProxySubject
+    RealSubject <-- ProxySubject
+}
+@enduml
+```
 ##### 例子：
 ```java
+public interface Music {
+    void play();
+}
 // 创建真实的音乐播放器类 MusicPlayer，实现音乐接口，并实现播放音乐的具体逻辑。
 public class MusicPlayer implements Music {
     private String song;
@@ -1038,9 +1226,133 @@ public class Main {
 // 它在调用真实播放器对象的播放方法之前，可以执行一些额外的操作:
 // 比如权限验证。这样可以确保用户具有播放音乐的权限，并且将一些额外的处理与核心功能分离开来。
 ```
-#### 工厂方法模式  
+#### 工厂方法模式(Factory Method Pattern) 
         工厂方法模式是一种创建型设计模式，用于创建对象的方法不是在对象自身的类中定义，而是通过一个工厂类来创建对象。
         通俗地说，工厂方法模式就像是一个工厂，能够根据客户端的需求动态地生产出不同的产品。客户端只需要告诉工厂需要什么产品，而无需关心具体的产品创建细节。
+##### 常见uml图
+工厂方法模式
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class Factory Method(工厂方法模式)" #DDDDDD {
+    abstract class Product
+    {
+    +display():void
+    }
+    note right: 抽象产品类
+
+    class ConcreteProductA
+    {
+    +display():void
+    }
+    note right: 具体产品类A
+
+    class ConcreteProductB
+    {
+    +display():void
+    }
+    note right: 具体产品类B
+
+    abstract class Factory
+    {
+    +createProduct():Product
+    }
+    note right: 抽象工厂类
+
+    class ConcreteFactoryA
+    {
+    +createProduct():Product
+    }
+    note right: 具体工厂类A
+
+    class ConcreteFactoryB
+    {
+    +createProduct():Product
+    }
+    note right: 具体工厂类B
+
+    Product <|-- ConcreteProductA
+    Product <|-- ConcreteProductB
+    Product <.. Factory
+    Factory <|-- ConcreteFactoryA
+    Factory <|-- ConcreteFactoryB
+}
+@enduml
+```
+抽象工厂模式
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class AbstractFactory(抽象工厂模式)" #DDDDDD {
+    abstract class AbstractProductA
+    {
+    +method():void
+    }
+
+    abstract class AbstractProductB
+    {
+    +method():void
+    }
+
+    class ConcreteProductA1
+    {
+    +method():void
+    }
+
+    class ConcreteProductA2
+    {
+    +method():void
+    }
+
+    class ConcreteProductB1
+    {
+    +method():void
+    }
+
+    class ConcreteProductB2
+    {
+    +method():void
+    }
+
+    abstract class AbstractFactory
+    {
+    +createProductA():AbstractProductA
+    +createProductB():AbstractProductB
+    }
+    note top of AbstractFactory: 抽象工厂
+
+    class ConcreteFactory1
+    {
+    +createProductA():AbstractProductA
+    +createProductB():AbstractProductB
+    }
+
+    class ConcreteFactory2
+    {
+    +createProductA():AbstractProductA
+    +createProductB():AbstractProductB
+    }
+
+    AbstractProductA <|-- ConcreteProductA1
+    AbstractProductA <|-- ConcreteProductA2
+    AbstractProductB <|-- ConcreteProductB1
+    AbstractProductB <|-- ConcreteProductB2
+    AbstractFactory <|-- ConcreteFactory1
+    AbstractFactory <|-- ConcreteFactory2
+    ConcreteFactory1 ..> ConcreteProductA1
+    ConcreteFactory1 ..> ConcreteProductB1
+    ConcreteFactory2 ..> ConcreteProductA2
+    ConcreteFactory2 ..> ConcreteProductB2
+    Client --> AbstractFactory
+    Client --> AbstractProductA
+    Client --> AbstractProductB
+}
+@enduml
+```
 ##### 例子：
 ```java
 // 假设我们要开发一个电商网站，其中有多种商品需要销售
@@ -1279,8 +1591,37 @@ class ConcreteFactory2 extends Factory {
     }
 }
 ```
-#### 原型模式  
+#### 原型模式(Prototype Pattern) 
         原型模式 (Prototype Pattern) 是一种创建对象的设计模式，它允许我们通过复制现有对象来创建新对象，而不需要通过调用构造函数。通俗地说，原型模式就像是制作复制品的工厂，它通过复制一个现有对象来创建新对象。
+##### 常见uml图
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class Protype(原型模式)" #DDDDDD {
+    class Protype<< (A,#FF7700) interface>>
+    {
+    +clone()
+    }
+    note right: 原型的抽象类或接口
+
+    class ConcreteProtype1
+    {
+    +clone()
+    }
+    class ConcreteProtype2
+    {
+    +clone()
+    }
+    note right: 具体的原型类
+
+    Protype <|.. ConcreteProtype1
+    Protype <|.. ConcreteProtype2
+    Client ..> Protype
+}
+@enduml
+```
 ##### 例子：
 ```java
 class Person implements Cloneable {
@@ -1306,18 +1647,52 @@ class Person implements Cloneable {
     }
 }
 
-public class Main {
-    public static void main(String[] args) throws CloneNotSupportedException {
-        Person prototype = new Person("John", 25);
-        Person newInstance = prototype.clone();
+public class Client {
+    public static void main(String[] args) {
+        Person person1 = new Person("Alice", 30);
+        Person person2 = null;
 
-        System.out.println("Prototype: " + prototype.getName() + ", " + prototype.getAge());
-        System.out.println("New Instance: " + newInstance.getName() + ", " + newInstance.getAge());
+        try {
+            person2 = person1.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+
+        if (person2 != null) {
+            System.out.println(person1.getName() + " " + person1.getAge());
+            System.out.println(person2.getName() + " " + person2.getAge());
+        }
     }
 }
 ```
-#### 模版方法模式  
+#### 模版方法模式(Template Method Pattern)  
         模板方法模式 (Template Method Pattern) 是一种行为型设计模式，它定义了一个算法框架，并将一些步骤推迟到子类中实现。通俗地说，模板方法模式就像是一个制定了步骤的流程模板，其中一些步骤可以由子类来自定义。
+##### 常见uml图
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class Template(模板方法模式)" #DDDDDD {
+    class AbsTemplate << (A,#FF7700) abstract >> {
+        #stepOne(): void
+        #stepTwo(): void
+        #stepThree(): void
+        +execute(): void
+    }
+    note right: 定义算法框架的抽象类
+
+    class ConcreteImplA
+    note right: 具体实现类A
+
+    class ConcreteImplB
+    note right: 具体实现类B
+
+    AbsTemplate <|-- ConcreteImplA
+    AbsTemplate <|-- ConcreteImplB
+}
+@enduml
+```
 ##### 例子：
 ```java
 abstract class Beverage {
@@ -1377,8 +1752,31 @@ public class Main {
     }
 }
 ```
-#### 外观模式  
+#### 外观模式(Facade Pattern) 
         外观模式是一种结构型设计模式，它提供了一个统一简化的接口，以隐藏复杂的子系统，并使客户端能够更方便地使用子系统。外观模式通过创建一个高层接口，将子系统的相关功能进行封装，使得客户端只需要调用这个高层接口就可以完成操作。
+##### 常见uml图
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class Facade(外观模式)" #DDDDDD {
+    class Facade{
+    + operationA()
+    + operationB():void
+    + operationC():void
+    }
+    note right: 系统对外的统一接口
+
+    class SystemA << (I,#FF7700) Interface>>
+    class SystemB << (I,#FF7700) Interface>>
+    class SystemC << (I,#FF7700) Interface>>
+    Facade --> SystemA:<<use>>
+    Facade --> SystemB:<<use>>
+    Facade --> SystemC:<<use>>
+}
+@enduml
+```
 ##### 例子：
 ```java
 // 子系统类A
@@ -1422,15 +1820,53 @@ class Facade {
 }
 
 // 客户端类
-public class Main {
+public class Client {
     public static void main(String[] args) {
         Facade facade = new Facade();
         facade.operation();
     }
 }
 ```
-#### 建造者模式  
+#### 建造者模式(Builder Pattern)  
         建造者模式是一种创建型设计模式，它用于将对象的构建与表示分离，并通过一个统一的接口逐步构建复杂对象。它允许使用相同的构建过程来创建不同的表示。
+##### 常见uml图
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class Builder(生成器模式)" #DDDDDD {
+    abstract class Builder
+    {
+    +buildPartA():void
+    +buildPartB():void
+    +buildPartC():void
+    }
+    note right: 抽象Builder类
+
+    class ConcreteBuilder
+    {
+    +buildPartA():void
+    +buildPartB():void
+    +buildPartC():void
+    }
+    note right: 具体Builder类
+
+    class Director
+    {
+    +construct()
+    }
+    note right:统一组装过程
+
+    abstract class Product
+    note right:产品的抽象类
+
+    Director o-- Builder
+    Builder <|-- ConcreteBuilder
+    Product <.. ConcreteBuilder:<<use>>
+}
+@enduml
+```
 ##### 例子：  
         客户端通过创建指挥者对象，使用指挥者对象调用相应的建造者方法来构建特定类型的汽车对象，并通过调用汽车对象的getter方法获取属性值。这样，我们可以根据需要创建不同属性的汽车对象，而不需要直接操作构建过程中的细节。
 ```java
@@ -1523,8 +1959,45 @@ public class Main {
     }
 }
 ```
-#### 观察者模式  
+#### 观察者模式(Observer Pattern)  
         观察者模式是一种行为型设计模式，用于对象之间的一对多依赖关系。当一个对象的状态发生变化时，它会自动通知所有依赖它的对象，使得这些对象能够自动更新自己的状态。
+##### 常见uml图
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class Observer(观察者模式)" #DDDDDD {
+    class Subject<< (A,#FF7700) abstract>>
+    {
+    +notifyObservers(Object)
+    }
+    note right: 抽象主题
+
+    class ConcreteSubject
+    {
+    +notifyObservers(Object)
+    }
+    note right: 具体主题
+
+    class Observer<< (I,#FF7700) interface>>
+    {
+    +update(Object)
+    }
+    note right: 抽象观察者
+
+    class ConcreteObserver
+    {
+    +update(Object)
+    }
+    note right: 具体观察者
+
+    Subject <|-- ConcreteSubject
+    Subject "1" o-- "0..*" Observer
+    Observer <|.. ConcreteObserver
+}
+@enduml
+```
 ##### 例子：
 ```java
 // 观察者接口，定义观察者需要实现的方法
@@ -1532,74 +2005,97 @@ interface Observer {
     void update(String message);
 }
 
-// 购物平台类，主题类
-class ShoppingPlatform {
+class Subject{
     private List<Observer> observers = new ArrayList<>();
 
-    // 注册观察者
-    public void registerObserver(Observer observer) {
+    public void addObserver(Observer observer) {
         observers.add(observer);
     }
 
-    // 取消观察者
-    public void unregisterObserver(Observer observer) {
+    public void removeObserver(Observer observer) {
         observers.remove(observer);
     }
 
-    // 通知观察者
     public void notifyObservers(String message) {
         for (Observer observer : observers) {
             observer.update(message);
         }
     }
+}
 
-    // 生成新订单
-    public void generateOrder() {
-        // 生成订单的逻辑
+class Admin implements Observer {
+    private String message;
 
-        // 通知管理员有新订单
-        notifyObservers("New order generated");
+    @Override
+    public void update(String message) {
+        this.message = message;
+        System.out.println("Admin收到通知: " + message);
     }
 }
 
-// 管理员类，观察者类
-class Admin implements Observer {
-    private String name;
-
-    public Admin(String name) {
-        this.name = name;
+class ShoppingSubject extends Subject {
+    public void putNewProduct() {
+        notifyObservers("新商品上架了！");
     }
 
-    // 当有通知时更新消息
-    public void update(String message) {
-        System.out.println("Admin " + name + " received notification: " + message);
+    public void removeProduct() {
+        notifyObservers("商品下架了！");
     }
 }
 
 public class Main {
     public static void main(String[] args) {
-        // 创建购物平台
-        ShoppingPlatform platform = new ShoppingPlatform();
+        ShoppingSubject shoppingSubject = new ShoppingSubject();
 
-        // 创建管理员
-        Admin admin1 = new Admin("Alice");
-        Admin admin2 = new Admin("Bob");
+        Admin admin1 = new Admin();
+        Admin admin2 = new Admin();
 
-        // 注册管理员为观察者
-        platform.registerObserver(admin1);
-        platform.registerObserver(admin2);
+        shoppingSubject.addObserver(admin1);
+        shoppingSubject.addObserver(admin2);
 
-        // 生成订单
-        platform.generateOrder();
-
-        // 输出：
-        // Admin Alice received notification: New order generated
-        // Admin Bob received notification: New order generated
+        shoppingSubject.putNewProduct();
+        shoppingSubject.removeProduct();
     }
 }
 ```
-#### 状态模式  
+#### 状态模式(State Pattern)  
         状态模式是一种设计模式，它允许对象在不同的状态下表现出不同的行为。通俗地说，就好像一个人可以根据自己的心情和状态做不同的事情一样。
+##### 常见uml图
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class State(状态模式)" #DDDDDD {
+    interface State
+    {
+    +doSomething():void
+    }
+    note right: 抽象状态类或状态接口
+
+    class ConcreteStateA
+    {
+    +doSomething():void
+    }
+
+    class ConcreteStateB
+    {
+    +doSomething():void
+    }
+
+    class Context
+    {
+    +addState(State)
+    +doSomething():void
+    }
+    note right:环境类
+
+    Context -- State
+    State <|.. ConcreteStateA
+    State <|.. ConcreteStateB
+}
+@enduml
+```
 ##### 例子：
 ```java 
 // 定义一个抽象的状态接口
@@ -1658,8 +2154,64 @@ public class Main {
         不同点：
         1. 状态模式和策略模式的目的不同。状态模式的目的是允许对象在内部状态发生改变时改变它的行为，而策略模式的目的是允许对象在运行时选择算法。
         2.  状态类的状态切换是由上下文类来控制的，而策略类的算法切换是由客户端来控制的。（最主要）
-#### 适配器模式  
+#### 适配器模式(Adapter Pattern) 
         适配器模式是一种设计模式，它用于使不兼容的接口能够一起工作。正常项目开发中，我们应该减少使用适配器模式，因为它会导致系统变得更加复杂。但是在某些情况下，比如接手老项目等，它可以帮助我们解决兼容性问题。
+##### 常见uml图
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+
+package "class Adapter(类适配器)" #DDDDDD {
+    class Target<< (I,#FF7700) Interface>>{
+    +operation1()
+    +operation2():void
+    }
+    note right: 目标
+
+    class Adapter{
+    + operation2()
+    }
+    note right: 适配器
+
+    class Adaptee{
+    + operation3()
+    }
+    note right: 需要适配的接口
+
+    Target <|-- Adapter
+    Adaptee <|-- Adapter
+}
+@enduml
+```
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class Adapter(对象适配器)" #DDDDDD {
+    class Target<< (I,#FF7700) Interface>>{
+    +operation1()
+    +operation2():void
+    }
+    note right: 目标
+
+    class Adapter{
+    -adaptee:Adaptee
+    + operation2()
+    }
+    note right: 适配器
+
+    class Adaptee{
+    + operation3()
+    }
+    note right: 需要适配的接口
+
+    Target <|-- Adapter
+    Adaptee <-- Adapter
+}
+```
 ##### 例子：
         假设你有一台笔记本电脑，但它只有一个USB接口，而你需要连接一个键盘和一个鼠标，它们都是使用PS/2接口的。这时候，你可以使用一个USB到PS/2适配器来解决兼容性问题。适配器连接到USB接口上，然后你可以将鼠标和键盘连接到适配器的PS/2接口上。
 ```java
@@ -1698,12 +2250,48 @@ public class Main {
     }
 }
 ```
-#### 备忘录模式  
+#### 备忘录模式(Memento Pattern)  
         备忘录模式是一种行为型设计模式，它用于在不破坏封装性的前提下捕获一个对象的内部状态，并且能够在稍后的时间点将该对象恢复到此状态。它通常用于需要保存和恢复对象状态的场景，例如撤销操作、历史记录等。
         在备忘录模式中，有三个主要角色： 
         1. 源发器（Originator）：它是需要被保存和恢复状态的对象。它知道如何创建和恢复备忘录对象，并且能够将自身的状态保存到备忘录对象中。 
         2. 备忘录（Memento）：它是用于存储源发器对象内部状态的对象。它可以包含源发器对象的部分或全部状态信息。 
         3. 管理者（Caretaker）：它负责保存备忘录对象，并且可以决定何时以及如何恢复源发器的状态。它不知道备忘录对象的具体内容，只负责存储和管理备忘录。
+##### 常见uml图
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class Memento(备忘录模式)" #DDDDDD {
+
+    class Originator
+    {
+    +restore(Memento)
+    +createMemento():Memento
+    }
+    note right: 负责创建备忘录
+
+    class Memento
+    {
+    -mState
+    +setState(int)
+    +getState():int
+    }
+    note right: 备忘录
+
+    class Caretaker
+    {
+    -mMemento:Memento
+    +restoreMemento():Memento
+    +storeMemento(Memento):void
+    }
+    note right:负责存储备忘录
+
+    Originator ..> Memento
+    Memento <--o Caretaker
+}
+@enduml
+```
 ##### 例子
 ```java
 // 源发器类
@@ -1772,12 +2360,48 @@ public class Main {
     }
 }
 ```
-#### 组合模式
+#### 组合模式(Composite Pattern)
         组合模式是一种结构型设计模式，它允许将对象组合成树状的层次结构，以表示“部分-整体”的关系。这使得客户端可以将单个对象和组合对象一视同仁地处理，无需区分它们之间的差异。
         在组合模式中，有三个主要角色： 
         1. 组件（Component）：它是组合模式的基本对象。它可以是叶子节点（没有子节点）或者是容器节点（有子节点），定义了统一的接口供客户端使用。 
         2. 叶子（Leaf）：它是组合模式中的叶子节点，它没有子节点。 
         3. 容器（Composite）：它是组合模式中的容器节点，可以包含其他组件对象作为子节点。它提供了管理子节点的方法，并且可以将操作委托给子节点。
+##### 常见uml图
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class Composite(组合模式)" #DDDDDD {
+    class Client
+
+    abstract class Component{
+    #name:String
+    +Component(String):void
+    +doSomething():void
+    }
+
+    class Leaf{
+    +Component(String):void
+    +doSomething():void
+    }
+
+    class Composite{
+    -components:List<Component>
+    +Component(String):void
+    +doSomething():void
+    +addChild(Component):void
+    +getChildren(int):Component
+    +removeChild(Component):void
+    }
+
+    Component <--left Client
+    Component <|--down Leaf
+    Component <|--down Composite
+    Component <--o Composite
+}
+@enduml
+```
 ##### 例子
 ```java
 // 组件接口
@@ -1840,11 +2464,50 @@ public class Main {
     }
 }
 ```
-#### 迭代器模式
+#### 迭代器模式(Iterator Pattern)
         迭代器模式是一种行为型设计模式，用于提供一种统一的方式来遍历集合对象中的元素，而无需暴露集合的内部表示。它将集合和遍历分离，使得可以独立地修改集合和遍历算法。
         在迭代器模式中，有两个主要角色： 
         1. 迭代器接口（Iterator）：它定义了遍历集合对象的方法，包括获取下一个元素、判断是否还有元素等。 
         2. 集合接口（Aggregate）：它定义了创建迭代器对象的方法，通常包含返回迭代器对象的方法。
+##### 常见uml图
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class Iterator(迭代器模式)" #DDDDDD {
+    class Iterator<< (I,#FF7700) interface>>{
+    +next():Object
+    +hasNext():boolean
+    }
+    note right: 迭代器接口
+
+    class ConcreteIterator{
+    +next():Object
+    +hasNext():boolean
+    }
+    note right: 具体迭代器类
+
+    class Aggregate<< (I,#FF7700) interface>>{
+    +add(Object):void
+    +remove(Object):void
+    +iterator():Iterator
+    }
+    note right: 容器接口
+
+    class ConcreteAggregate{
+    +add(Object):void
+    +remove(Object):void
+    +iterator():Iterator
+    }
+    note right: 具体容器类
+
+    Iterator <|.. ConcreteIterator
+    Iterator o-- Aggregate
+    Aggregate <|.. ConcreteAggregate
+}
+@enduml
+```
 ##### 例子
 ```java
 // 迭代器接口
@@ -1907,11 +2570,28 @@ public class Main {
     }
 }
 ```
-#### 单例模式
+#### 单例模式(Singleton Pattern)
         单例模式是一种创建型设计模式，它能够保证一个类只有一个实例，并提供一个访问该实例的全局节点。
         在单例模式中，有两个主要角色： 
         1. 单例类（Singleton）：它包含了一个实例且能自行创建这个实例。 
         2. 客户端（Client）：它需要通过单例类的全局节点来获取单例类的实例。
+##### 常见uml图
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class Singleton(单例模式)" #DDDDDD {
+    class Singleton
+    {
+    -instance:Singleton
+    +getInstance():Singleton
+    }
+    note right: 单例类
+
+    Singleton -- Singleton
+}
+```
 ##### 懒汉模式与饿汉模式
         懒汉模式是指单例实例在第一次被使用时才进行初始化的模式，而饿汉模式是指单例实例在类被加载时就进行初始化的模式。
         懒汉模式的优点是单例只有在使用时才会被实例化，可以节省资源，缺点是第一次加载时需要及时进行实例化，反应稍慢一些，且在多线程环境下需要使用同步锁 synchronized 进行同步，可能会造成资源的浪费。
@@ -1942,13 +2622,48 @@ public class EagerSingleton {
     }
 }
 ```
-#### 桥接模式
+#### 桥接模式(Bridge Pattern)
         桥接模式是一种结构型设计模式，它可以将抽象部分与实现部分分离，使它们都可以独立地变化。通俗地说，桥接模式就是将事物与其具体实现分开，使它们可以各自独立地变化。
         在桥接模式中，有四个主要角色： 
         1. 抽象类（Abstraction）：它定义了抽象部分的接口。它一般是抽象类而不是接口，因为接口不能包含实现代码。 
         2. 扩充抽象类（Refined Abstraction）：它是抽象类的子类，可以扩充抽象类中定义的方法。 
         3. 实现类接口（Implementor）：它定义了实现类的接口，这个接口不一定要与抽象类的接口完全一致，事实上这两个接口可以完全不同。一般来说，Implementor接口仅提供基本操作，而Abstraction定义的接口可能会做更多更复杂的操作。 
         4. 具体实现类（Concrete Implementor）：它是实现类接口的具体实现，含有实现类的具体操作。
+##### 常见uml图
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+skinparam linetype ortho
+
+package "class Bridge(桥接模式)" #DDDDDD {
+
+    abstract class Abstraction
+    Abstraction : +operation()
+    note top: 抽象部分
+
+    class RefinedAbstraction
+    note bottom of RefinedAbstraction:优化的抽象部分
+
+    interface Implementor
+    Implementor : +operationImpl()
+    note right:实现部分
+
+    class Client
+    note bottom: 客户端
+
+    ConcreteImplementorA : +operationImpl()
+
+    ConcreteImplementorB : +operationImpl()
+
+    Client -right-> Abstraction
+    RefinedAbstraction -up-|> Abstraction
+    Implementor -left--o Abstraction
+    ConcreteImplementorA -up..|> Implementor
+    ConcreteImplementorB -down..|> Implementor
+}
+@enduml
+```
 ##### 例子
 ```java
 // 定义抽象类 Shape
@@ -2011,13 +2726,57 @@ public class BridgePatternExample {
     }
 }
 ```
-#### 命令模式
+#### 命令模式(Command Pattern)
         命令模式是一种行为型设计模式，它可以将请求转换为一个包含与请求相关的所有信息的独立对象。这种转换让你能根据不同的请求将方法参数化、延迟请求执行或将其放入队列中，且能实现可撤销操作。
         在命令模式中，有四个主要角色： 
         1. 命令（Command）：它声明了执行操作的接口。 
         2. 具体命令（Concrete Command）：它是命令接口的实现类，它对应具体的接收者对象，将接收者对象的动作绑定其中。 
         3. 调用者（Invoker）：它接收客户端的命令并执行命令。 
         4. 接收者（Receiver）：它执行命令具体的操作，是具体命令对象业务的真正实现者。
+##### 常见uml图
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Source Han Sans SC Light"
+
+package "class Comand(命令模式)" #DDDDDD {
+    class Invoker
+    {
+    -comand:Comand
+    +Invoker(Comand)
+    +action():void
+    }
+    note right: 请求者
+
+    class Receiver
+    {
+    -comand:Comand
+    +action():void
+    }
+    note right: 接收者
+
+    class Comand<< (I,#FF7700) interface>>
+    {
+    +execute():void
+    }
+    note right: 命令
+
+    class ConcreteComand
+    {
+    -receiver:Receiver
+    +ConcreteComand(Comand)
+    +execute():void
+    }
+    note right: 具体命令
+
+    Client..>ConcreteComand
+    Client-->Receiver
+    Invoker o-->Comand
+    Receiver<--ConcreteComand
+    Comand<|--ConcreteComand
+}
+@enduml
+```
 ##### 例子
 ```java
 // 以电视遥控器为例
@@ -2083,7 +2842,7 @@ public class Main {
     }
 }
 ```
-#### 责任链模式
+#### 责任链模式(Chain of Responsibility Pattern)
         责任链模式是一种行为型设计模式，它允许你将请求沿着处理者链进行发送，直至其中一个处理者对其进行处理。该模式允许多个对象来处理同一请求，而无需让客户端类了解到底使用哪一个对象来处理它。
         在责任链模式中，有两个主要角色： 
         1. 处理者（Handler）：它声明了一个处理请求的接口，同时实现了后继链（successor link）。 
@@ -2150,7 +2909,7 @@ public class Main {
         不同点：
         1. 状态模式是让各个状态对象自己知道其下一个处理的对象是谁，即在编译时便设定。而责任链模式是让客户端自己决定将请求发送给哪个处理者，即在运行时才决定。
         2. 状态模式的子类只负责改变其拥有类的状态属性，而不负责去执行下一个状态的方法，执行还需要通过拥有他的类去调用下个状态子类的方法。而责任链模式的子类则负责去执行下个节点的方法，也就是说责任链模式的子类不仅仅是改变状态，还有执行权。
-#### 中介者模式
+#### 中介者模式(Mediator Pattern)
         中介者模式是一种行为型设计模式，它可以让你减少对象之间混乱无序的依赖关系。该模式会限制对象之间的直接交互，迫使它们通过一个中介者对象进行合作。
         在中介者模式中，有四个主要角色： 
         1. 中介者（Mediator）：它定义了一个接口，该接口用于与各同事对象之间进行通信。 
@@ -2243,7 +3002,7 @@ public class Main {
     }
 }
 ```
-#### 享元模式
+#### 享元模式(Flyweight Pattern)
         享元模式是一种结构型设计模式，它通过共享大量细粒度对象来有效地支持大量细粒度的对象。
         在享元模式中，有两个主要角色： 
         1. 享元（Flyweight）：它是一个包含状态独立的不可变（又称固有的）数据的共享对象。 
@@ -2290,7 +3049,7 @@ public class Main {
     }
 }
 ```
-#### 解释器模式
+#### 解释器模式(Interpreter Pattern)
         解释器模式是一种行为型设计模式，它允许你定义语言的语法，并解释语言中的句子。它通常用于需要频繁处理一些结构化文本的场景。
         在解释器模式中，有四个主要角色： 
         1. 抽象表达式（Abstract Expression）：它一般是一个抽象类或接口，声明了解释器的抽象方法 interpret()，它是所有终结符表达式和非终结符表达式的公共父类。 
@@ -2391,7 +3150,7 @@ public class Main {
     }
 }
 ```
-#### 访问者模式
+#### 访问者模式(Visitor Pattern)
         访问者模式是一种行为型设计模式，它能将算法与其所作用的对象隔离开来。
         在访问者模式中，有四个主要角色： 
         1. 抽象访问者（Visitor）：它声明了一组访问方法，用于声明访问者可以访问哪些元素。 

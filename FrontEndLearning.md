@@ -74,6 +74,20 @@ CACHE MANIFEST: 在此标题下列出的文件将在首次下载后进行缓存�
 NETWORK: 在此标题下列出的文件需要与服务器的连接，且不会被缓存。  
 FALLBACK: 在此标题下列出的文件规定当页面无法访问时的默认页面。
 
+### Emmet
+
+1. `!` 初始化 html 文件。
+2. id: `element#id`表示`<element id="id"></element>`。
+3. class: `element.classA.classB`表示`<element class="classA classB"></element>`。
+4. 子元素: `parent>child`表示`<parent><child></child></parent>`。
+5. 兄弟元素: `element1+element2`表示`<element1></element1><element2></element2>`。
+6. 上级元素: `element^`表示`<element></element>`。
+7. 重复元素: `element*3`表示`<element></element><element></element><element></element>`。
+8. 属性: `element[attr="value"]`表示`<element attr="value"></element>`。
+9. 文本: `element{content}`表示`<element>content</element>`。
+10. 编号: `element$*3`表示`<element1></element1><element2></element2><element3></element3>`。
+11. 分组: `element1>(element2>element3)+p`表示`<element1><element2><element3></element3></element2><p></p></element1>`。
+
 ## CSS
 
 ### CSS 语法
@@ -189,19 +203,6 @@ counter-reset: 重置计数器。
     inline可以用于铺满容器，但是无法设置宽高。此时可以设置display:inline-block，使元素可以设置宽高。
     inline会垂直居中，可以设置vertical-align属性进行调整。
 
-### Emmet
-
-1. `!` 初始化 html 文件。
-2. id: `element#id`表示`<element id="id"></element>`。
-3. class: `element.classA.classB`表示`<element class="classA classB"></element>`。
-4. 子元素: `parent>child`表示`<parent><child></child></parent>`。
-5. 兄弟元素: `element1+element2`表示`<element1></element1><element2></element2>`。
-6. 上级元素: `element^`表示`<element></element>`。
-7. 重复元素: `element*3`表示`<element></element><element></element><element></element>`。
-8. 属性: `element[attr="value"]`表示`<element attr="value"></element>`。
-9. 文本: `element{content}`表示`<element>content</element>`。
-10. 编号: `element$*3`表示`<element1></element1><element2></element2><element3></element3>`。
-11. 分组: `element1>(element2>element3)+p`表示`<element1><element2><element3></element3></element2><p></p></element1>`。
 
 ## JavaScript
 
@@ -229,7 +230,6 @@ innerHTML：获取或替换 HTML 元素的内容。
 在 JS 中，字符串是一串字符，可以用单引号、双引号、反引号进行定义。
 字符串长度用.length 获取。
 字符串可以是对象，可以用`new String()`创建，此时该对象可以调用字符串方法。
-反引号表示模版字符串，可以用`${}`进行变量替换，同时还支持多行文本。
 
 #### JS 运算符
 
@@ -243,11 +243,11 @@ innerHTML：获取或替换 HTML 元素的内容。
 
 #### JS 类型转换
 
-6 种数据类型: string, number, boolean, object, function, undefined。
+7 种数据类型: string, number, boolean, object, null, undefined, symbol(ES6)。
 3 种对象类型: Object, Date, Array。
 2 种不包含任何值的类型: null, undefined。(NaN, Infinity 是 Number 类型)
 无法通过 typeof 判断类型，因为 typeof Array 和 Date 返回 object。
-一般运用 Constructor 属性进行判断。
+一般运用 Constructor 属性进行判断, 即`variable.constructor == Array`。
 任意转字符串: `String()`, `toString()`, `+""`(置于两者之间)。  
 任意转数字: `Number()`, `parseInt()`, `parseFloat()`, `+`(置于字符串前)。(无法转换则返回 NaN)。
 json 转换: `JSON.stringify()`、`JSON.parse()`。
@@ -292,20 +292,13 @@ this 关键字在不同的对象中有不同的含义:
 在 apply、call、bind 中，this 表示传入的对象。
 
 ### JS 函数
-
 JS 中函数也存在函数提升。
 函数可以自调用，即在函数末尾添加(), 则会自动调用。
-箭头函数(Lambda 函数): ES6 新增的函数定义方式，可以简化函数定义。箭头函数无法提升。
 
-```JavaScript
-// 普通函数
-var x = function(x, y) {
-    return x * y;
-}
-// 箭头函数
-var x = (x, y) => x * y;
-```
-
+JS 比较重要的函数:
+- Object.assign(target, source): 用于将所有可枚举属性的值从一个或多个源对象复制到目标对象。
+- Object.keys(obj): 用于返回一个由给定对象的自身可枚举属性组成的数组。
+- Array.splice(start, deleteCount, item1, item2, ...): 用于向/从数组中添加/删除项目，然后返回被删除的项目。
 #### JS 函数参数
 
 显示参数: 通过函数名传递的参数。默认为 undefined。
@@ -455,8 +448,9 @@ JS 中对象是引用类型，可以通过`new Object()`或`{}`进行创建。
 对象属性可以通过`.`或`[]`进行访问或设置。
 对象构造器: 用于创建对象的函数，`function objectName(arg1, arg2, ...) {this.arg1 = arg1; ...}`。
 
-### JS 导入和导出
+### ES6 新特性
 
+#### import 和 export
 ES6 中新增了模块化的概念，可以通过`import`和`export`进行导入和导出。
 默认导出: `export default function() {}`
 命名导出: `export function fun1() {}`
@@ -465,6 +459,31 @@ ES6 中新增了模块化的概念，可以通过`import`和`export`进行导入
 导入方式: 默认导出可以直接导入，命名导出需要使用`{}`导入。
 使用场景: 默认导出适用导出模块主要功能或核心功能，命名导出适用导出模块中的多个相关功能或辅助功能。
 可读性与维护性: 默认导出命名灵活，适合简单模块，命名导出可读性好，适合复杂模块。
+#### 解构赋值
+解构赋值: 用于从数组或对象中提取值，然后对变量进行赋值。
+数组解构: `let [a, b] = [1, 2]`。
+对象解构: `let {a} = {a: 1, b: 2}`。
+默认值: `let {a = 1} = {variable}`。
+#### 箭头函数
+箭头函数(Lambda 函数): ES6 新增的函数定义方式，可以简化函数定义。箭头函数无法提升。
+省略: 当只有一个参数时，可以省略括号; 当只有一个表达式时，可以省略大括号和 return。
+示例: `let fun = (a, b) => a + b`;
+```JavaScript
+// 普通函数
+var x = function(x, y) {
+    return x * y;
+}
+// 箭头函数
+var x = (x, y) => x * y;
+```
+#### 模板字符串
+模板字符串: 用于创建多行字符串，可以嵌入变量。
+模板字符串使用反引号`进行定义，变量使用'${}'进行替换，同时还支持多行文本。
+```JavaScript
+let name = "John";
+let age = 30;
+let text = `My name is ${name}, I am ${age} years old.`;
+```
 
 ## TypeScript
 
