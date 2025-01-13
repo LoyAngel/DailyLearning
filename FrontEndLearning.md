@@ -122,7 +122,8 @@ class 选择器:`.class`，用于指定一组 HTML 元素。其中，"."前面�
 绝对单位  
 px: 像素，绝对单位，不可伸缩。  
 pt: 物理长度单位，1pt=1/72in。  
-相对单位  
+相对单位 
+rpx: 相对单位，相对于屏幕宽度的 1/750。 
 em: 相对单位，相对于所在容器的 font-size 大小。  
 rem: 相对单位，相对于 html 的 font-size 大小。  
 %: 百分比，相对于父元素的大小。  
@@ -140,15 +141,44 @@ a:link/visited/hover/active a 的四种状态。
 _:first-child/last-child/nth-child(n) 选择第一个/最后一个/第 n 个子元素。  
 input:enabled/disabled/checked input 的三种状态。  
 _:lang(language) 选择指定语言中替换成符号的元素。  
+示例:
+
+```css
+a:link {
+    color: #ff0000;
+} /* 未访问的链接 */
+div:nth-child(2) {
+    background: #ff0000;
+} /* 第二个 div 元素 */
+```
+
 常见的伪元素:  
 ::first-line 选择元素的第一行。  
 ::first-letter 选择元素的第一个字母。  
 ::before 在元素之前插入内容。  
 ::after 在元素之后插入内容。  
+示例:
+
+```css
+p::first-line {
+    color: #ff0000;
+} /* 段落的第一行 */
+p::first-letter {
+    font-size: xx-large;
+} /* 段落的第一个字母 */
+```
+
 常见的伪元素属性:
 content: 插入内容。
 counter-increment: 增加计数器。
 counter-reset: 重置计数器。
+
+```css
+p::before {
+    content: "Read this: ";
+    font-weight: bold;
+} /* 在 p 元素之前插入内容 */
+```
 
 ### 布局讲解
 
@@ -195,14 +225,48 @@ counter-reset: 重置计数器。
     overflow属性用于控制元素的溢出内容。
     visible: 默认值，内容不会被修剪，会溢出。
     hidden: 内容会被修剪，不会溢出。
-    scroll: 内容会被修剪，会出现滚动条。
-    auto: 如果内容溢出，会出现滚动条。
+    auto: 自动决定是否溢出。
+
+```html
+    <!-- 清除浮动一般是为了避免float属性无法撑开父元素，造成父元素塌陷的问题。 -->
+    <style>
+    .test{
+        float: left;
+        height: 100px;
+        width: 100px;
+    }
+    </style>
+    <div class="outer">
+        <div class="test"></div>
+        <div class="test"></div>
+    </div>
+    <!-- 解决方法1 添加新元素-->
+    <div class="outer">
+        <div class="test"></div>
+        <div class="test"></div>
+        <div style="clear:both;"></div>
+    </div>
+    <!-- 解决方法2 父元素使用overflow属性-->
+    <style>
+    .outer{
+        overflow: auto; // 或hidden
+    }
+    </style>
+    <!-- 解决方法3 使用伪元素-->
+    <style>
+    .outer::after{
+        content: "";
+        display: block;
+        clear: both;
+    }
+    </style>
+
+```
 
 ### inline
 
     inline可以用于铺满容器，但是无法设置宽高。此时可以设置display:inline-block，使元素可以设置宽高。
     inline会垂直居中，可以设置vertical-align属性进行调整。
-
 
 ## JavaScript
 
@@ -233,24 +297,64 @@ innerHTML：获取或替换 HTML 元素的内容。
 
 #### JS 运算符
 
-特殊比较运算符: `==`和`===`，前者会进行类型转换，后者不会。
+特殊比较运算符: `==`和`===`，前者会进行类型转换，后者不会。(注意，NaN不等于自身, +0不等于-0, 两者用`===`会出错，可以用`Object.is()`进行比较)
 逻辑运算符: `&&`、`||`、`!`。
 扩展运算符: `...`，用于函数参数、数组、对象等, 用于对数组进行解构。
+其他运算符: `in`——比较特殊，右边必须是对象（因此不能判断数组存在），判断对象是否具有指定的属性。
+空值运算符：`??=`, `??`, `?.`——见ES6特性
 
 #### JS 循环
 
-类似 C，有 for、while、do-while、for-in 等循环, 写法也类似。
+类似 C，有 for、while、do-while、for-of 等循环, 写法也类似。
+注意: js中for-in用来遍历对象的属性，不适用于数组，数组使用for-of遍历。(for-in在数组里遍历表示遍历下标)
 
-#### JS 类型转换
+#### JS 类型
 
-7 种数据类型: string, number, boolean, object, null, undefined, symbol(ES6)。
+6 种基本数据类型: string, number, boolean, null, undefined, symbol(ES6)。
 3 种对象类型: Object, Date, Array。
 2 种不包含任何值的类型: null, undefined。(NaN, Infinity 是 Number 类型)
-无法通过 typeof 判断类型，因为 typeof Array 和 Date 返回 object。
-一般运用 Constructor 属性进行判断, 即`variable.constructor == Array`。
-任意转字符串: `String()`, `toString()`, `+""`(置于两者之间)。  
+typeof 可以判断基本数据类型，但无法区分Object和Array类型，
+
+一般运用 Constructor 或者 instanceof 进行判断, 即`variable.constructor == Array`, `variable instanceof Array`。
+任意转字符串: `String()`, `toString()`, `+""`, `${}`。
 任意转数字: `Number()`, `parseInt()`, `parseFloat()`, `+`(置于字符串前)。(无法转换则返回 NaN)。
 json 转换: `JSON.stringify()`、`JSON.parse()`。
+
+String常用属性或方法: 
+- `length`: 字符串长度。
+- `indexOf(str, start)`: 查找字符串中的子字符串，返回第一个匹配的位置。
+- `slice(start, end)`: 提取字符串的一部分，从左到右，支持负数。
+- `substring(start, end)`: 提取字符串的一部分，不支持负数。
+- `replace(value, newValue)`: 替换字符串中第一个匹配的子字符串。
+- `concat(str1, str2, ...strN)`: 连接两个或多个字符串。
+- `trim()`: 去除字符串两端的空格。
+- `charAt(index)`: 返回指定位置的字符。
+- `includes(str)`: 判断字符串是否包含指定字符串。
+
+Array常用属性和方法:
+- 同String: `length`, `indexOf()`, `slice()`, `concat()` 
+- `join(separator)`: 将数组元素连接成字符串，用指定的分隔符分隔。
+- `pop()`: 删除数组的最后一个元素。
+- `push(item1, item2, ...itemN)`: 向数组的末尾添加一个或多个元素。
+- `shift()`: 删除数组的第一个元素。
+- `unshift(item1, item2, ...itemN)`: 向数组的开头添加一个或多个元素。
+- `reverse()`: 颠倒数组中元素的顺序。
+- `sort(compareFunction)`: 对数组元素进行排序。
+- `splice(index, howmany, item1, item2, ...itemN)`: 删除从 index 开始的 howmany 个元素，并插入新元素。
+- `forEach(function(item, index, arr))`: 用于调用数组的每个元素，并将元素传递给回调函数。
+- `map(function(item, index, arr))`: 用于对数组的每个元素执行函数，并返回包含结果的数组。
+- `filter(function(item, index, arr))`: 用于筛选数组的元素，并返回符合条件的元素。
+- `reduce(function(total, item, index, arr), initialValue)`: 用于累加器，从左到右。
+- `flat(depth)`: 用于将数组扁平化, 降维。
+
+若拷贝数组arr,浅拷贝:  
+- `arr.slice()`: 返回一个新数组，包含从开始到结束的元素。
+- `arr.concat()`: 返回一个新数组，包含原数组的值。
+- `[...arr]`: 返回一个新数组，包含原数组的值。
+- `Array.from(arr)`: 返回一个新数组，包含原数组的值。
+深拷贝:
+- `JSON.parse(JSON.stringify(arr))`: 返回一个新数组，包含原数组的值。
+    
 
 #### JS 正则(RegExp)
 
@@ -273,7 +377,6 @@ var person = {
 
 对象属性可以用`.`或`[]`进行访问。  
 对象方法的定义:
-
 ```JavaScript
 var person = {
     fullName: function() {
@@ -281,24 +384,32 @@ var person = {
     }
 };
 ```
+对象获得属性的方法: `Object.keys()`、`Object.values()`、`Object.entries()`。
+基本类型转对象: `new Object()`
 
 ### JS this 关键字
 
 this 关键字在不同的对象中有不同的含义:
-在方法中，this 表示拥有该方法的对象；  
-单独使用，this 表示全局对象；  
-在函数中，this 表示全局对象(严格模式下为 undefined)；
-在事件中，this 表示接收事件的元素；
-在 apply、call、bind 中，this 表示传入的对象。
+- 默认绑定。单独使用，this 表示全局对象，默认绑定window；  
+- 隐式绑定。对象调用，this 表示调用对象；
+- 显示绑定。apply、call、bind，this 表示传入的对象（例外：传入为null/unfefined时，this表示全局对象）；
+- new 绑定。构造函数调用，this 表示新创建的对象；
+优先级: new > 显示 > 隐式 > 默认。
+除此之外的特例：
+- 箭头函数。this 表示上级作用域的 this 值。
+- 间接函数引用。如`(obj1.foo = obj2.foo)()`，foo中`console.log(this)`，此时类似直接调用，this表示全局对象。
 
 ### JS 函数
+
 JS 中函数也存在函数提升。
 函数可以自调用，即在函数末尾添加(), 则会自动调用。
 
 JS 比较重要的函数:
-- Object.assign(target, source): 用于将所有可枚举属性的值从一个或多个源对象复制到目标对象。
-- Object.keys(obj): 用于返回一个由给定对象的自身可枚举属性组成的数组。
-- Array.splice(start, deleteCount, item1, item2, ...): 用于向/从数组中添加/删除项目，然后返回被删除的项目。
+
+-   Object.assign(target, source): 用于将所有可枚举属性的值从一个或多个源对象复制到目标对象。
+-   Object.keys(obj): 用于返回一个由给定对象的自身可枚举属性组成的数组。
+-   Array.splice(start, deleteCount, item1, item2, ...): 用于向/从数组中添加/删除项目，然后返回被删除的项目。
+
 #### JS 函数参数
 
 显示参数: 通过函数名传递的参数。默认为 undefined。
@@ -451,23 +562,49 @@ JS 中对象是引用类型，可以通过`new Object()`或`{}`进行创建。
 ### ES6 新特性
 
 #### import 和 export
+
 ES6 中新增了模块化的概念，可以通过`import`和`export`进行导入和导出。
-默认导出: `export default function() {}`
-命名导出: `export function fun1() {}`
-两者区别:
-数量限制: 默认导出只能有一个，命名导出可以有多个。
-导入方式: 默认导出可以直接导入，命名导出需要使用`{}`导入。
-使用场景: 默认导出适用导出模块主要功能或核心功能，命名导出适用导出模块中的多个相关功能或辅助功能。
-可读性与维护性: 默认导出命名灵活，适合简单模块，命名导出可读性好，适合复杂模块。
+- 默认导出: `export default function() {}`
+- 命名导出: `export function fun1() {}`
+- 两者区别:
+    - 数量限制: 默认导出只能有一个，命名导出可以有多个。
+    - 导入方式: 默认导出可以直接导入，命名导出需要使用`{}`导入。
+    - 使用场景: 默认导出适用导出模块主要功能或核心功能，命名导出适用导出模块中的多个相关功能或辅助功能。
+    - 可读性与维护性: 默认导出命名灵活，适合简单模块，命名导出可读性好，适合复杂模块。
+
 #### 解构赋值
-解构赋值: 用于从数组或对象中提取值，然后对变量进行赋值。
-数组解构: `let [a, b] = [1, 2]`。
-对象解构: `let {a} = {a: 1, b: 2}`。
-默认值: `let {a = 1} = {variable}`。
+
+- 解构赋值: 用于从数组或对象中提取值，然后对变量进行赋值。
+- 数组解构: `let [a, b, ...rest] = [1, 2, 3, 4, 5]`
+- 对象解构: `let {a} = {a: 1, b: 2}`。
+ - 默认值: `let {a = 1} = {variable}`。
+
+#### 空值运算符
+- `??=`: 空值赋值运算符，仅在变量为 null 或 undefined 时赋值。
+- `??`: 空值合并运算符，当左侧为 null 或 undefined 时，返回右侧的值，否则返回左侧的值。
+- `?.`: 可选链运算符，用于判断对象的属性是否存在，如果不存在则返回 undefined，避免报错。
+
+#### 生成器
+function* 用于定义生成器函数，生成器函数返回一个生成器对象。
+```JavaScript
+function* fun() {
+    yield 1;
+    yield 2;
+    yield 3;
+}
+
+let generator = fun();
+for (let value of generator) {
+    console.log(value);
+}
+```
+
 #### 箭头函数
-箭头函数(Lambda 函数): ES6 新增的函数定义方式，可以简化函数定义。箭头函数无法提升。
-省略: 当只有一个参数时，可以省略括号; 当只有一个表达式时，可以省略大括号和 return。
-示例: `let fun = (a, b) => a + b`;
+
+- 箭头函数(Lambda 函数): ES6 新增的函数定义方式，可以简化函数定义。箭头函数无法提升。
+- 省略: 当只有一个参数时，可以省略括号; 当只有一个表达式时，可以省略大括号和 return。
+- 示例: `let fun = (a, b) => a + b`;
+
 ```JavaScript
 // 普通函数
 var x = function(x, y) {
@@ -476,9 +613,12 @@ var x = function(x, y) {
 // 箭头函数
 var x = (x, y) => x * y;
 ```
+
 #### 模板字符串
-模板字符串: 用于创建多行字符串，可以嵌入变量。
-模板字符串使用反引号`进行定义，变量使用'${}'进行替换，同时还支持多行文本。
+
+- 模板字符串: 用于创建多行字符串，可以嵌入变量。
+- 模板字符串使用反引号`进行定义，变量使用'${}'进行替换，同时还支持多行文本。
+
 ```JavaScript
 let name = "John";
 let age = 30;
@@ -487,48 +627,50 @@ let text = `My name is ${name}, I am ${age} years old.`;
 
 ## TypeScript
 
-TypeScript 是 JavaScript 的超集，可以编译为纯 JavaScript。
-TypeScript 支持类型注解、接口、类、模块等。
+- TypeScript 是 JavaScript 的超集，可以编译为纯 JavaScript。
+- TypeScript 支持类型注解、接口、类、模块等。
+
 以下重点叙述 TypeScript 区别于 JavaScript 的部分。
 
 ### TypeScript 变量声明
 
-TypeScript 支持变量声明时指定类型，如`let name: string = "John";`。
-联合类型: 变量可以有多种类型，如`let name: string | number = "John";`。
-类型断言: 用于告诉编译器变量的类型，有两种形式，`<type>value`和`value as type`。
-类型推断: TypeScript 可以根据变量的值推断变量的类型, 如果未申明类型，则默认类型为 any。
+- TypeScript 支持变量声明时指定类型，如`let name: string = "John";`。
+- 联合类型: 变量可以有多种类型，如`let name: string | number = "John";`。
+- 类型断言: 用于告诉编译器变量的类型，有两种形式，`<type>value`和`value as type`。
+- 非空断言: 用于告诉编译器变量不为空，如`let stu{ name!: string; } = {}; console.log(stu!.name);`。
+- 类型推断: TypeScript 可以根据变量的值推断变量的类型, 如果未申明类型，则默认类型为 any。
 
 ### TypeScript 函数
 
-TypeScript 可以指定返回值类型，如`function fun(): number {return 1;}`。
-TypeScript 可以指定参数类型，如`function fun(name: string): void {console.log(name);}`; 可以指定可选参数，如`function fun(name?: string): void {console.log(name);}`；可以指定默认参数，如`function fun(name: string = "John"): void {console.log(name);}`；可以指定剩余参数，如`function fun(...name: string[]): void {console.log(name);}`。
-TypeScript 支持函数重载，即可以定义多个同名函数，但参数类型或个数不同。
+- TypeScript 可以指定返回值类型，如`function fun(): number {return 1;}`。
+- TypeScript 可以指定参数类型，如`function fun(name: string): void {console.log(name);}`; 可以指定可选参数，如`function fun(name?: string): void {console.log(name);}`；可以指定默认参数，如`function fun(name: string = "John"): void {console.log(name);}`；可以指定剩余参数，如`function fun(...name: string[]): void {console.log(name);}`。
+- TypeScript 支持函数重载，即可以定义多个同名函数，但参数类型或个数不同。
 
 ### TypeScript 元组和数组
 
 元组和数组区别:
-元组: 元组中的元素类型不必相同。
-数组: 数组中的元素类型必须相同。
-元组和数组的定义: 元组使用`[type1, type2, ...]`，数组使用`type[]`。
+- 元组: 元组中的元素类型不必相同。
+- 数组: 数组中的元素类型必须相同。
+- 元组和数组的定义: 元组使用`[type1, type2, ...]`，数组使用`type[]`。
 
 ### TypeScript 接口
 
-接口: 用于定义对象的类型，可以包含属性、方法、索引签名等。
-接口定义: 使用`interface`关键字，如`interface Person {name: string; age: number;}`。
-接口可以设置数组的索引值和元素类型，如`interface StringArray { [index: number]: string; }`。
-接口也支持继承，并且支持多继承，如`interface Person extends Name, Age {}`。
+- 接口: 用于定义对象的类型，可以包含属性、方法、索引签名等。
+- 接口定义: 使用`interface`关键字，如`interface Person {name: string; age: number;}`。
+- 接口可以设置数组的索引值和元素类型，如`interface StringArray { [index: number]: string; }`。
+- 接口也支持继承，并且支持多继承，如`interface Person extends Name, Age {}`。
 
 ### TypeScript 对象
 
-TypeScript 中对象的定义: 使用`{}`，如`let person = {name: "John", age: 30};`。
-类型模版: TypeScript 的对象必须是特定类型的实例，因此直接使用未申明的对象会报错，可以使用类型模版进行定义，如`let person: {name: string, age: number} = {name: "John", age: 30};`。
+- TypeScript 中对象的定义: 使用`{}`，如`let person = {name: "John", age: 30};`。
+- 类型模版: TypeScript 的对象必须是特定类型的实例，因此直接使用未申明的对象会报错，可以使用类型模版进行定义，如`let person: {name: string, age: number} = {name: "John", age: 30};`。
 
 ### TypeScript 泛型
 
-泛型: 用于创建可重用的组件，一个组件可以支持多种类型。泛型可以设置默认类型，如`function identity<T = string>(arg: T): T {return arg;}`。
-泛型标识符: TypeScript 有各种泛型标识符，`T`表示泛型类型，`K, V`表示键值对，`E`表示数组元素类型, `R`表示返回类型, `U, V`表示第二、第三个泛型类型参数。
-泛型函数: 使用泛型来创建一个可以支持多种类型的函数，如`function identity<T>(arg: T): T {return arg;}`。
-泛型约束: 用于限制泛型类型。
+- 泛型: 用于创建可重用的组件，一个组件可以支持多种类型。泛型可以设置默认类型，如`function identity<T = string>(arg: T): T {return arg;}`。
+- 泛型标识符: TypeScript 有各种泛型标识符，`T`表示泛型类型，`K, V`表示键值对，`E`表示数组元素类型, `R`表示返回类型, `U, V`表示第二、第三个泛型类型参数。
+- 泛型函数: 使用泛型来创建一个可以支持多种类型的函数，如`function identity<T>(arg: T): T {return arg;}`。
+- 泛型约束: 用于限制泛型类型。
 
 ```TypeScript
 // 泛型约束
