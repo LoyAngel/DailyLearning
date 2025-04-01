@@ -793,11 +793,12 @@ const Component = {
 
         `emit`也需要用`defineEmits`来定义。使用参考:`const emit = defineEmits(['event1', 'event2']); emit('event1', data);`。
         Vue3中`emit`还加了双向绑定的语法糖，即`update:propName`。示例如下：
+
 ```vue
 <!-- 双向绑定示例 -->
 <!-- 父组件 -->
 <template>
-    <child-component :count="count"></child-component>
+    <child-component v-model:count="count" />
 </template>
 <script setup>
     import { ref } from "vue";
@@ -805,16 +806,21 @@ const Component = {
 </script>
 <!-- 子组件 -->
 <template>
-    <input type="text" @input="updateCount" :value="count" />
+    <input
+        type="text"
+        v-model="countComputed"
+    />
+    <view>{{ countComputed }}</view>
 </template>
 <script setup>
-    import { ref } from "vue";
+    import { computed } from "vue";
     import { defineProps, defineEmits } from "vue";
     const props = defineProps(["count"]);
     const emit = defineEmits(["update:count"]);
-    const updateCount = (value) => {
-        emit("update:count", value);
-    };
+    const countComputed = computed({
+        get: () => props.count,
+        set: (value) => emit("update:count", value),
+    });
 </script>
 ```
 
