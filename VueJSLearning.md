@@ -801,8 +801,8 @@ const Component = {
     <child-component v-model:count="count" />
 </template>
 <script setup>
-    import { ref } from "vue";
-    const count = ref(0);
+import { ref } from "vue";
+const count = ref(0);
 </script>
 <!-- 子组件 -->
 <template>
@@ -813,14 +813,14 @@ const Component = {
     <view>{{ countComputed }}</view>
 </template>
 <script setup>
-    import { computed } from "vue";
-    import { defineProps, defineEmits } from "vue";
-    const props = defineProps(["count"]);
-    const emit = defineEmits(["update:count"]);
-    const countComputed = computed({
-        get: () => props.count,
-        set: (value) => emit("update:count", value),
-    });
+import { computed } from "vue";
+import { defineProps, defineEmits } from "vue";
+const props = defineProps(["count"]);
+const emit = defineEmits(["update:count"]);
+const countComputed = computed({
+    get: () => props.count,
+    set: (value) => emit("update:count", value),
+});
 </script>
 ```
 
@@ -836,64 +836,96 @@ const Component = {
 
 ### Vue3 生命周期
 
-        生命周期: 生命周期指的是Vue实例从创建到销毁的过程。可以用如下表示Vue3的生命周期。
+-   生命周期: 生命周期指的是 Vue 实例从创建到销毁的过程。可以用如下表示 Vue3 的生命周期。
 
-```
-开始
-  |
-  v
-渲染器遇到组件
-  |
-  +-------------> setup (组合式 API)
-  |
-  +-------------> beforeCreate
-  |
-  v
-初始化选项式 API
-  |
-  v
-created
-  |
-  v
-是否存在预编译模板-------->
-  |                       |
-  |                       v
-  |                       即时编译模板
-  |                       |
-  v                       v
- YES                     NO
-  |                       |
-  v -----------------------
-beforeMount
-  |
-  v
-初始渲染: 创建和插入 DOM 节点
-  |
-  v
-mounted
-  |
-  v
-挂载
-  |
-  +-------------> 当数据变化时
-  |    ^                   |
-  |    |                   v
-  |    |             重新渲染并打补丁
-  |    |                   |
-  |    |                   v
-  |    ---------updated-----
-  |
-  v
-当组件被取消挂载时
-  |
-  |
-  + --------------->beforeUnmount
-  |
-  v
-取消挂载--------------->unmounted
-```
+-   生命周期图示:
+    ```
+    开始
+    |
+    v
+    渲染器遇到组件
+    |
+    +-------------> setup (组合式 API)
+    |
+    +-------------> beforeCreate
+    |
+    v
+    初始化选项式 API
+    |
+    v
+    created
+    |
+    v
+    是否存在预编译模板-------->
+    |                       |
+    |                       v
+    |                       即时编译模板
+    |                       |
+    v                       v
+    YES                     NO
+    |                       |
+    v -----------------------
+    beforeMount
+    |
+    v
+    初始渲染: 创建和插入 DOM 节点
+    |
+    v
+    mounted
+    |
+    v
+    挂载
+    |
+    +-------------> 当数据变化时
+    |    ^                   |
+    |    |                   v
+    |    |             重新渲染并打补丁
+    |    |                   |
+    |    |                   v
+    |    ---------updated-----
+    |
+    v
+    当组件被取消挂载时
+    |
+    |
+    + --------------->beforeUnmount
+    |
+    v
+    取消挂载--------------->unmounted
+    ```
+-   生命周期所做的事情:
 
-        生命周期钩子: 当进入生命周期的某个阶段时，自动触发的函数称为生命周期钩子函数。Vue3中的生命周期钩子与Vue2中的生命周期钩子基本一致，只是名称有所改变。`beforeCreate` => `onBeforeCreate`, `created` => `onCreated`, `beforeMount` => `onBeforeMount`, `mounted` => `onMounted`, `beforeUpdate` => `onBeforeUpdate`, `updated` => `onUpdated`, `beforeDestroy` => `onBeforeUnmount`, `destroyed` => `onUnmounted`, `errorCaptured` => `onErrorCaptured`, `renderTracked` => `onRenderTracked`, `renderTriggered` => `onRenderTriggered`;
+    -   beforeCreate：实例初始化之后，数据观测和事件配置之前。此时组件实例刚被创建，properties、methods、data 和 computed 等选项都不可用。
+    -   created：实例创建完成后立即调用。此时已完成数据观测、属性和方法的运算，watch/event 事件回调，但还未挂载 DOM，$el 属性不可见。可以在此阶段进行 API 调用或数据初始化。
+    -   beforeMount：DOM 挂载开始之前被调用。render 函数首次被调用，DOM 初步挂载，数据双向绑定还未完成。此时可以访问到 DOM 元素，但是不能修改 DOM 元素。
+    -   mounted：实例被挂载后调用，此时 el 被新创建的 vm.$el 替换，并挂载到实例上。可以在此阶段操作 DOM 元素，进行第三方库初始化等。
+    -   beforeUpdate：数据更新时调用，发生在虚拟 DOM 重新渲染和打补丁之前。此阶段可以进一步更改数据，不会触发附加的重渲染过程。
+    -   updated：由于数据更改导致的虚拟 DOM 重新渲染和打补丁后调用。组件 DOM 已更新，可执行依赖 DOM 的操作。应避免在此阶段更改状态，可能导致无限更新循环。
+    -   beforeDestroy：实例销毁之前调用。此时实例仍然完全可用，可以执行清理工作，如清除定时器、取消网络请求等。
+    -   destroyed：实例销毁后调用。调用后，所有的事件监听器被移除，所有的子实例也被销毁。
+
+-   生命周期钩子: 当进入生命周期的某个阶段时，自动触发的函数称为生命周期钩子函数。Vue3 中的生命周期钩子与 Vue2 中的生命周期钩子基本一致，只是名称有所改变。`beforeCreate` => `onBeforeCreate`, `created` => `onCreated`, `beforeMount` => `onBeforeMount`, `mounted` => `onMounted`, `beforeUpdate` => `onBeforeUpdate`, `updated` => `onUpdated`, `beforeDestroy` => `onBeforeUnmount`, `destroyed` => `onUnmounted`, `errorCaptured` => `onErrorCaptured`, `renderTracked` => `onRenderTracked`, `renderTriggered` => `onRenderTriggered`;
+
+-   父子组件执行顺序：
+    -   加载渲染过程
+        -   父组件 `beforeCreate`
+        -   父组件 `created`
+        -   父组件 `beforeMount`
+        -   子组件 `beforeCreate`
+        -   子组件 `created`
+        -   子组件 `beforeMount`
+        -   子组件 `mounted`
+        -   父组件 `mounted`
+    -   更新渲染过程
+        -   父组件 `beforeUpdate`
+        -   子组件 `beforeUpdate`
+        -   子组件 `updated`
+        -   父组件 `updated`
+    -   销毁渲染过程
+        -   父组件 `beforeDestroy`
+        -   子组件 `beforeDestroy`
+        -   子组件 `destroyed`
+        -   父组件 `destroyed`
 
 ### Vue3 模版引用
 
@@ -974,3 +1006,138 @@ app.use(MyPlugin);
 ## 风格指南
 
         待更新，https://cn.vuejs.org/style-guide/rules-essential.html#avoid-v-if-with-v-for
+
+## 八股补充知识
+
+### Vue 基础
+
+-   Vue 的底层原理
+    Vue2 在实例创建时，会遍历 data 中的属性，利用 Object.defineProperty()将属性转换为 getter/setter，在内部追踪依赖，数据变化时通知视图更新。每个组件都有一个 watcher 实例，在组件渲染过程中把属性记录为依赖，当属性变化时，watcher 会重新渲染组件。  
+    Vue3 使用 Proxy 来实现响应式，提供了更强大的拦截机制，比起 Object.defineProperty()，它的优点在于：更完整的拦截能力，可以拦截数组和对象的所有操作；更好的性能，前者需要深度遍历对象的每个属性，后者只需要在对象层面拦截，只有访问属性才会执行拦截；惰性观察，只有访问嵌套对象才会观察。
+-   双向绑定的原理
+    Vue 是采用数据劫持与发布-订阅模式结合的方式实现双向绑定的。Vue 在初始化时会遍历 data 中的属性，利用 Object.defineProperty()将属性转换为 getter/setter，在数据变动时发消息给订阅者，触发相应监听回调，主要分为以下步骤：
+    1. 对需要监听的数据进行劫持，使用 Object.defineProperty() 将数据转换为 getter/setter，当数据被访问或修改时，触发相应的回调函数。
+    2. 使用 compile 解析模板指令，将模板中的变量替换为数据，生成对应的 DOM 节点，并初始化页面视图，将每个指令绑定到相应的 watcher 上。
+    3. Watcher 订阅者是 Observer 和 Compile 之间通信的桥梁，主要做的事情是: 在自身实例化时往属性订阅器添加自己；自身拥有个 update 方法，主要是更新视图；在属性值变化时，调用自身的 update 方法，通知 Compile 更新视图。
+    4. MVVM 作为数据绑定的入口，整合 Observer、Compile 和 Watcher 三者，通过 Observer 来监听自己的 model 数据变化，通过 Compile 来解析编译模板指令，最终利用 Watcher 搭起 Observer 和 Compile 之间的通信桥梁，达到数据变化 -> 视图更新；视图交互变化(input) -> 数据 model 变更的双向绑定效果。
+-   Computed, Watcher 的底层原理
+    -   理解 effect
+        在 Vue 的响应式系统中，effect（副作用函数）是整个响应式系统的核心。从本质上讲，effect 是一个会在数据变化时重新执行的函数。它连接了"数据变化"和"更新操作"这两个环节。  
+        Vue 中的 effect 主要实现两个核心机制：依赖收集，访问数据时会将当前的 effect 记录到依赖列表中；触发更新，当数据变化时，会遍历依赖列表，调用所有的 effect 函数。
+    -   Computed
+        computed 是一个基于依赖收集的懒计算属性，它会在依赖的数据变化时重新计算值。computed 的实现原理是：计算属性创建了一个特殊的 effect; 使用 dirty 标志控制是否需要重新计算; 只有访问值时才会计算，且只在 dirty 为 true 时重新计算; 当依赖项变化时，只是将 dirty 标记为 true，并不立即重新计算在访问 computed 属性时，会将当前的 effect 添加到依赖列表中；当依赖的数据变化时，会触发更新，重新计算 computed 的值。
+    -   Watcher
+        watcher 是一个基于依赖收集的观察者，它会在依赖的数据变化时执行回调函数。watcher 的实现原理是： Watch 创建了一个 effect，但自定义 scheduler;对于对象类型的侦听源，会递归访问所有属性来收集依赖;通过 scheduler 控制回调的执行时机;支持 immediate、deep 等高级选项。
+        watcher 的特点时可以访问旧值和新值，可以深度监听对象的变化，支持立即执行和延迟执行等选项，支持异步更新和批量更新等特性。
+-   v-if, v-show 底层原理
+    -   v-if 调用 addTransitionClass()方法添加过渡类名，调用 removeTransitionClass()方法移除过渡类名。v-if 还会在 DOM 中添加一个注释节点，用于标记 v-if 的位置。
+    -   v-show 会生成 vnode, render 时也会渲染成真实 DOM, 但是不会添加注释节点。v-show 只会添加一个 display:none 的样式类名，而不会移除 DOM 节点。
+-   $nextTick 的底层原理
+    Vue 的 $nextTick 是一个异步函数，它会在 数据更新与DOM 更新后执行回调函数。$nextTick 的实现原理是：使用 Promise、MutationObserver 或 setTimeout 来实现异步更新；在 DOM 更新后，将所有的回调函数放入一个队列中；使用微任务或宏任务来执行队列中的回调函数。
+    -   Vue2 中使用了 setTimeout 来实现异步更新；Vue3 中使用了 Promise 来实现异步更新。Vue3 中的 $nextTick 会在 DOM 更新后立即执行回调函数，而不是等到下一个事件循环。
+    -   $nextTick 常见的使用场景一般在于要在数据更新后立即操作 DOM 元素，比如在数据更新后立即获取 DOM 元素的高度、宽度等信息，或者在数据更新后立即执行某个函数等。
+-   Vue 如何收集依赖
+    在初始化 Vue 组件时，会对 data 初始化，将普通对象变为响应式对象，在这个过程中执行依赖收集相关的逻辑。
+    1. Dep 部分。Dep 是一个用于收集依赖的类，它会在数据变化时通知所有的订阅者。Dep 中有一个 subs 数组，用于存储所有的订阅者。同时，Dep 还有一个静态属性 target，用于存储当前的订阅者，保证同一时间只有一个订阅者被计算。
+    2. Watcher 部分。Watcher 是一个用于观察数据变化的类，它会在数据变化时执行回调函数。
+    3. 过程：初始化 initState，普通对象通过 defineReactive 将对象转换为响应式对象；在访问属性时，触发 getter 方法，Dep.target = watcher; mountComponent 时，实例化 Watcher；在数据变化时，触发 setter 方法，Dep.notify()方法通知所有的订阅者。
+-   Vue 模版解析原理
+    Vue 中的模板 template 无法被浏览器解析并渲染，因为这不属于浏览器的标准，不是正确的 HTML 语法，所有需要将 template 转化成一个 JavaScript 函数，这样浏览器就可以执行这一个函数并渲染出对应的 HTML 元素，就可以让视图跑起来了，这一个转化的过程，就成为模板编译。模板编译又分三个阶段，解析 parse，优化 optimize，生成 generate，最终生成可执行函数 render。
+    1. 解析阶段：使用正则表达式将模板字符串解析成 AST 语法树，AST 语法树是一个描述模板结构的对象，包含了所有的节点信息。
+    2. 优化阶段：对 AST 语法树进行静态标记，标记出哪些节点是静态的，哪些节点是动态的。静态节点不会被重新渲染，动态节点会被重新渲染。
+    3. 生成阶段：将 AST 语法树转换成可执行的 JavaScript 函数，函数中包含了所有的节点信息和渲染逻辑。最终生成的函数会被挂载到 Vue 实例上，作为 render 函数使用。
+-   Vue 传参
+    1. 父子传参：子组件 props 接受父组件数据，emit 向父组件传递数据; ref 属性设置子组件名, $refs 获取子组件实例, $parents 获取父组件实例; provide/inject 实现跨级传参。
+    2. 兄弟传参：使用 EventBus 实现兄弟组件之间的通信; $parents/$refs 进行通信; Vuex 实现全局状态管理。
+-   虚拟DOM
+    -   虚拟 DOM 是 Vue 中的一个重要概念，它是对真实 DOM 的一种抽象表示。虚拟 DOM 本质是一个 JavaScript 对象，它描述了真实 DOM 的结构和属性。Vue 在渲染组件时，会先生成一个虚拟 DOM 树，然后将虚拟 DOM 树转换为真实 DOM 树，最后将真实 DOM 树渲染到页面上。
+    -   虚拟 DOM 的优点是：
+        1. 性能高：虚拟 DOM 是一个 JavaScript 对象，操作速度比真实 DOM 快很多。
+        2. 跨平台：虚拟 DOM 可以在不同的平台上运行，比如浏览器、服务器等。
+        3. 可测试：虚拟 DOM 可以方便地进行单元测试和集成测试。
+    -   虚拟 DOM 的缺点是：
+        1. 内存占用大：虚拟 DOM 是一个 JavaScript 对象，内存占用比真实 DOM 大。
+        2. 学习成本高：虚拟 DOM 是一个新的概念，需要学习和理解。
+-   Diff 算法
+    -   Vue 中的 Diff 算法是一个高效的算法，用于比较新旧虚拟 DOM 树的差异，并更新真实 DOM。Diff 算法的核心思想是：
+        1. 通过对比新旧虚拟 DOM 树，找出差异的部分，并将差异的部分更新到真实 DOM 中。
+        2. Diff 算法的时间复杂度是 O(n)，空间复杂度是 O(n)，性能较高。
+    -   Vue 中的 Diff 算法主要分为以下几个步骤：
+        1. 比较新旧虚拟 DOM 树的根节点，如果根节点不同，则直接替换整个树。
+        2. 如果根节点相同，则比较子节点，使用深度优先遍历的方式，递归比较新旧虚拟 DOM 树的子节点。
+        3. 对于同级节点，使用算法进行比对，对于不同的节点进行增删或移动的操作。
+        4. 对于新增或删除的节点，使用 patch 方法进行处理。
+    -   Vue2 跟 Vue3 的 Diff 算法的区别：
+        1. 核心策略：Vue2 使用的是双端比较算法，遍历所有新旧节点，逐层比较；Vue3 引入动态规划思想，使用最长递增子序列算法，减少最小的插入和删除操作。
+        2. 静态内容处理：Vue2 无静态内容优化，每次更新需全量比较；Vue3 通过静态提升和 PatchFlag 优化静态内容，避免不必要的比较。
+
+### Vue Router
+
+        Vue Router 是 Vue.js 的官方路由管理器，支持嵌套路由、动态路由、路由懒加载等功能。Vue Router 通过 Vue.extend() 创建路由组件，并使用 Vue.use() 安装路由插件。
+
+-   SPA(Single Page Application) 和 MPA(Multi Page Application) 的区别
+    -   SPA 是单页面应用，所有的页面都在一个 HTML 页面中加载，使用 JavaScript 动态加载数据和渲染视图。SPA 的优点是用户体验好，页面切换快，缺点是 SEO 不友好，首次加载时间长。
+    -   MPA 是多页面应用，每个页面都是一个独立的 HTML 页面，使用服务器渲染。MPA 的优点是 SEO 好，首次加载时间短，缺点是用户体验差，页面切换慢。
+    -   Vue Router 可以实现 SPA 的路由管理，支持嵌套路由、动态路由、路由懒加载等功能。
+
+-   Vue Router常见导航钩子
+    -   全局守卫
+        -   beforeEach：在路由跳转之前调用，可以用于权限验证、数据预处理等操作。
+        -   beforeResolve：在路由解析完成后调用，可以用于权限验证、数据预处理等操作。
+        -   afterEach：在路由跳转完成后调用，可以用于数据清理、日志记录等操作。
+    -   路由独享守卫
+        -   beforeEnter：在路由进入之前调用，可以用于权限验证、数据预处理等操作。
+    -   组件内守卫
+        -   beforeRouteEnter：在路由进入之前调用，可以用于权限验证、数据预处理等操作。
+        -   beforeRouteUpdate：在路由更新之前调用，一般用于重用组件时更新数据。
+        -   beforeRouteLeave：在路由离开之前调用，可以用于权限验证、数据预处理等操作。
+
+-   路由模式
+    1. hash 模式：使用 URL 的 hash 部分来实现路由，hash 部分不会被发送到服务器，适合单页面应用。hash 模式的路由地址以 # 开头。
+    2. history 模式：使用 HTML5 的 history API 来实现路由，history 模式的路由地址不带 #，可以实现更好的 SEO 和用户体验。history 模式需要服务器支持，服务器需要配置路由重定向，将所有请求都指向 index.html。
+    3. abstract 模式：使用 Node.js 的内置模块来实现路由，适合服务端渲染的应用。abstract 模式的路由地址不带 #，也不带 /，适合服务端渲染的应用。
+    -   hash 模型切换到 history 模型需要: 添加`base`属性; 将所有相对路径改为绝对路径; 在服务器端配置路由重定向，将所有请求都指向 index.html。
+
+-   Vue Router完整的导航流程
+    1. 导航触发: 用户点击链接或调用 router.push() 方法，触发路由导航。
+    2. 组件失活: 如果当前路由和目标路由的组件不同，则需要先失活当前路由的组件，调用 beforeRouteLeave 钩子函数。
+    3. 全局守卫: 调用全局的 beforeEach 钩子函数，进行权限验证、数据预处理等操作。
+    4. 重用检测: 检测是否可重用，可重用则调用 beforeRouteUpdate 钩子函数。
+    5. 路由解析: 解析目标路由的信息，获取路由的组件、参数、查询字符串等信息，解析路由前调用 beforeEnter 钩子函数。
+    6. 组件激活: 激活目标路由的组件，调用 beforeRouteEnter 钩子函数。
+    7. 全局解析: 调用全局的 beforeResolve 钩子函数，进行权限验证、数据预处理等操作。
+    8. 路由确认: 确认路由的变化，调用 afterEach 钩子函数。
+    9. 组件渲染: 渲染目标路由的组件，更新DOM。
+    10. 导航完成: 导航完成，用创建好的实例传给 beforeRouteEnter 钩子函数，调用 next() 方法，完成路由导航。
+
+-   常见的辨析
+    -   route 与 router
+        -   route 包含了当前路由的信息， 如 path、params、query、meta 等。可以通过 route 获取到当前路由的信息, 比如 route.path 获取当前路由的路径。
+        -   router 包含了路由的配置信息， 如 routes、mode、base、linkActiveClass 等。通过 router.push() 可以实现当前路由的跳转。
+    -   params 与 query
+        -   params 和 query 都是路由传参时使用的参数。
+        -   params 是路由参数。params传参时name不能带路径。params 刷新页面时会丢失，并且参数不会显示在 URL 中。相较于query，params 适合传递复杂的对象，且安全性更高。
+        -   query 是查询参数。query传参时name可以带路径。query 刷新页面时不会丢失，并且参数会显示在 URL 中。相较于params，query 适合传递简单的参数，做为 URL 的查询字符串。
+-   路由懒加载
+    路由懒加载是指在路由切换时，才加载对应的组件，而不是在应用启动时就加载所有的组件。路由懒加载可以提高应用的性能，减少首屏加载时间。路由懒加载的实现原理是：使用 webpack 的代码分割功能，将路由组件分割成多个文件，在路由切换时，动态加载对应的组件。  
+    Vue Router 使用路由懒加载有以下方式:
+    1. 使用 import() 函数动态加载组件。
+    2. 使用 webpack 的 require.ensure() 函数动态加载组件。
+    3. 使用 Vue Router 的异步组件功能，使用 Vue.component() 函数动态加载组件。
+    
+### Vuex 和 Pinia
+#### Vuex
+Vuex 是 Vue.js 的官方状态管理库，使用单向数据流的方式来管理状态。Vuex 的核心概念是 Store，Store 是一个容器，用于存储应用的状态。Vuex 的核心 API 包括：
+-   Vuex 核心概念
+    -   State：状态，存储应用的状态。
+    -   Getter：计算属性，从 State 中派生出一些状态。
+    -   Mutation：变更函数，用于修改 State 的状态。
+    -   Action：异步操作，用于处理异步请求。
+    -   Module：模块化，将 Store 分割成多个模块。
+
+-   Vuex 常用 API
+    -   mapState：将 State 映射到组件的计算属性中。
+    -   mapGetters：将 Getter 映射到组件的计算属性中。
+    -   mapMutations：将 Mutation 映射到组件的方法中。
+    -   mapActions：将 Action 映射到组件的方法中。
+    -   createStore：创建 Store 实例。
