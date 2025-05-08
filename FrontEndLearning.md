@@ -242,14 +242,15 @@ CSS 规则由两个主要的部分构成:选择器，以及一条或多条声明
 
 -   无继承性的属性
     -   display
-    -   部分文本属性(white-space, text-shadow)
+    -   部分文本属性(white-space)
     -   盒子模型属性(width, height, margin, padding, border...)
     -   背景属性(background-开头的属性)
     -   定位属性(position, float, clear, z-index...)
     -   生成内容属性(content)
 -   有继承性的属性
     -   字体系列属性(font-开头的属性)
-    -   部分文本系列属性(color, text-align, text-indent, line-height, letter-spacing, word-spacing, text-transform)
+    -   大部分文本系列属性(text-开头的属性, text-align, text-indent, text-transform)
+    -   其他文本系列属性(color, line-height, letter-spacing, word-spacing)
     -   其他属性(visibility, cursor, direction...)
 -   所有元素可继承的属性
     -   visibility
@@ -331,6 +332,7 @@ position 属性用于定义元素的定位方式。
 -   relative: 相对定位，元素相对于自身原来的位置进行定位。当元素设置了 top、right、bottom、left 属性时，元素会相对于原来的位置进行偏移。
 -   fixed: 固定定位，元素相对于浏览器窗口进行定位，即使页面滚动，元素也不会移动。
 -   absolute: 绝对定位，元素相对于最近的已定位(position 不为 static)祖先元素进行定位。如果没有已定位的祖先元素，则相对于最初的包含块进行定位。
+-   sticky: 粘性定位，元素在相对定位和固定定位之间切换。当元素在视口内时，元素会相对于视口进行定位；当元素在视口外时，元素会相对于文档流进行定位。
 -   inherit: 继承父元素的定位方式。
 
 ##### z-index
@@ -499,6 +501,7 @@ IFC(Inline Formatting Context) 行内格式化上下文。简单来说，IFC 的
 -   行内元素
     ```css
     .parent {
+        display: inline-block;
         text-align: center;
     }
     ```
@@ -537,6 +540,7 @@ IFC(Inline Formatting Context) 行内格式化上下文。简单来说，IFC 的
 -   margin: auto
     ```css
     .parent {
+        position: relative;
         margin: 0 auto;
     }
     ```
@@ -577,15 +581,15 @@ innerHTML：获取或替换 HTML 元素的内容。
     - json 转换: `JSON.stringify()`、`JSON.parse()`。
 5. 原型链
     - 原型：每一个对象从被创建开始就和另一个对象相关联，从另一个对象继承属性和方法，则另一个对象就是原型。
-    - 原型链：由对象和原型层层向上组成的链条。
+    - 原型链：当读取实例对象的属性时，如果找不到，就会查找与该对象关联的原型对象中的属性，如果还查不到，就去找原型的原型，一直找到为止，如果还找不到就是 null（也是对象）。在此过程中，由互相关联的原型组成的链状结构就是 原型链。
     - 构造函数：创建对象的函数。
-    - proto：通过实例对象的 proto 属性，可以获得对象的原型对象，等同于 Object.getPrototypeOf()。
+    - `__proto__`：通过实例对象的 `__proto__` 属性，可以获得对象的原型对象，等同于 Object.getPrototypeOf()。
     - prototype：每个构造函数都有一个 prototype 属性，指向一个原型对象，这个对象包含由特定类型的所有实例共享的属性和方法。
     - constructor：每个原型对象都有一个 constructor 属性，指向构造函数。
     - 构造函数，对象实例和原型对象(也是一个实例)的关系：
         - 构造函数 function Array(){} ---- let a = new Array(); ----> 对象实例 a
         - 对象实例 a ---- a.proto ----> 原型对象 Array.prototype
-        - 对象实例 a ---- a.constructor ----> 构造函数 function Array(){}
+        - 对象实例 a ---- a.constructor ----> 构造函数 function Array(){} (实际上a没有constructor属性，而是通过原型链查找的)
         - 原型对象 Array.prototype ---- Array.prototype.constructor ----> 构造函数 function Array(){}
     - 而另一方面，构造函数实际上也是对象，是 Function 构造函数的实例，所以构造函数也有 proto 属性，即`Array.__proto__ === Function.prototype`。特殊的，`Function.__proto__ === Function.prototype`。
 
@@ -666,7 +670,7 @@ innerHTML：获取或替换 HTML 元素的内容。
 特殊比较运算符: `==`和`===`，前者会进行类型转换，后者不会。(注意，NaN 不等于自身, +0 不等于-0, 两者用`===`会出错，可以用`Object.is()`进行比较)
 逻辑运算符: `&&`、`||`、`!`。
 扩展运算符: `...`，用于函数参数、数组、对象等, 用于对数组进行解构。
-其他运算符: `in`——比较特殊，右边必须是对象（因此不能判断数组存在），判断对象是否具有指定的属性；`&`交叉可以作为交叉类型，比如`PageParams & {subType?: string}`可以表示在 PageParams 的基础上增加 subType 属性；`|`可以作为联合类型，比如`string | number`表示可以是字符串或者数字。
+其他运算符: `in`——比较特殊，右边必须是对象（因此不能判断数组存在），判断对象是否具有指定的属性。
 空值运算符：`??=`, `??`, `?.`——见 ES6 特性
 
 #### JS 循环
@@ -821,11 +825,9 @@ const createPerson = (name, age) => {
 
 ### JS 异步编程
 
-回调函数: 将函数作为参数传入另一个函数中，等待调用。
-异步 AJAX: 通过 XMLHttpRequest 对象进行异步请求。
-Promise: 用于异步编程，可以链式调用。
-
 #### Promise
+
+Promise: 用于异步编程，可以链式调用。
 
 -   Promise 的构造:
 
@@ -842,15 +844,31 @@ var promise = new Promise(function(resolve, reject) {
 
 -   Promise 会返回一个 Promise 对象，可用以下几个方法进行处理:
 
-    -   `then()`: 用于指定 resolve 和 reject 的回调函数。如果then中是一个值，那么会被忽略。
+    -   `then()`: 用于指定 resolve 和 reject 的回调函数。如果 then 中是一个值，那么会被忽略。
     -   `catch()`: 用于指定 reject 的回调函数。
     -   `finally()`: 用于指定不管 Promise 对象最后状态如何都会执行的操作。
-    -   `resolve()`: 用于将 Promise 对象的状态改为 resolved。如果resolve 中是一个值，那么会返回一个新的 Promise 对象。
-    -   `reject()`: 用于将 Promise 对象的状态改为 rejected。如果reject 中是一个值，那么会返回一个新的 Promise 对象。
+    -   `resolve()`: 用于将 Promise 对象的状态改为 resolved。如果 resolve 中是一个值，那么会返回一个新的 Promise 对象。
+    -   `reject()`: 用于将 Promise 对象的状态改为 rejected。如果 reject 中是一个值，那么会返回一个新的 Promise 对象。
 
 -   Promise 常见的方法:
     -   `Promise.all([p1, p2, ...])`: 用于将多个 Promise 实例包装成一个新的 Promise 实例。
     -   `Promise.race([p1, p2, ...])`: 用于将多个 Promise 实例包装成一个新的 Promise 实例，只要有一个实例率先改变状态，新的实例就会跟着改变状态，返回值为第一个改变状态的实例的返回值。
+
+#### 定时器
+
+JS 提供一些原生的方法来实现定时器功能。
+
+-   常见的定时器
+    -   `setTimeout(function, delay)`: 用于在指定的延迟时间后执行函数。返回一个定时器 ID。
+    -   `setInterval(function, delay)`: 用于在指定的时间间隔内重复执行函数。返回一个定时器 ID。
+-   定时器的清除
+    -   `clearTimeout(timerId)`: 用于清除定时器。
+    -   `clearInterval(timerId)`: 用于清除定时器。
+-   定时器的使用注意事项:
+    -   定时器的延迟时间最短为 4ms，并且并非为严格的延迟时间，这是因为 JS 是单线程的，定时器的延迟时间是相对的，如果定时器里有大量的代码需要执行，那么定时器的延迟时间会被延长。
+    -   定时器是异步的，定时器的回调函数会在当前执行栈清空后执行。
+    -   定时器一般属于宏任务。
+    -   `requestAnimationFrame()`是浏览器专门为动画设计的 API，相比于普通的定时器，它会保持刷新率与浏览器一致，避免了不必要的性能浪费。
 
 #### defer
 
@@ -907,7 +925,7 @@ JS 的异步机制和事件循环有关。
     - 宏任务队列: 存储宏任务，执行顺序为 script(主代码)、setTimeout、setInterval、setImmediate、I/O、UI rendering。
     - 微任务队列: 存储微任务，如 process.nextTick、Promise、MutationObserver、async 函数中 await 后的函数。
 
-压栈顺序按照上述存储区依次执行，并且为先进后出，所以先执行当前宏队列的同步代码，然后执行该宏队列的微任务，接着执行下一个宏队列的同步代码，依次循环。
+压入队列顺序按照上述存储区依次执行，并且为先进后出，所以先执行当前宏队列的同步代码，然后执行该宏队列的微任务，接着执行下一个宏队列的同步代码，依次循环。
 
 ### JS 类
 
@@ -931,17 +949,25 @@ JS 的异步机制和事件循环有关。
 DOM: Document Object Model，文档对象模型，是 HTML 和 XML 的应用程序接口。
 DOM 是文档的逻辑结构，可以通过 JS 进行访问和修改。
 
+#### DOM 节点创建
+
+`document.createElement(tag)`: 创建一个新的元素节点。
+`document.createTextNode(text)`: 创建一个新的文本节点。
+`document.createAttribute(name)`: 创建一个新的属性节点。
+
 #### DOM 查找
 
 `document.getElementById(id)`: 通过 id 获取元素。
 `document.getElementsByTagName(tag)`: 通过标签名获取元素。
 `document.getElementsByClassName(class)`: 通过类名获取元素。
 `document.querySelector(selector)`: 通过选择器获取元素。
+`document.querySelectorAll(selector)`: 通过选择器获取所有元素，返回一个 NodeList(静态快照)。
 
 #### DOM 修改
 
 `element.innerHTML`: 获取或设置元素的内容。
 `element.attribute`: 获取或设置元素的属性。
+`element.style`: 获取或设置元素的样式。
 
 #### DOM EventListener
 
@@ -971,6 +997,18 @@ NodeList 是动态的，当文档结构发生变化时，NodeList 会自动更�
 JS 中对象是引用类型，可以通过`new Object()`或`{}`进行创建。
 对象属性可以通过`.`或`[]`进行访问或设置。
 对象构造器: 用于创建对象的函数，`function objectName(arg1, arg2, ...) {this.arg1 = arg1; ...}`。
+
+### 可枚举和可迭代
+
+-   定义
+    -   可枚举: 对象的属性可以被枚举。一般由`defineProperty()`方法中的`enumerable`属性决定。
+    -   可迭代: 对象可以被迭代。一般由`Symbol.iterator`属性决定。
+-   区别
+    -   可枚举: 主要用于对象的属性，可以通过`for...in`循环遍历。
+    -   可迭代: 主要用于对象的值，可以通过`for...of`循环遍历。
+-   常见的可枚举和可迭代对象:
+    -   可枚举: 对象、数组等。
+    -   可迭代: 数组、字符串、Map、Set。
 
 ### ES6 新特性
 
@@ -1101,6 +1139,38 @@ const proxy = new Proxy(obj, {
 });
 ```
 
+### 作用域
+
+-   作用域: 变量的可访问范围。作用域最大的用处就是隔离变量，避免变量冲突。
+-   词法作用域和动态作用域:
+    -   词法作用域: 变量的作用域在代码编写时就已经确定了，JS 是词法作用域，通过作用域链实现。__函数的作用域由函数定义时的位置决定__。
+    -   动态作用域: 变量的作用域在运行时确定。___函数的作用域由函数调用时的位置决定__。
+-   作用域类型:
+    -   全局作用域: 在任何地方都可以访问的变量。
+    -   函数作用域: 在函数内部定义的变量，只能在函数内部访问。
+    -   块级作用域: 在代码块内部定义的变量，只能在代码块内部访问。
+-   var, let, const 的区别:
+    -   var: 声明的变量是全局作用域或函数作用域，存在变量提升，允许重复声明。
+    -   let: 声明的变量是块级作用域，不存在变量提升，不允许重复声明。
+    -   const: 声明的变量是块级作用域，不存在变量提升，不允许重复声明，且必须初始化。
+
+### JS 执行上下文
+    执行上下文是 JS 代码执行的环境，包含了变量、函数、对象等信息。执行上下文分为三种:全局执行上下文、函数执行上下文、eval 执行上下文。
+#### 执行栈
+    执行栈，也叫调用栈，具有后进先出（LIFO）的特性。每当一个函数被调用时，都会创建一个新的执行上下文，并将其压入栈中。当函数执行完毕后，执行上下文会被弹出栈。
+-   变量提升: js引擎执行时是一段段执行的，对于函数和变量的声明会提前到当前作用域的顶部进行处理。其中，函数声明提升优先级高于变量声明，但是函数赋值表达式不会提升。
+#### 全局执行上下文
+    全局执行上下文是 JS 代码执行的第一个上下文，包含了全局变量和函数。全局上下文只有一个，在浏览器中是 window 对象，在 Node.js 中是 global 对象。全局上下文中的变量和函数可以在任何地方访问。
+#### 函数执行上下文
+    函数执行上下文是函数被调用时创建的上下文，包含了函数的参数、变量、作用域链等信息。执行过程包括三个阶段:
+-   执行上限文会激活变量对象(VO)，创建作用域链，确定 this 的指向。
+-   代码执行阶段会执行函数体内的代码，创建活动对象（AO），并将参数和变量添加到 AO 中。AO包括：
+    -   arguments: 存储函数参数的对象。
+    -   变量对象: 存储函数内的变量声明和函数声明。
+    -   this: 指向当前执行上下文的对象。
+-   回收阶段: 当函数执行完毕后，执行上下文会被弹出栈，释放内存。
+
+
 ## TypeScript 基础
 
 -   TypeScript 是 JavaScript 的超集，可以编译为纯 JavaScript。
@@ -1121,21 +1191,30 @@ const proxy = new Proxy(obj, {
 -   非空断言: 用于告诉编译器变量不为空，如`let stu{ name!: string; } = {}; console.log(stu!.name);`。
 -   类型推断: TypeScript 可以根据变量的值推断变量的类型, 如果未申明类型，则默认类型为 any。
 
+### TypeScript 类型
+
+-   js继承: TypeScript 支持js所有的基本类型和引用类型。   
+-   大写与小写: TypeScript 中大小写敏感。对于基本类型， 大写表示包装对象与字面量都能使用，小写只能使用字面量。对于`Object`，表示广义对象，兼容基本类型和object类型。在实际开发中，更倾向于使用小写字母的类型，一是基本类型中字面量应用更广泛，并且ts将很多内置方法限制于字面量类型，二是`Object`过于宽泛，可能会导致类型不安全。
+-   值类型: 值类型是指变量存储的是值本身。当使用`const`时，ts会自动推断为值类型。
+-   联合类型: 联合类型是指变量可以有多种类型，如`let name: string | number = "John";`。
+-   交叉类型: 交叉类型是指将多个类型合并为一个类型，如`type Person = {name: string} & {age: number}`。基本类型的联合意义不大，会被推断为`never`类型。
+-   `tuple` 和 `array`:
+    -   `tuple`: 元组类型，表示一个固定长度的数组，每个元素可以是不同类型，如`let tuple: [string, number] = ["John", 30];`。
+    -   `array`: 数组类型，表示一个可变长度的数组，所有元素必须是相同类型，如`let array: number[] = [1, 2, 3];`。
+-   `never`, `any`, `unknown`:
+    -   `never`: 表示永远不会有值的类型，通常用于函数抛出异常或无限循环的情况。`never`可以被赋值给任何类型。
+    -   `any`: 表示任意类型，可以是基本类型、对象、数组等。使用 any 会失去类型检查。`any`会让失去ts使用的价值，一般应用于适配老旧代码或ts无法推断类型的场景。
+    -   `unknown`: 表示未知类型，类似于 any，但 unknown 需要进行类型检查后才能使用。`unknown`无法赋值给其他类型，也无法调用方法，进行运算也是有限的，需要经过“类型缩小”才可使用，可以被视为`any`的安全替代品。
+-   枚举类型: 枚举类型是 TypeScript 中的一种特殊类型，用于定义一组命名的常量。可以使用数字或字符串作为枚举值，如`enum Color {Red, Green, Blue}`。`Enum`的成员默认不需要赋值，系统会自动从零开始递增赋值; 若需要赋值，则类型只能为`number`或`string`。
+
+
 ### TypeScript 函数
 
 -   TypeScript 可以指定返回值类型，如`function fun(): number {return 1;}`。
 -   TypeScript 可以指定参数类型，如`function fun(name: string): void {console.log(name);}`; 可以指定可选参数，如`function fun(name?: string): void {console.log(name);}`；可以指定默认参数，如`function fun(name: string = "John"): void {console.log(name);}`；可以指定剩余参数，如`function fun(...name: string[]): void {console.log(name);}`。
 -   TypeScript 支持函数重载，即可以定义多个同名函数，但参数类型或个数不同。
 
-### TypeScript 元组和数组
-
-元组和数组区别:
-
--   元组: 元组中的元素类型不必相同。
--   数组: 数组中的元素类型必须相同。
--   元组和数组的定义: 元组使用`[type1, type2, ...]`，数组使用`type[]`。
-
-### TypeScript 接口 和 类型
+### TypeScript interface 和 type
 
 -   接口: 用于定义对象的类型，可以包含属性、方法、索引签名等。
 -   接口定义: 使用`interface`关键字，如`interface Person {name: string; age: number;}`。
@@ -1178,6 +1257,20 @@ const proxy = new Proxy(obj, {
             stuId: number
         }
         ```
+    -   属性映射方面有区别:
+
+        ```TypeScript
+        interface Person {
+            name: string
+            age: number
+        }
+        // type 映射
+        type PersonCopy = {
+            [K in keyof Person]: Person[K]
+        }
+
+        // interface 无法映射
+        ```
 
     -   type 可以定义基本类型、联合类型、元组、对象等，而 interface 只能定义对象类型。
     -   interface 可以定义多个同名接口，会自动合并，而 type 不行。
@@ -1197,37 +1290,37 @@ const proxy = new Proxy(obj, {
 
 -   泛型: 用于创建可重用的组件，一个组件可以支持多种类型。泛型可以设置默认类型，如`function identity<T = string>(arg: T): T {return arg;}`。
 -   泛型标识符: TypeScript 有各种泛型标识符，`T`表示泛型类型，`K, V`表示键值对，`E`表示数组元素类型, `R`表示返回类型, `U, V`表示第二、第三个泛型类型参数。
--   泛型函数: 使用泛型来创建一个可以支持多种类型的函数，如`function identity<T>(arg: T): T {return arg;}`。
+-   函数泛型: 使用泛型来创建一个可以支持多种类型的函数。
+    ```TypeScript
+    // 泛型函数
+    function identity<T>(arg: T): T {
+        return arg;
+    }
+    // 泛型函数 变量定义 写法1
+    let myIdentity: <T>(arg: T) => T = identity;
+    // 泛型函数 变量定义 写法2
+    let myIdentity: {<T>(arg: T): T} = identity;
+    ```
+-   接口泛型: 使用泛型来创建一个可以支持多种类型的接口。
+    ```TypeScript
+    // 泛型接口
+    interface GenericIdentityFn<T> {
+        (arg: T): T;
+    }
+    ```
 -   泛型约束: 用于限制泛型类型。
+    ```TypeScript
+    // 泛型约束
+    interface Lengthwise {
+        length: number;
+    }
+    function logLength<T extends Lengthwise>(arg: T): void {
+        console.log(arg.length);
+    }
+    logLength("Hello"); // 5
+    logLength(10); // Error: Argument of type 'number' is not assignable to parameter of type 'Lengthwise'.
+    ```
 
-```TypeScript
-// 泛型约束
-interface Lengthwise {
-    length: number;
-}
-function loggingIdentity<T extends Lengthwise>(arg: T): T {
-    console.log(arg.length);
-    return arg;
-}
-// 正确使用
-loggingIdentity("Hello");
-// 错误使用, 因为数字没有length属性
-loggingIdentity(3);
-```
-
-```TypeScript
-// 样例讲解
-// 定义一个接口，包含length属性
-interface ApiResponseData<T> {
-  code: number
-  data: T
-  message: string
-}
-// 下面这个接口继承了上面的接口，并指定了data的类型为string
-type LoginResponseData = ApiResponseData<{
-  token: string
-}>
-```
 
 ### TypeScript 命名空间
 
@@ -1436,11 +1529,6 @@ PostCSS 的工作原理是将 CSS 解析成抽象语法树，然后对抽象语�
 </script>
 ```
 
-### dva
-
-dva 指的是一个基于 redux 和 redux-saga 的数据流方案，用于简化应用的状态管理。
-...(待补充)
-
 ### Map 和 Object
 
 Map 和 Object 非常相似，但它们仍然存在一些区别：
@@ -1484,6 +1572,17 @@ CommonJS 规范加载模块是同步的，所以只有加载完成才能执行�
 -   CommonJS 的应用场景：
     -   Node.js 是 CommonJS 规范的主要实践者。
     -   浏览器端使用 Browserify、Webpack 等工具可以使用 CommonJS 规范。
+
+#### AMD 模块化
+AMD (Asynchronous Module Definition) 是一种异步模块定义规范，主要用于浏览器端的模块化开发。
+
+-   AMD 的特点:
+    -   导入与加载使用的是 define 和 require。
+    -   支持依赖管理，可以指定模块的依赖。
+    -   支持回调函数，可以在模块加载完成后执行回调函数。
+-   AMD 的应用场景:
+    -   主要用于浏览器端的模块化开发，如 RequireJS。（目前已经逐步被 ES6 模块化取代。）
+    -   可以与 CommonJS 规范结合使用，如使用 curl.js。
 
 #### ES6 模块化
 
@@ -1599,7 +1698,7 @@ ES6 模块化是异步加载的，可以在任何地方引入模块。
         - 输出转义: 对用户输入的内容进行转义，将特殊字符转换为 HTML 实体。
         - CSP（Content Security Policy）: 设置 Content-Security-Policy 头，限制页面加载的资源和执行的脚本。
 2. **CSRF（Cross Site Request Forgery）**
-    - CSRF 是一种跨站请求伪造攻击，攻击者通过伪造用户的请求，执行恶意操作。
+    - CSRF 是一种跨站请求伪造攻击，攻击者通过利用用户的登录状态，伪造用户的请求，执行恶意操作。
     - 本质原因：网站没有对请求来源进行验证。
     - 攻击类型
         - GET 请求: 攻击者通过 URL 发送 GET 请求，执行恶意操作。
@@ -1667,12 +1766,19 @@ ES6 模块化是异步加载的，可以在任何地方引入模块。
 -   强缓存和协商缓存
     -   强缓存: 浏览器在加载资源时，先检查强缓存，如果命中强缓存，则直接从缓存中获取资源，不会向服务器发送请求。强缓存常见的 header 有 Expires 和 Cache-Control。
         -   Expires: 指定资源的过期时间，是一个绝对时间，如 Expires: Wed, 21 Oct 2020 07:28:00 GMT。
-        -   Cache-Control: 指定资源的缓存策略，是一个相对时间，如 Cache-Control: max-age=3600。
+        -   Cache-Control: 指定资源的缓存策略，是一个相对时间，如 Cache-Control: max-age=3600。Cache-Control 包括的字段有 public、private、no-cache、no-store、max-age、must-revalidate 等。
+            -   public: 资源可以被任何缓存所缓存。
+            -   private: 资源只能被浏览器缓存，不能被代理服务器缓存。
+            -   no-cache: 强制浏览器每次都向服务器验证资源是否更新。
+            -   no-store: 禁止缓存，浏览器每次都向服务器请求资源。
+            -   max-age: 指定资源的最大缓存时间，单位为秒。max-age优先级高于 Expires。
+            -   must-revalidate: 强制浏览器在过期后必须向服务器验证资源是否更新。
+        -   memory cache 和 disk cache: memory cache 是内存缓存，disk cache 是磁盘缓存。memory cache 的速度更快，但存储空间有限；disk cache 的速度较慢，但存储空间较大。
     -   协商缓存: 如果未命中强缓存，浏览器会向服务器发送请求，服务器根据请求头中的 If-Modified-Since、If-None-Match 等字段判断资源是否更新，如果资源未更新，则返回 304，浏览器从缓存中获取资源。协商缓存常见的 header 有 Last-Modified、Etag、If-Modified-Since、If-None-Match。
         -   Last-Modified: 指定资源的最后修改时间。
-        -   Etag: 指定资源的唯一标识符。
-        -   If-Modified-Since: 指定资源的最后修改时间，用于协商缓存。
-        -   If-None-Match: 指定资源的唯一标识符，用于协商缓存。
+        -   Etag: 指定资源的唯一标识符。Etag 的优先级高于 Last-Modified。
+        -   If-Modified-Since: 指定资源的最后修改时间，用于协商缓存。一般值为last-modified。
+        -   If-None-Match: 指定资源的唯一标识符，用于协商缓存。一般值为Etag。
 
 #### 浏览器存储
 
@@ -1904,13 +2010,6 @@ CDN(Content Delivery Network) 是一种通过在网络边缘部署缓存服务�
     - **延迟加载非关键资源**: 延迟加载非关键资源，如广告、统计代码等，减少首屏加载时间。
     - **使用异步加载**: 使用异步加载非关键资源，提高页面的加载速度。
 
-#### Webpack&Vite 优化
-
--   Webpack 优化
-    -   **代码分割**: 使用 Webpack 的代码分割功能，将代码拆分成多个文件，减少打包后的文件大小。
-    -   **Tree Shaking**: 使用 Webpack 的 Tree Shaking 功能，删除未使用的代码，减少打包后的文件大小。
-    -   **gzip 压缩**: 使用 Webpack 的 gzip 压缩功能，减少文件的体积，提高页面的加载速度。
-
 ### 网络传输
 
 #### 同源策略
@@ -2085,347 +2184,666 @@ CDN(Content Delivery Network) 是一种通过在网络边缘部署缓存服务�
 6. **表示层**: 数据格式转换、数据加密。常见协议: JPEG、MPEG、SSL。
 7. **应用层**: 应用程序接口、数据传输。常见协议: DNS、HTTP、FTP、SMTP、TELNET。
 
+### 工程化
+
+#### 打包工具
+
+##### Webpack
+
+Webpack 是一个模块打包工具，用于将多个模块打包成一个或多个文件。Webpack 的核心概念是模块化，支持 CommonJS、AMD、ES6 模块等多种模块化规范。
+
+-   Webpack 核心概念:
+    -   **入口**: Webpack 的入口文件，指定从哪个文件开始打包。
+    -   **输出**: Webpack 打包后的输出文件，指定输出的文件名和路径。
+    -   **加载器**: Webpack 的加载器，用于处理不同类型的文件，如 CSS、图片、字体等。
+    -   **插件**: Webpack 的插件，用于扩展 Webpack 的功能，如压缩代码、提取 CSS、生成 HTML 等。
+    -   **模式**: Webpack 的模式，用于指定打包的模式，如开发模式、生产模式。
+-   加载器(Loader)
+    -   加载器一般在 `module.rules` 中配置，`test` 用于匹配文件类型，`use` 用于指定加载器。
+    -   加载器的执行顺序是从下往上，从右往左。
+    -   常见的加载器:
+        -   **babel-loader**: 用于将 ES6+ 转换为 ES5。
+        -   **css-loader**: 用于处理 CSS 文件。
+        -   **style-loader**: 用于将 CSS 插入到 DOM 中。
+        -   **file-loader**: 用于处理图片、字体等文件。
+        -   **url-loader**: 用于将文件转换为 Base64 编码。
+        -   **ts-loader**: 用于将 TypeScript 转换为 JavaScript。
+-   插件(Plugin)
+    -   Webpack 插件是具有 apply 方法的 JavaScript 对象，插件可以在 Webpack 的生命周期中执行特定的操作。
+    -   插件一般在 `plugins` 中配置，插件的执行顺序是从上往下。
+    -   常见的插件:
+        -   **webpack-bundle-analyzer**: 用于分析打包后的文件大小。
+        -   **speed-measure-webpack-plugin**: 用于测量打包的速度。
+        -   **optimize-css-assets-webpack-plugin**: 用于压缩 CSS 文件。
+        -   **uglifyjs-webpack-plugin**: 用于压缩 JavaScript 文件。
+        -   **compression-webpack-plugin**: 启用 gzip 压缩。
+-   Loader 和 Plugin 的区别:
+    -   生命周期: Loader 在打包之前执行，Plugin 在整个编译周期都起作用。
+    -   功能: Loader 实质是转换器，将 A 编译形成 B，操作的是文件; Plugin 是对 Webpack 运行生命周期的不同广播事件进行监听，可以对 Loader 的输出结果进行操作，操作的是 Webpack 的运行过程。
+    -   使用方式: Loader 在 `module.rules` 中配置，Plugin 在 `plugins` 中配置。
+-   Webpack 常见的功能底层原理
+    -   热更新: Webpack 的热更新可以通过`devServer`中的`hot`选项来实现。热更新的原理是通过 WebSocket 连接，监听文件的变化，当文件发生变化时，客户端对比新旧文件的差异后，向 WDS 发送 Ajax 请求，获取更改内容(文件列表, Hash)，客户端借助该信息，继续向 WDS 发起 jsonp 请求， 获取该 chunk 的增量更新。
+    -   跨域: Webpack 的跨域可以通过 `devServer` 中的 `proxy` 选项来实现。跨域的原理是通过 `webpack-dev-server` 启动一个本地服务器，将请求转发到目标服务器。
+-   Webpack 构建过程
+    -   初始化参数：从配置文件和 Shell 语句中读取与合并参数，得出最终的参数
+    -   开始编译：用上一步得到的参数初始化 Compiler 对象，加载所有配置的插件，执行对象的 run 方法开始执行编译
+    -   确定入口：根据配置中的 entry 找出所有的入口文件
+    -   编译模块：从入口文件出发，调用所有配置的 Loader 对模块进行翻译，再找出该模块依赖的模块，再递归本步骤直到所有入口依赖的文件都经过了本步骤的处理
+    -   完成模块编译：在经过第 4 步使用 Loader 翻译完所有模块后，得到了每个模块被翻译后的最终内容以及它们之间的依赖关系
+    -   输出资源：根据入口和模块之间的依赖关系，组装成一个个包含多个模块的 Chunk，再把每个 Chunk 转换成一个单独的文件加入到输出列表
+    -   输出完成：在确定好输出内容后，根据配置确定输出的路径和文件名，把文件内容写入到文件系统
+
+##### Vite
+
+    Vite 是一个新一代的前端构建工具，具有快速、轻量、易用等特点。Vite 的核心概念是模块化，支持 ES6 模块和 CommonJS 模块。
+
+-   Vite 与 Webpack 相比
+    -   优点
+        -   更快的冷启动: Vite 使用原生 ES6 模块，采用 unbundled 的方式加载模块，避免了 Webpack 的打包过程。
+        -   更快的热更新: Vite 使用 HMR 技术，支持模块热替换，避免了 Webpack 的全量刷新。
+        -   更简单的配置: Vite 的配置文件更简单，支持 TypeScript 和 JavaScript。
+    -   缺点
+        -   开发环境首屏加载速度慢: 由于 unbundled 的方式加载模块，vite 首次首屏需要做大量的额外工作。不过首次之后 dev server 会对模块进行缓存，后续的加载速度会快很多。
+        -   开发环境懒加载慢: 由于 unbundled 的方式加载模块，需要做 resolve 等
+
+#### Web Worker
+
+    Web Worker 是一种在后台线程中运行 JavaScript 的技术，可以实现多线程编程。Web Worker 可以在主线程和子线程之间进行通信，支持传递数据和消息。Web Worker 的优点是可以提高页面的性能，减少主线程的负担。
+-   Web Worker 的使用场景
+    -   处理大量计算密集型任务，如图像处理、数据分析等。
+    -   处理大量 I/O 密集型任务，如网络请求、文件读取等。
+    -   实现多线程编程，提高页面的性能。
+-   Web Worker 的使用方法
+    1. 创建 Web Worker: 使用 `new Worker()` 创建 Web Worker 实例，传入 Worker 脚本的 URL。
+    2. 主线程发送消息: 使用 `postMessage()` 方法向 Web Worker 发送消息，用对象的形式传递数据。
+    3. Web Worker 接收消息: 使用 `onmessage` 事件处理程序接收主线程发送的消息，用`e.data`获取数据。
+    4. Web Worker 发送消息: 使用 `postMessage()` 方法向主线程发送消息。
+    5. 主线程接收消息: 使用 `addEventListener()` 监听 `message` 事件接收 Web Worker 发送的消息。
+    6. 终止 Web Worker: 使用 `terminate()` 方法终止 Web Worker 的运行。
+-   Web Worker 注意点
+    -   Web Worker 不能访问 DOM 和 BOM。
+    -   Web Worker 只能使用部分Web API，如 `XMLHttpRequest`、`fetch`、`IndexedDB`、定时器等等。
+    -   Web Worker 一般适用于 运算时长 - 通信时长 > 50ms 的场景。
+
+#### SandBox
+
+    SandBox 是一种安全的 JavaScript 执行环境，用于隔离和保护 JavaScript 代码的执行。SandBox 可以防止恶意代码对系统的破坏，保护用户的隐私和数据安全。SandBox 的实现方式有多种，如 iframe、Web Worker、Proxy 等。
+-   手写 SandBox
+    -   with + New Function + Proxy
+        -   使用 `with` 语句创建一个新的作用域，使用 `new Function` 创建一个动态执行的函数，使用`Proxy`对对象进行拦截，禁止访问全局变量和对象。
+    ```javascript
+    function SandBox(code) {
+        const sandbox = {}; // 创建一个新的作用域
+        const fn = new Function("shadow", `with(shadow) { ${code} }`); // 创建一个动态执行的函数
+        const proxy = new Proxy(sandbox, { // 对对象进行代理
+            //  拦截对象的属性访问
+            has: (target, key) => {
+                if(!target.hasOwnProperty(key)) {
+                    throw new Error(`"${key}" is not defined`); // 禁止访问全局变量
+                }
+                return true;
+            },
+        });
+        fn(proxy); // 执行函数
+        return proxy; // 返回代理对象
+    }
+    ```
+    -   iframe
+        -   使用 `iframe` 创建一个新的执行环境，将代码注入到 `iframe` 中执行，使用 `postMessage` 和 `onmessage` 进行通信。
+    ```javascript
+    class SandBox {
+        constructor() {
+            this.iframe = document.createElement("iframe"); // 创建一个新的 iframe
+            this.iframe.style.display = "none"; // 隐藏 iframe
+            document.body.appendChild(this.iframe); // 将 iframe 添加到 DOM 中
+            this.window = this.iframe.contentWindow; // 获取 iframe 的 window 对象
+        }
+        execute(code) {
+            return new Promise((resolve, reject) => {
+                this.window.postMessage(code, "*"); // 向 iframe 发送消息
+                this.window.addEventListener("message", (e) => {
+                    if (e.origin !== window.location.origin) return; // 验证消息来源
+                    resolve(e.data); // 返回执行结果
+                });
+            });
+        }
+    }
+    ```
+
+#### Babel
+
+    Babel 是一个 JavaScript 编译器，用于将 ES6+ 转换为 ES5。Babel 的核心概念是转换器，支持多种转换插件和预设。Babel 的使用方法是安装 Babel CLI 和 Babel 核心库，使用 `babel` 命令进行转换。
+-   Babel 的流程
+    
+    1. 解析: 将源代码解析为抽象语法树 (AST)，使用 `babylon`。
+    2. 转换: 使用转换插件对 AST 进行转换，使用 `@babel/traverse`。
+    3. 生成: 将转换后的 AST 生成代码，使用 `@babel/generator`。
+-   Babel 在vite中的配置与使用
+    -   Vite 内置了 Babel 的支持，可以通过 `vite.config.js` 中的 `babel` 选项进行配置。
+    -   Vite 使用 `@vitejs/plugin-legacy` 插件来支持旧版浏览器。在`plugin`配置项中添加`PluginLegacy`插件，同时进行相应的配置。常见配置项如下:
+        -   `targets`: 指定支持的浏览器版本。
+        -   `additionalLegacyPolyfills`: 指定需要添加的额外的 polyfill。
+        -   `polyfills`: 指定需要添加的 polyfill。
+   
 ### 简单的手写
 
 -   Js 基础
 
     -   手写 instanceof
 
-    ```javascript
-    function myInstanceof(x, y) {
-        const y_pro = y.prototype;
-        let x_pro = x.__proto__;
+        ```javascript
+        function myInstanceof(x, y) {
+            const y_pro = y.prototype;
+            let x_pro = x.__proto__;
 
-        // 递归查找x的原型链
-        while (x_pro) {
-            if (x === y) return true;
-            x_pro = x.__proto__;
+            // 递归查找x的原型链
+            while (x_pro) {
+                if (x === y) return true;
+                x_pro = x.__proto__;
+            }
+
+            return false;
         }
-
-        return false;
-    }
-    ```
+        ```
 
     -   手写 new
 
-    ```javascript
-    function myNew(x, ...res) {
-        // 错误处理
-        if (typeof x !== "function") {
-            console.log("error");
-            return;
+        ```javascript
+        function myNew(x, ...args) {
+            // 错误处理
+            if (typeof x !== "function") {
+                console.log("error");
+                return;
+            }
+
+            // 创建一个新对象
+            let obj = {};
+            obj.__proto__ = x.prototype;
+            // 执行构造函数
+            let res = x.apply(obj, args);
+            // 判断返回值
+            let flag = res instanceof Object;
+
+            return flag && res !== null ? res : obj;
         }
+        ```
 
-        // 创建一个新对象
-        let obj = {};
-        obj.__proto__ = x.prototype;
-        // 执行构造函数
-        let res = obj.call(x, ...res);
-        // 判断返回值
-        let flag = res instanceof Object;
+    -   手写 Object.create
 
-        return flag ? res : obj;
-    }
-    ```
+        ```javascript
+        function myCreate(proto) {
+            // 错误处理
+            if (typeof proto !== "object") {
+                console.log("error");
+                return;
+            }
+
+            // 创建一个新对象
+            function F() {}
+            F.prototype = proto;
+            return new F();
+        }
+        ```
 
     -   手写 Promise(理解)
 
-    ```javascript
-    function myPromise(fn) {
-        var self = this; // 保存初始状态
-        this.state = "pending"; // 初始状态
-        this.value = null; // 保存resolve/reject的值
-        this.resolvedCallbacks = []; // 保存then的回调
-        this.rejectedCallbacks = []; // 保存catch的回调
+        ```javascript
+        function myPromise(fn) {
+            var self = this; // 保存初始状态
+            this.state = "pending"; // 初始状态
+            this.value = null; // 保存resolve/reject的值
+            this.resolvedCallbacks = []; // 保存then的回调
+            this.rejectedCallbacks = []; // 保存catch的回调
 
-        // resolve函数
-        function resolve(value) {
-            // 只有value是promise对象时才能继续执行
-            if (value instanceof myPromise) {
-                return value.then(resolve, reject);
+            // resolve函数
+            this.resolve = function (value) {
+                // 只有在pending状态下才能改变状态
+                if (self.state !== "pending") return;
+
+                self.state = "fulfilled";
+                self.value = value;
+
+                // 保证代码的执行顺序
+                queueMicrotask(() => {
+                    self.resolvedCallbacks.forEach((cb) => {
+                        cb(self.value);
+                    });
+                });
             }
 
-            // 保证代码的执行顺序
-            setTimeout(() => {
+            // reject函数
+            this.reject = function (error) {
                 // 只有在pending状态下才能改变状态
-                if (self.state === "pending") {
-                    self.state = "resolved";
-                    self.value = value;
-                    self.resolvedCallbacks.map((cb) => cb(self.value));
-                }
-            }, 0);
+                if (self.state !== "pending") return;
+
+                self.state = "rejected";
+                self.value = error;
+
+                queueMicrotask(() => {
+                    self.rejectedCallbacks.forEach((cb) => {
+                        cb(self.value);
+                    });
+                });
+            }
+
+            // 执行fn
+            try {
+                fn(this.resolve, this.reject);
+            } catch (e) {
+                reject(e);
+            }
         }
 
-        // reject函数
-        function reject(error) {
-            // 保证代码的执行顺序
-            setTimeout(() => {
-                // 只有在pending状态下才能改变状态
-                if (self.state === "pending") {
-                    self.state = "rejected";
-                    self.value = error;
-                    self.rejectedCallbacks.map((cb) => cb(self.value));
-                }
-            }, 0);
-        }
+        // then方法
+        myPromise.prototype.then = function (onFulfilled, onRejected) {
+            var self = this;
+            onFulfilled =
+                typeof onFulfilled === "function"
+                    ? onFulfilled
+                    : function (value) {
+                          return value;
+                      };
+            onRejected =
+                typeof onRejected === "function"
+                    ? onRejected
+                    : function (error) {
+                          throw error;
+                      };
 
-        // 执行fn
-        try {
-            fn(this.resolve.bind(this), this.reject.bind(this));
-        } catch (e) {
-            reject(e);
-        }
-    }
-
-    // then方法
-    myPromise.prototype.then = function (onFulfilled, onRejected) {
-        var self = this;
-        onFulfilled =
-            typeof onFulfilled === "function"
-                ? onFulfilled
-                : function (value) {
-                      return value;
-                  };
-        onRejected =
-            typeof onRejected === "function"
-                ? onRejected
-                : function (error) {
-                      throw error;
-                  };
-
-        // then方法返回一个新的promise对象
-        return new myPromise((resolve, reject) => {
-            // 封装一个函数，用于处理回调函数的返回值
-            function handle(callback) {
-                try {
-                    var res = callback(self.value);
-                    if (res instanceof myPromise) {
-                        res.then(resolve, reject);
-                    } else {
-                        resolve(res);
+            // then方法返回一个新的promise对象
+            return new myPromise((resolve, reject) => {
+                // 封装一个函数，用于处理回调函数的返回值
+                function handle(callback, type) {
+                    try {
+                        var res = callback(self.value);
+                        if (res instanceof myPromise) {
+                            res.then(resolve, reject);
+                        } else {
+                            type === 1 ? resolve(res) : reject(res);
+                        }
+                    } catch (e) {
+                        reject(e);
                     }
-                } catch (e) {
-                    reject(e);
                 }
-            }
 
-            // 根据状态执行不同的回调函数
-            switch (self.state) {
-                case "pending":
-                    self.resolvedCallbacks.push(() => handle(onFulfilled));
-                    self.rejectedCallbacks.push(() => handle(onRejected));
-                    break;
-                case "resolved":
-                    handle(onFulfilled);
-                    break;
-                case "rejected":
-                    handle(onRejected);
-                    break;
-            }
-        });
-    };
-    ```
+                // 根据状态执行不同的回调函数
+                switch (self.state) {
+                    case "pending":
+                        self.resolvedCallbacks.push(() =>
+                            handle(onFulfilled, 1)
+                        );
+                        self.rejectedCallbacks.push(() =>
+                            handle(onRejected, 0)
+                        );
+                        break;
+                    case "fulfilled":
+                        handle(onFulfilled, 1);
+                        break;
+                    case "rejected":
+                        handle(onRejected, 0);
+                        break;
+                }
+            });
+        };
+        ```
 
     -   手写 Promise.all, Promise.race
 
-    ```javascript
-    function myPromiseAll(promises) {
-        return new Promise((resolve, reject) => {
-            // 保存结果
-            let result = Array(promises.length);
-            // 计数器
-            let count = 0;
+        ```javascript
+        function myPromiseAll(promises) {
+            return new Promise((resolve, reject) => {
+                // 保存结果
+                let result = Array(promises.length);
+                // 计数器
+                let count = 0;
 
-            promises.forEach((promise, index) => {
-                promise.then(
-                    (res) => {
-                        result[index] = res;
-                        count++;
-                        if (count === promises.length) {
-                            resolve(result);
+                promises.forEach((promise, index) => {
+                    promise.then(
+                        (res) => {
+                            result[index] = res;
+                            count++;
+                            if (count === promises.length) {
+                                resolve(result);
+                            }
+                        },
+                        (err) => {
+                            reject(err);
                         }
-                    },
-                    (err) => {
-                        reject(err);
-                    }
-                );
+                    );
+                });
             });
-        });
-    }
+        }
 
-    function myPromiseRace(promises) {
-        return new Promise((resolve, reject) => {
-            promises.forEach((promise) => {
-                Promise.resolve(promise).then(resolve, reject);
+        function myPromiseRace(promises) {
+            return new Promise((resolve, reject) => {
+                promises.forEach((promise) => {
+                    Promise.resolve(promise).then(resolve).catch(reject);
+                });
             });
-        });
-    }
-    ```
+        }
+        ```
 
     -   手写 call、apply、bind
 
-    ```javascript
-    // call
-    Function.prototype.myCall = function (context, ...args) {
-        context = context || window; // 处理this为null或undefined的情况
-        const fn = new Symbol(); // 创建一个唯一的symbol值
-        context[fn] = this; // 将函数挂载到context上
-        const res = context[fn](...args); // 执行函数
-        delete context[fn]; // 删除挂载的函数
-        return res; // 返回结果
-    };
-    // apply
-    Function.prototype.myApply = function (context, args = []) {
-        context = context || window; // 处理this为null或undefined的情况
-        const fn = Symbol(); // 创建一个唯一的symbol值
-        context[fn] = this; // 将函数挂载到context上
-        const res = context[fn](...args); // 执行函数
-        delete context[fn]; // 删除挂载的函数
-        return res; // 返回结果
-    };
-
-    // bind
-    Function.prototype.myBind = function (context, ...args) {
-        context = context || window; // 处理this为null或undefined的情况
-        const fn = this; // 保存函数
-        const bound = function (...rest) {
-            // 返回一个新的函数
-            // 处理new调用的情况
-            return fn.apply(this instanceof bound ? this : context, [
-                ...args,
-                ...rest,
-            ]);
+        ```javascript
+        // call
+        Function.prototype.myCall = function (context, ...args) {
+            context = context || window; // 处理this为null或undefined的情况
+            const fn = new Symbol(); // 创建一个唯一的symbol值
+            context[fn] = this; // 将函数挂载到context上
+            const res = context[fn](...args); // 执行函数
+            delete context[fn]; // 删除挂载的函数
+            return res; // 返回结果
         };
-        // 继承原型链
-        bound.prototype = Object.create(fn.prototype);
-        return bound;
-    };
-    ```
+        // apply
+        Function.prototype.myApply = function (context, args = []) {
+            context = context || window; // 处理this为null或undefined的情况
+            const fn = Symbol(); // 创建一个唯一的symbol值
+            context[fn] = this; // 将函数挂载到context上
+            const res = context[fn](...args); // 执行函数
+            delete context[fn]; // 删除挂载的函数
+            return res; // 返回结果
+        };
+
+        // bind
+        Function.prototype.myBind = function (context, ...args) {
+            context = context || window; // 处理this为null或undefined的情况
+            const fn = this; // 保存函数
+            const bound = function (...rest) {
+                // 返回一个新的函数
+                // 处理new调用的情况
+                return fn.apply(this instanceof bound ? this : context, [
+                    ...args,
+                    ...rest,
+                ]);
+            };
+            // 继承原型链
+            bound.prototype = Object.create(fn.prototype);
+            return bound;
+        };
+        ```
 
     -   手写深拷贝
 
-    ```javascript
-    function deepClone(obj, hash = new WeakMap()) {
-        if (obj === null) return null; // null
-        if (typeof obj !== "object") return obj; // 基本数据类型
+        ```javascript
+        function deepClone(obj, hash = new WeakMap()) {
+            if (obj === null) return null; // null
+            if (typeof obj !== "object") return obj; // 基本数据类型
 
-        // 处理循环引用
-        if (hash.has(obj)) return hash.get(obj);
-        const cloneObj = Array.isArray(obj) ? [] : {}; // 数组或对象
-        hash.set(obj, cloneObj); // 缓存
+            // 处理循环引用
+            if (hash.has(obj)) return hash.get(obj);
+            const cloneObj = Array.isArray(obj) ? [] : {}; // 数组或对象
+            hash.set(obj, cloneObj); // 缓存
 
-        for (let key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                cloneObj[key] = deepClone(obj[key], hash); // 递归拷贝
+            for (let key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    cloneObj[key] = deepClone(obj[key], hash); // 递归拷贝
+                }
             }
+            return cloneObj;
         }
-        return cloneObj;
-    }
-    ```
+        ```
 
     -   手写 AJAX 请求
 
-    ```javascript
-    function myAjax(url, method = "GET", data = null) {
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest(); // 创建xhr对象
-            xhr.open(method, url, true); // 初始化请求
-            xhr.setRequestHeader("Content-Type", "application/json"); // 设置请求头
+        ```javascript
+        function myAjax(url, method = "GET", data = null) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest(); // 创建xhr对象
+                xhr.open(method, url, true); // 初始化请求
+                xhr.setRequestHeader("Content-Type", "application/json"); // 设置请求头
 
-            xhr.onreadystatechange = function () {
-                // 监听状态变化
-                if (xhr.readyState === 4) {
-                    // 请求完成
-                    if (xhr.status === 200) {
-                        // 请求成功
-                        resolve(JSON.parse(xhr.responseText)); // 解析响应数据
-                    } else {
-                        reject(xhr.statusText); // 请求失败
+                xhr.onreadystatechange = function () {
+                    // 监听状态变化
+                    if (xhr.readyState === 4) {
+                        // 请求完成
+                        if (xhr.status === 200) {
+                            // 请求成功
+                            resolve(JSON.parse(xhr.responseText)); // 解析响应数据
+                        } else {
+                            reject(xhr.statusText); // 请求失败
+                        }
                     }
-                }
-            };
+                };
 
-            xhr.send(data ? JSON.stringify(data) : null); // 发送请求
-        });
-    }
-    ```
+                xhr.send(data ? JSON.stringify(data) : null); // 发送请求
+            });
+        }
+        ```
 
     -   函数柯里化
 
-    ```javascript
-    function curry(fn, ...args) {
-        // 判断参数个数
-        if (fn.length === args.length) return fn(...args); // 参数个数相等，直接执行
+        ```javascript
+        function curry(fn, ...args) {
+            // 判断参数个数
+            if (fn.length === args.length) return fn(...args); // 参数个数相等，直接执行
 
-        return function (...rest) {
-            // 返回一个新的函数
-            return curry(fn, ...args, ...rest); // 递归调用
-        };
-    }
-    ```
+            return function (...rest) {
+                // 返回一个新的函数
+                return curry(fn, ...args, ...rest); // 递归调用
+            };
+        }
+        ```
 
 -   数据处理
+
     -   日期格式化('YYYY-MM-DD HH:mm:ss')
-    ```javascript
-    function formatDate(date, format) {
-        const map = {
-            YYYY: date.getFullYear(),
-            MM: String(date.getMonth() + 1).padStart(2, "0"),
-            DD: String(date.getDate()).padStart(2, "0"),
-            HH: String(date.getHours()).padStart(2, "0"),
-            mm: String(date.getMinutes()).padStart(2, "0"),
-            ss: String(date.getSeconds()).padStart(2, "0"),
-        };
-        return format.replace(
-            /YYYY|MM|DD|HH|mm|ss/g,
-            (matched) => map[matched]
-        );
-    }
 
-    // 使用
-    const date = new Date("2023-10-01 12:00:00");
-    const format = "YYYY-MM-DD HH:mm:ss";
-    const result = formatDate(date, format);
-    ```
+        ```javascript
+        function formatDate(date, format) {
+            const map = {
+                YYYY: date.getFullYear(),
+                MM: String(date.getMonth() + 1).padStart(2, "0"),
+                DD: String(date.getDate()).padStart(2, "0"),
+                HH: String(date.getHours()).padStart(2, "0"),
+                mm: String(date.getMinutes()).padStart(2, "0"),
+                ss: String(date.getSeconds()).padStart(2, "0"),
+            };
+            return format.replace(
+                /YYYY|MM|DD|HH|mm|ss/g,
+                (matched) => map[matched]
+            );
+        }
+
+        // 使用
+        const date = new Date("2023-10-01 12:00:00");
+        const format = "YYYY-MM-DD HH:mm:ss";
+        const result = formatDate(date, format);
+        ```
+
     -   数组扁平化
-    ```javascript
-    function flatten(arr) {
-        return arr.reduce((acc, val) => {
-            return acc.concat(Array.isArray(val) ? flatten(val) : val);
-        }, []);
-    }
-    ```
-    -   url和object互转
-    ```javascript
-    // url转object
-    function urlToObject(url) {
-        const paramsStr = url.split("?")[1];
-        const paramsArr = paramsStr.split("&");
-        let paramsObj = {};
 
-        paramsArr.forEach((param) => {
-            if(param.includes("=")) {
-                const [key, value] = param.split("=");
-                paramsObj[key] = decodeURIComponent(value);
-            } else {
-                paramsObj[param] = true;
+        ```javascript
+        function flatten(arr) {
+            return arr.reduce((acc, val) => {
+                return acc.concat(Array.isArray(val) ? flatten(val) : val);
+            }, []);
+        }
+        ```
+
+    -   url 和 object 互转
+
+        ```javascript
+        // url转object
+        function urlToObject(url) {
+            const paramsStr = url.split("?")[1];
+            const paramsArr = paramsStr.split("&");
+            let paramsObj = {};
+
+            paramsArr.forEach((param) => {
+                if (param.includes("=")) {
+                    const [key, value] = param.split("=");
+                    paramsObj[key] = decodeURIComponent(value);
+                } else {
+                    paramsObj[param] = true;
+                }
+            });
+
+            return paramsObj;
+        }
+        ```
+
+    -   手写 json.parse 和 json.stringify
+
+        ```javascript
+        // json.stringify
+        function myStringify(obj) {
+            if (obj === null) return "null"; // null
+            if (typeof obj !== "object") return JSON.stringify(obj); // 基本数据类型
+
+            const arr = Array.isArray(obj) ? [] : {}; // 数组或对象
+            for (let key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    arr[key] = myStringify(obj[key]); // 递归拷贝
+                }
             }
-        });
+            return JSON.stringify(arr); // 转换为字符串
+        }
 
-        return paramsObj;
-    }
+        // json.parse
+        function myParse(str) {
+            return eval("(" + str + ")"); // 使用eval解析字符串
+        }
+        ```
+
 -   设计模式
-    -   单例模式
-    ```javascript
-    function Singleton(fn) {
-        let instance = null; // 保存实例
 
-        return function (...args) {
-            if (!instance) {
-                instance = fn.apply(this, args); // 创建实例
+    -   单例模式
+
+        -   常见前端场景：组件实例化; Vuex 的 store 等。
+
+        ```javascript
+        class Singleton {
+            constructor() {
+                if (Singleton.instance) {
+                    return Singleton.instance;
+                }
+                Singleton.instance = this;
             }
-            return instance; // 返回实例
-        };
-    }
-    ```
-    -   
+        }
+        ```
+
+    -   适配器模式
+
+        -   常见前端场景：统一接口；替换外部依赖；适配数据格式等。
+
+        ```javascript
+        class iPhone {
+            request() {
+                console.log("iPhone request");
+            }
+        }
+
+        class Adapter {
+            constructor(iphone) {
+                this.iphone = iphone;
+            }
+
+            request() {
+                console.log(
+                    "Android request has been adapted to iPhone request"
+                );
+                this.iphone.request();
+            }
+        }
+        ```
+
+    -   装饰器模式
+
+        -   前端常用场景：权限控制；日志监控；流式 API 等等。
+
+        ```javascript
+        // 装饰器模式 在函数前添加函数
+        Function.prototype.before = function(beforeFn) {
+            const _self = this;
+            return function() {
+                beforeFn.apply(this, arguments); // 执行前置函数
+                return _self.apply(this, arguments); // 执行原函数
+            }
+        }
+        ```
+
+    -   观察者模式
+
+        -   常见前端场景：Vue 的双向绑定; `defineProperty` 的实现; 事件监听等。
+
+        ```javascript
+        class Subject {
+            constructor() {
+                this.observers = [];
+            }
+
+            addObserver(observer) {
+                this.observers.push(observer);
+            }
+
+            notify() {
+                this.observers.forEach((observer) => observer.update());
+            }
+        }
+
+        class Observer {
+            constructor(name) {
+                this.name = name;
+            }
+
+            update() {
+                console.log(`${this.name} has been notified`);
+            }
+        }
+        ```
+
+    -   策略模式
+
+        -   常见前端场景：表单验证; 购物车计算; 价格计算等。
+
+        ```javascript
+        // 策略模式 实现表单验证
+        class Validator {
+            constructor() {
+                this.strategies = {};
+            }
+
+            addStrategy(name, fn) {
+                this.strategies[name] = fn;
+            }
+
+            validate(name, value) {
+                return this.strategies[name](value);
+            }
+        }
+        ```
+
+    -   代理模式
+    
+        -   常见前端场景：懒加载; 访问控制; 远程代理等。
+
+        ```javascript
+        // 代理模式 图片懒加载
+        class Image {
+            constructor() {
+                let imgNode = document.createElement("img");
+                document.body.appendChild(imgNode);
+
+                this.imgNode = imgNode;
+            }
+
+            setSrc(src) {
+                this.imgNode.src = src;
+            }
+        }
+
+        class ProxyImage {
+            constructor() {
+                let img = new Image();
+                img.onload = () => {
+                    this.image.setSrc(this.src);
+                };
+            }
+
+            setSrc(src) {
+                this.image.setSrc(this.src);
+            }
+        }
+
+        ```
