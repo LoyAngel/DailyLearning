@@ -592,23 +592,43 @@ Vue.component("custom-input", {
             `oldVnode`: 上一个虚拟节点，仅在update和componentUpdated钩子中可用
 
 ```html
+```html
 <!-- 自定义指令示例 -->
 <div id="app">
+    <!-- 基础使用示例 -->
     <p v-runoob="{ color: 'red', text: 'Hello!' }">Runoob</p>
+    <!-- 不同颜色和文本示例 -->
+    <p v-runoob="{ color: 'blue', text: 'Welcome!' }">Welcome</p>
+    <!-- 缺少 color 属性，使用默认颜色示例 -->
+    <p v-runoob="{ text: 'No Color Specified' }">No Color</p>
+    <!-- 缺少 text 属性，使用默认文本示例 -->
+    <p v-runoob="{ color: 'green' }">No Text</p>
+    <!-- 错误数据格式示例 -->
+    <p v-runoob="invalidData">Invalid Data</p>
 </div>
 <script>
     Vue.directive("runoob", {
         bind: function (el, binding, vnode) {
             var s = JSON.stringify;
-            el.style.color = binding.value.color;
-            el.innerHTML =
-                s(binding.value.text) +
-                "<br>" +
-                s(binding.expression) +
-                "<br>" +
-                s(binding.arg) +
-                "<br>" +
-                s(binding.modifiers);
+            // 处理绑定值
+            if (typeof binding.value === 'object' && binding.value !== null) {
+                // 设置颜色，若未提供则使用默认黑色
+                el.style.color = binding.value.color || 'black';
+                // 设置文本，若未提供则使用默认文本
+                const text = binding.value.text || 'Default Text';
+                el.innerHTML =
+                    s(text) +
+                    "<br>" +
+                    s(binding.expression) +
+                    "<br>" +
+                    s(binding.arg) +
+                    "<br>" +
+                    s(binding.modifiers);
+            } else {
+                // 处理无效绑定值
+                el.style.color = 'red';
+                el.innerHTML = "Invalid binding value";
+            }
         },
     });
     new Vue({
@@ -1141,3 +1161,39 @@ Vuex 是 Vue.js 的官方状态管理库，使用单向数据流的方式来管�
     -   mapMutations：将 Mutation 映射到组件的方法中。
     -   mapActions：将 Action 映射到组件的方法中。
     -   createStore：创建 Store 实例。
+
+### Public 和 Assets 区别
+1. 静态资源处理
+    静态资源可以通过两种方式处理:
+    - JS被导入或 template/CSS 中通过相对路径引用，这类引用会被 webpack/vite 处理。
+    - 放置在public目录下或者通过绝对路径被引用，该资源会被拷贝而不经过 webpack/vite 处理。
+2. Assets的使用
+   - 当在js(require), CSS(background: url(...), @import ,@use)等资源使用时，所有URL会被解析为一个模块依赖，资源会进入打包工具的依赖图中。 
+   - Assets里内容会被打包工具处理，只支持相对路径形式，会被解析为模块依赖。
+3. Public的使用
+   - Public下的静态资源不会经过webpack处理,会被直接拷贝到 dist文件的根目录下。必须使用绝对路径引用这些文件。
+   - Public下的资源不会被Webpack处理，所以不会被压缩、合并，它们会直接被复制到最终的打包目录（默认是dist/static）下。必须使用绝对路径引用这些文件，这个取决于你vue.config.js中 publicPath 的配置，默认的是`/`。
+
+## TypeScript 的补充
+1. defineComponents
+- 定义: 定义组件的类型，用于 TypeScript 中。
+- 代码: 
+```ts
+import { defineComponent } from 'vue'
+const Component = defineComponent({
+    props: {
+        name: {
+            type: String,
+            default: ''
+        }
+    }
+})
+```
+2. ref 与 InstanceType 引入组件
+- 定义: 引入组件的类型，用于 TypeScript 中。可以丰富VsCode的代码提示。
+- 代码: 
+```ts
+import { ref, onMounted } from 'vue'
+import Component from './Component.vue'
+const ComponentRef = ref<InstanceType<typeof Component>>()
+```
