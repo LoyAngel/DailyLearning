@@ -278,7 +278,7 @@ WebPack可以进行一系列配置减少打包时间
 
 - cache:
   
-  ```
+  ```javascript
   cache: {
     type: 'filesystem',
     // 优化缓存配置：移除整个配置文件依赖，只追踪关键构建相关的文件
@@ -295,18 +295,49 @@ WebPack可以进行一系列配置减少打包时间
   },
   ```
 
-- resolve:
+- resolve
+  
+  ```javascript
+    resolve: {
+      extensions: ['.js', '.vue', '.json'],
+      modules: ['node_modules'],
+      alias: {
+        '@': path.resolve(rootPath, 'src'),
+        'vue': 'vue/dist/vue.esm.js'
+      },
+      fallback: {
+        querystring: require.resolve('querystring-es3')
+        // buffer: require.resolve("buffer/"),
+        // os: require.resolve('os-browserify/browser')
+      },
+      // 添加 resolve 缓存
+      cacheWithContext: false,
+      unsafeCache: true
+    },
+  ```
 
-```
-    cacheWithContext: false,
-    unsafeCache: true
-```
+- babel
+  
+  ```javascript
+  {
+         loader: 'babel-loader',
+         options: {
+           cacheDirectory: true,
+           // 添加缓存压缩以节省磁盘空间
+           cacheCompression: false,
+           // 设置缓存标识符，确保缓存有效性
+           cacheIdentifier: process.env.NODE_ENV || 'development'
+         }
+  }
+  ```
+  
+  
 
 ### 精灵图插件
 
 SpirtesmithPlugin自动将多个小图标合并成一张雪碧图并生成对应的 CSS 样式，减少 HTTP 请求次数，提高页面加载性能。
 
-```
+```javascript
 new SpritesmithPlugin({
   src: {
     cwd: path.resolve(rootPath, "src/assets/icons"),
@@ -401,6 +432,136 @@ export default {
 
 如果在Vue的模板里直接使用一个不带参数的函数，那么这个函数没有依赖，每次渲染都会依赖于整个页面发生的变化，此时请求数据容易形成死循环卡死。
 
+## SSO的介绍
+
+单点登录英文全称Single Sign On，简称就是SSO。它的解释是：**在多个应用系统中，只需要登录一次，就可以访问其他相互信任的应用系统。** 
+
+基本介绍见：[单点登录（SSO）看这一篇就够了-阿里云开发者社区](https://developer.aliyun.com/article/636281)
+
+### 常见SSO实现方案
+
+#### 1. 基于Cookie的SSO
+
+- **原理**：利用顶级域名共享Cookie特性
+
+- **前端实现**：
+  
+  ```javascript
+  // 设置跨域Cookie
+  document.cookie = `token=${token}; domain=.example.com; path=/; secure; httponly`;
+  
+  // 读取Cookie
+  const getCookie = (name) => {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? match[2] : null;
+  };
+  
+  ```
+
+- **优缺点**：
+  
+  - 优点：实现简单，浏览器自动处理
+  - 缺点：仅限于相同顶级域名，存在CSRF风险
+
+### 2. 基于OAuth2/OpenID Connect的SSO
+
+- **原理**：使用标准授权框架，通过授权码模式或隐式模式
+
+- **前端实现**：
+  
+  ```javascript
+  // 授权码模式示例
+  function redirectToSSO() {
+    const clientId = 'your_client_id';
+    const redirectUri = encodeURIComponent('https://your-app.com/callback');
+    const authUrl = `https://sso.com/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`;
+    window.location.href = authUrl;
+  }
+  
+  // 处理回调
+  function handleCallback() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const authCode = urlParams.get('code');
+    if (authCode) {
+      // 用授权码换取令牌
+      fetchTokenWithAuthCode(authCode);
+    }
+  }
+  
+  ```
+
+- **优缺点**：
+  
+  - 优点：标准化，安全性高，支持跨域
+  - 缺点：实现复杂，需要多次请求
+
+### 3. 基于JWT的SSO
+
+- **原理**：使用JSON Web Token作为认证凭证
+
+- **前端实现**：
+  
+  ```javascript
+  // 存储JWT
+  function storeJWT(token) {
+    localStorage.setItem('jwt_token', token);
+    // 或使用sessionStorage
+    // sessionStorage.setItem('jwt_token', token);
+  }
+  
+  // 获取JWT
+  function getJWT() {
+    return localStorage.getItem('jwt_token');
+  }
+  
+  // 在请求头中添加JWT
+  function fetchWithJWT(url, options = {}) {
+    const token = getJWT();
+    options.headers = {
+      ...options.headers,
+      'Authorization': `Bearer ${token}`
+    };
+    return fetch(url, options);
+  }
+  
+  ```
+
+- **优缺点**：
+  
+  - 优点：无状态，支持跨域，减少服务端存储压力
+  - 缺点：令牌存储安全性问题，无法主动撤销令牌
+
+### 常见SSO实现方案
+
+### 1. 令牌存储策略
+
+- **Cookie存储**：
+  - 优点：浏览器自动处理，可设置HttpOnly增强安全性
+  - 缺点：有大小限制，仅限于同域或特定跨域场景
+- **LocalStorage/SessionStorage**：
+  - 优点：存储空间大，支持跨域
+  - 缺点：易受XSS攻击，需要额外安全措施
+- **内存存储**：
+  - 优点：最安全，页面关闭即清除
+  - 缺点：页面刷新后需要重新认证
+
+### 2. 安全性考虑
+
+- **XSS防护**：用户输入转义
+- **CSRF防护**：Origin Header、Referer Header检测；CSRF Token。
+
+### 3. 登录状态管理
+
+- **全局状态管理**：Vuex(mutations 存储， actions 请求)或者Pinia持久化
+
+- **Vue Router 路由守卫** : 通过token鉴权
+
+- **多标签页同步**：`localStorge`和`SessionStorge`（window.onstorge）；**SSE**（Server-Sent Events)；WebSocket；BoradCastChannel
+
+## JWT认证方式
+
+
+
 ## WebSocket 的应用
 
 WebSocket 是一种在单个 TCP 连接上进行全双工通信的协议。它允许客户端和服务器之间进行实时的双向数据传输，而无需像传统的 HTTP 请求那样每次都需要重新发起请求。
@@ -429,7 +590,19 @@ WebSocket 正是为了克服上述缺点而设计的一种新型通信协议。�
 - **节省资源**：只需要一次握手即可维持长期稳定的连接关系，避免了反复创建销毁连接所带来的性能损失；
 - **真正的实时性**：无论是哪一方产生的最新信息都可以第一时间通知对方，确保了数据同步的一致性和即时性。
 
-## WebSocket 工作原理
+### WebSokect 前端实现心跳机制的必要性
+
+1. WebSocket只是一个应用层协议规范，其传输层是TCP，而TCP为长连接提供KeepAlive机制，可以定时发送心跳报文确认对方的存活，但一般是服务器端使用。因为是TCP传输控制层的机制，具体的实现要看操作系统，也就是说应用层接收到的连接状态是操作系统通知的，不同操作系统的资源调度是不一样的，例如何时发送探测报文（不包含有效数据的TCP报文）检测对方的存活，频率是多久，在不同的系统配置下存在差异。可能是2小时进行一次心跳检测，或许更短。如果连续没有收到对方的应答包，才会通知应用层已经断开连接。这就带来了不确定性。同时也意味着其它依赖该机制的应用层协议也会被影响。也就是说要利用这个过程进行检测，客户端要修改操作系统的TCP配置才行，在浏览器环境显然不行。
+
+2. WebSocket协议也有自身的保活机制，但需要通讯双方的实现。
+   
+   - 关闭数据帧，在任意一方要关闭通道时，发送给对方。例如浏览器的WebSocket实例调用close时，就会发送一个OPCODE为连接关闭的数据帧给服务器端，服务器端接收到后同样需要返回一个关闭数据帧，然后关闭底层的TCP连接。
+   - ping数据帧，用于发送方询问对方是否存活，也就是心跳检测包。目前只有后端可以控制ping数据帧的发送。但浏览器端的WebSocket实例上没有对应的api可用。
+   - pong数据帧，当WebSocket通讯一方接收到对方发送的ping数据帧后，需要及时回复一个内容一致，且OPCODE标记为pong的数据帧，告诉对方我还在。但目前回复pong是浏览器的自动行为，意味着不同浏览器会有差异。而且在js中没有相关api可以控制。
+
+综上所述，探测对方存活的方式都是服务器主动进行心跳检测。浏览器并没有提供相关能力。为了能够在浏览器端实时探测后端的存活，或者说连接依旧可用，只能自己实现心跳检测。
+
+### WebSocket 工作原理
 
 WebSocket 的工作流程大致可分为三个阶段：
 
@@ -518,7 +691,7 @@ sequenceDiagram
     participant S as Store
     participant W as WebSocket
     participant R as receive-ws-message.js
-    
+
     P->>S: dispatch initWs()
     S->>W: 创建WebSocket连接
     Note over S,W: 配置onmessage回调
@@ -534,17 +707,23 @@ sequenceDiagram
     R->>R: 显示桌面通知
 ```
 
-
-
 ## 项目整合
 
-### 市政云管网监测项目（微前端架构）：
+
+
+
+
+### 市政云管网监测项目
+
+#### 技术栈
+
+Vue2 + WebPack + Vuex + Qiankun + hatom + Hui/Vant2 + AMap + Sass
 
 #### 业务层面
 
 - 实现动态表单架构：根据协议类型动态显示不同表单字段，处理3中协议类型+5种设备类型的差异化逻辑，实现复杂状态管理。
 - 智能表单验证系统：集成11种字段验证规则，用工厂模式和策略模式进行优化，通过高阶函数生成不同验证规则（如validateNull、validateRange等）
-- 复杂组件整合开发：结合AMap地理编码和反向地理编码开发复合GIS集成组件；通过hatom和微信小程序的api，实现多端带标签的多图上传控件，优化图片上传能力
+- 复杂组件整合开发：通过AMap组件开发GIS组件，提供地址搜索与位置确认；通过hatom脚手架与wxSDK，开发APP与小程序双端多图上传控件；通过WebSocoket通信轻框架（心跳检测、自动重连），设计微应用消息总线，开发告警消息通知组件，实现消息实时刷新与通知。
 
 #### 性能层面
 
@@ -553,25 +732,118 @@ sequenceDiagram
 - 配置filesystem缓存，通过buildDependencies精确控制缓存失效
 - 多核并行压缩：TerserPlugin和CssMinimizerPlugin启用parallel参数
 - 自定义Spritesmith模板函数实现雪碧图自动化生成
+- 合理运用 `splitChunks` 缓存组策略对第三方库和公共组件进行精准拆包，有效减少重复加载。
 
-#### 其它层面
+#### 架构层面
 
-- **技术架构**：
+- **模块化解耦**：在Qiankun微前端框架中独立开发其中的一个子应用，并实现与其他子应用共享共享认证状态和用户上下文信息。
+
+- **权限控制系统**：结合RBAC模型实现了跨子应用的统一权限管理。
   
-  - 在Vue2 + qiankun微前端架构，在子应用实现开发和部署
-  - 基于原生WebSocket实现实时通信系统（含心跳检测、断线重连机制）
+  - 优化了菜单码(MenuCode)的权限过滤方式；
 
-- **主要贡献**：
-  
-  1. 设计实现WebSocket通信框架：
-     - 支持自动协议补全、心跳检测(10s间隔)、断线重连
-     - 日均处理告警消息5000+条，响应速度提升60%
-  2. 搭建微前端架构：
-     - 基于qiankun实现主子应用隔离
-     - 支持各子应用独立开发部署
+## 其它：
 
-- **技术亮点**：
-  
-  - 自主研发WebSocket通信层，稳定性达99.9%
-  - 创新性的微应用消息总线设计
-  - 支持多维度预警信息展示
+- 编写油猴插件，整理应用令牌到本地并用插件读取，用到时快捷键粘贴。
+- 运用Vim进行开发，熟练掌握Vim的应用。
+
+
+
+### 智能展厅演示系统
+
+#### 技术栈
+
+Vue3 + Vite + Pinia + Mitt + Element Plus UI + Echarts + Less + Animejs
+
+#### 业务层面
+
+- **渐进式内容展示**——实现大模型前端页面的动画展示，包括打字机效果、组件的渐隐渐显
+
+- **智能化对话流程**——定义对话机器人状态，实现机器人动画同步与时序控制，支持用户消息和机器人响应的完整对话流，根据对话内容触发不同的场景回显
+
+- **制定Function Call规则**——通过agent.json配置文件定义工具和响应内容，与大模型实现交互
+
+- **开发多模态交互组件**——开发大模型调用的多模态组件，实现按需调用
+
+#### 性能层面
+
+#### 架构层面
+
+
+
+## 前端新技术
+
+### Astro
+
+Astro是一个现代化的网站构建框架，于2021年发布，旨在提供更快、更轻量级的方式来构建内容驱动的网站。它的核心理念是"零JavaScript默认"，通过创新的"岛屿架构"实现高性能的网站。
+
+#### 核心概念
+
+##### 1. 岛屿架构（Islands Architecture）
+
+- 页面上的大部分静态内容作为纯HTML发送
+- 只有交互式组件（"岛屿"）会被水合为JavaScript
+- 默认情况下，Astro页面没有JavaScript，只有需要交互时才加载
+
+##### 2. 多框架支持
+
+- 可以使用React、Vue、Svelte、Solid、Preact等前端框架的组件
+- 这些组件在构建时被渲染为静态HTML，需要交互时才被水合为原始框架组件
+
+##### 3. <u>SSR</u>
+
+- 服务端渲染，可以对页面上的不同组件独立控制水合行为
+- 类似Nuxt、Next的自动路由和自动导入
+
+##### 4. 内容收集
+
+- 内置支持从Markdown、MDX等文件中获取内容并生成页面
+
+#### 优点
+
+1. **极快的加载速度**
+   
+   - 默认不发送JavaScript，页面加载速度极快
+   - 对SEO和用户体验有显著好处
+
+2. **低JavaScript占用**
+   
+   - 只有真正需要交互性的部分才会发送JavaScript
+   - 大幅减少页面总体积
+
+3. **多框架集成**
+   
+   - 可以使用熟悉的前端框架组件
+   - 不同团队可以使用不同框架，然后在Astro中统一
+
+4. **灵活的渲染策略**
+   
+   - 可以在同一项目中混合使用静态生成（SSG）和服务器端渲染（SSR）
+
+5. **强大的内容支持**
+   
+   - 内置对Markdown和MDX的支持，非常适合内容驱动的网站
+
+#### 场景
+
+##### 适合场景
+
+1. **内容驱动的网站** - 博客、文档网站、新闻网站等
+2. **营销网站** - 产品展示、企业官网、落地页等
+3. **个人作品集** - 需要快速加载和良好视觉效果的展示型网站
+4. **电子商务网站** - 特别是产品目录和详情页
+5. **多团队项目** - 不同团队使用不同前端框架的项目
+
+##### 不太适合的场景
+
+1. **高度交互的单页应用** - 如复杂的仪表板、在线编辑器等
+2. **需要大量实时数据更新的应用** - 如聊天应用、实时协作工具
+3. **移动应用** - Astro主要用于Web开发，不适合原生移动应用
+
+
+
+## Qiankun 微服务原理解析
+
+
+
+## MCP与 Function Call
