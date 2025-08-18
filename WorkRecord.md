@@ -330,8 +330,6 @@ WebPack可以进行一系列配置减少打包时间
          }
   }
   ```
-  
-  
 
 ### 精灵图插件
 
@@ -455,7 +453,6 @@ export default {
     const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
     return match ? match[2] : null;
   };
-  
   ```
 
 - **优缺点**：
@@ -487,7 +484,6 @@ export default {
       fetchTokenWithAuthCode(authCode);
     }
   }
-  
   ```
 
 - **优缺点**：
@@ -523,7 +519,6 @@ export default {
     };
     return fetch(url, options);
   }
-  
   ```
 
 - **优缺点**：
@@ -559,8 +554,6 @@ export default {
 - **多标签页同步**：`localStorge`和`SessionStorge`（window.onstorge）；**SSE**（Server-Sent Events)；WebSocket；BoradCastChannel
 
 ## JWT认证方式
-
-
 
 ## WebSocket 的应用
 
@@ -707,11 +700,65 @@ sequenceDiagram
     R->>R: 显示桌面通知
 ```
 
+## 动态代理避免重启项目
+
+配置动态代理可以避免每次项目重启，原理是将proxy中的`target`换成`router:()=>{}`，然后将代理的配置写在另一个文件中，就可以让项目运行时实时获取最新的配置。
+
+示例：
+
+```js
+// proxy.js
+const fs = require('fs')
+
+function looseJsonParse(obj) {
+  returggFunction('"use strict";return (' + obj + ')')()
+}
+function getUrl(key) {
+  const router = fs.readFileSync('./build/proxy-config.js', 'utf8')
+  const a = router.indexOf('{')
+  const b = router.lastIndexOf('}')
+  const proxy = looseJsonParse(router.substring(a, b + 1))
+  return proxy[key]
+}
+module.exports = {
+ [`/ghd/ghdsrm/web/`]: {
+    target: 'target',// 这个字段必须有
+    router: () => getUrl('temp'),
+    changeOrigin: true,
+    secure: false,
+    pathRewrite: {
+      '^/ghd/ghdsrm': '/'
+    }
+  },
+  '**/web/**': {
+    target: 'target',
+    router: () => getUrl('web'),
+    changeOrigin: true,
+    secure: false,
+  }
+}
+
+// proxy-config.js
+/**
+ * 代理配置，修改完代理后，不需要重启项目，直接刷新浏览器即可
+ * 不使用json文件的原因是，json文件无法注释，不利于维护
+ * https://github.com/chimurai/http-proxy-middleware#router-objectfunction
+ */
+const proxy = {
+  /**
+   * temp
+   * 临时的代理地址
+   */
+  temp: 'http://10.16.83.15:6007', //dev
+  /**
+   * web
+   * 所有web请求都代理到这个地址
+   */
+  web: 'https://ghd-inner-gn.hikyun.com', //dev
+}
+```
+
 ## 项目整合
-
-
-
-
 
 ### 市政云管网监测项目
 
@@ -747,29 +794,86 @@ Vue2 + WebPack + Vuex + Qiankun + hatom + Hui/Vant2 + AMap + Sass
 - 编写油猴插件，整理应用令牌到本地并用插件读取，用到时快捷键粘贴。
 - 运用Vim进行开发，熟练掌握Vim的应用。
 
-
-
 ### 智能展厅演示系统
 
-#### 技术栈
+Vue3 + Vite + Pinia + Mitt + Element Plus UI + Echarts + Less + AnimateCss
 
-Vue3 + Vite + Pinia + Mitt + Element Plus UI + Echarts + Less + Animejs
+- **智能化对话流程**——实现大模型前端聊天页面，处理用户与大模型交流逻辑，包括消息收发与进度条滚动，消息打字机（包括对话和深度思考）、渐隐渐显组件的动画展示，根据对话内容触发不同的场景回显；
 
-#### 业务层面
+- **渐进式内容展示**——实现对话机器人的状态动画控制，定义对话机器人状态，实现机器人动画同步与时序控制；
 
-- **渐进式内容展示**——实现大模型前端页面的动画展示，包括打字机效果、组件的渐隐渐显
+- **开发多模态交互组件**——使用Function Call形式定义大模型的tool和response，通过json文件配置，让大模型参与工具建议，同时开发大模型调用的多模态组件，实现按需调用。
 
-- **智能化对话流程**——定义对话机器人状态，实现机器人动画同步与时序控制，支持用户消息和机器人响应的完整对话流，根据对话内容触发不同的场景回显
+#### 上述内容需要细化
 
-- **制定Function Call规则**——通过agent.json配置文件定义工具和响应内容，与大模型实现交互
+1. 智能化对话
+   
+   - 消息收发机制
+     
+             该项目作为展厅演示系统，并未采用真实的收发，而是用了**仿真驱动架构**。配置方面——采用JSON Schema定义工具调用规范，模拟Function Calling机制，通过配置文件解耦业务逻辑与展示层，提升系统灵活性。交互方面——自研打字机组件实现深度思考与回复的渐进式展示，通过时间控制算法营造AI"思考-组织-表达"的认知过程，结合视觉动画和语音播报打造沉浸式人机交互体验。
+     
+             在深入理解项目架构的基础上，我在空余时间进行了延伸性的技术实践，基于SSE技术构建了完整的流式数据处理体系——**连接管理层**，实现SSE生命周期管理（建连、心跳、重连、优雅关闭）；**消息处理管道**，`数据接收 → 格式解析 → 类型路由 → 顺序维护 → 内容渲染`，实现消息类型动态分发机制；**组件生态适配**，多媒体组件动态加载框架，同时增量渲染引擎替代传统定时器方案。
+     
+             当浏览器标签页被切换或进入后台时，SSE的暂停与恢复处理：
+     
+     1. 监听页面，不同状态对应不同连接策略，active正常接收，passvie节流，hidden则断连但启用心跳保活； 
+     
+     2. 数据持久化，实时接收消息持久化到IndexedDB（当然一般来说这部分应该后端存储）； 
+     
+     3. 断点续传，采用SSE的Last-Event-ID头部机制，后端维护消息缓存窗口，前端重启携带上次的ID建连。
+     
+     [为什么大模型网站使用 SSE 而不是 WebSocket？_为什么很多不用websocket-CSDN博客](https://blog.csdn.net/fakerplus/article/details/146146467)
+   
+   - 打字机动画机制 
+     
+     虽然项目中并未直接使用 **Animejs** 库，但其实现方式体现了类似的原理和设计思想。打字机动画的核心在于模拟字符逐个出现的效果，这通常通过以下步骤实现：
+     
+     - **逐字输出机制**  将完整文本按字符拆分，利用定时器 (`setInterval` 或 `setTimeout`) 控制每次向 DOM 插入一个新字符。
+     
+     - **动画速度控制**  每个字符插入的时间间隔决定了“打字”速度。可以通过调整时间参数来改变节奏感，甚至支持动态变速（例如标点符号稍作停顿）。
+     
+     项目未采用标准的第三方库，但从架构角度看，这种定制化策略具有明显优势：
+     
+     - **灵活性优先**  
+       自研组件可以精确控制每一帧的行为（如高亮关键词、特殊符号处理等），满足复杂的交互需求，而无需受限于通用动画框架的功能边界。
+     
+     - **性能考量**  
+       相比 CSS 动画可能引起的重排(reflow) 和重绘(repaint)，精细化操作 DOM 更利于性能调优；同时结合 `ResizeObserver` 实时感知容器尺寸变化，保证滚动一致性。
+     
+     - **响应式集成**  
+       虽然并未使用状态管理，但在 Vue3 的 Composition API 架构下，借助 `watch` 和 `ref/reactive` 实现动画进度与全局状态的联动：
+     
+     面对高频消息流（如语音识别连续输入或多轮大模型回复），系统采取了几种关键技术手段保障流畅体验：
+     
+     - **队列缓冲 + 流控策略**  
+       新增的消息会被推入本地队列，在前一条动画结束后再依次消费。这样既避免了资源争抢，又保留了语义顺序。
+     
+     - **虚拟化卸载非可视区域**  
+       结合 Element Plus 的 `<el-scrollbar>` 组件特性，只渲染可见范围内的消息节点，超出视窗部分则懒加载或销毁，大幅降低内存占用。
+     
+     项目中的打字机动画采用了 `setInterval` 方案，而不是 `requestAnimationFrame` (RAF)。这两种方案在事件循环层面的表现有显著不同：
+     
+     - **`setInterval` 的工作机制**：
+       
+       - 它会在宏任务队列中定期添加一个新的回调任务。
+       - 每次事件循环迭代都会检查是否有到期的任务要执行。
+       - 如果主线程繁忙（比如正在处理其他耗时任务），`setInterval` 的执行可能会被推迟，导致动画不连贯。
+     
+     - **`requestAnimationFrame` 的工作机制**：
+       
+       - 它专门用于动画渲染，在浏览器下次重绘之前执行回调。
+       - 浏览器会根据屏幕刷新率（通常是 60Hz）来决定何时执行 RAF 回调。
+       - 如果页面不可见（例如标签页被隐藏），RAF 会暂停执行，节省资源。
 
-- **开发多模态交互组件**——开发大模型调用的多模态组件，实现按需调用
-
-#### 性能层面
-
-#### 架构层面
-
-
+2. 渐进内容展示
+   
+   - 机器人状态机设计
+     
+     - **事件驱动**: WebSocket消息、用户交互、动画结束事件触发状态变更
+     
+     - **条件判断**: 根据消息类型(content/thought)决定下一状态
+     
+     - **动画绑定**: 每个状态关联特定CSS动画，动画结束回调控制状态流转，CSS动画采用keyframes与animations实现，监听则采用@animationEnd等事件。
 
 ## 前端新技术
 
@@ -840,10 +944,6 @@ Astro是一个现代化的网站构建框架，于2021年发布，旨在提供�
 2. **需要大量实时数据更新的应用** - 如聊天应用、实时协作工具
 3. **移动应用** - Astro主要用于Web开发，不适合原生移动应用
 
-
-
 ## Qiankun 微服务原理解析
-
-
 
 ## MCP与 Function Call
